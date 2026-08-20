@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Request an Item — China Source GH</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream: '#FBF6EE', forest: '#1A3A2A', orange: '#F07A3A',
+            softyellow: '#F5E6A3', softgreen: '#D4E8D8'
+          },
+          fontFamily: { sans: ['DM Sans', 'system-ui', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <style>body { font-family: 'DM Sans', system-ui, sans-serif; }</style>
+</head>
+<body class="bg-cream text-forest antialiased">
+
+  <nav class="sticky top-0 z-40 bg-cream/95 backdrop-blur border-b border-forest/5">
+    <div class="max-w-xl mx-auto px-4 h-14 flex items-center justify-between">
+      <a href="index.html" class="font-extrabold tracking-tight">CHINA SOURCE <span class="text-orange text-sm">GH</span></a>
+      <a href="index.html" class="text-sm font-medium text-forest/60 hover:text-forest">← Home</a>
+    </div>
+  </nav>
+
+  <main class="max-w-xl mx-auto px-4 py-10">
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center gap-1.5 text-orange mb-2">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.5 6.5L20 10l-6.5 1.5L12 18l-1.5-6.5L4 10l6.5-1.5L12 2z"/></svg>
+        <span class="text-xs font-bold uppercase tracking-wide">New request</span>
+      </div>
+      <h1 class="text-3xl font-extrabold tracking-tight">What can we find for you?</h1>
+      <p class="text-forest/60 text-sm mt-2">Describe the item, add a photo or link, and tell us your budget.</p>
+    </div>
+
+    <!-- FORM -->
+    <form id="form" class="space-y-5">
+      <section class="bg-white rounded-3xl border border-forest/10 p-5 space-y-4 shadow-sm">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-forest/50">Your details</h2>
+        <div>
+          <label class="block text-sm font-semibold mb-1.5">Full name *</label>
+          <input name="name" required class="w-full rounded-full border-2 border-forest/15 bg-cream/50 px-4 py-3 text-sm focus:outline-none focus:border-orange" placeholder="Ama Mensah" />
+        </div>
+        <div>
+          <label class="block text-sm font-semibold mb-1.5">WhatsApp number *</label>
+          <input name="whatsapp" type="tel" required class="w-full rounded-full border-2 border-forest/15 bg-cream/50 px-4 py-3 text-sm focus:outline-none focus:border-orange" placeholder="024 XXX XXXX" />
+        </div>
+        <div>
+          <label class="block text-sm font-semibold mb-1.5">Email</label>
+          <input name="email" type="email" class="w-full rounded-full border-2 border-forest/15 bg-cream/50 px-4 py-3 text-sm focus:outline-none focus:border-orange" placeholder="optional" />
+        </div>
+        <div>
+          <label class="block text-sm font-semibold mb-1.5">Location in Ghana</label>
+          <input name="location" class="w-full rounded-full border-2 border-forest/15 bg-cream/50 px-4 py-3 text-sm focus:outline-none focus:border-orange" placeholder="Accra, Kumasi..." />
+        </div>
+      </section>
+
+      <section class="bg-white rounded-3xl border border-forest/10 p-5 space-y-4 shadow-sm">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-forest/50">Item details</h2>
+        <div>
+          <label class="block text-sm font-semibold mb-1.5">What are you looking for? *</label>
+          <input name="item" required class="w-full rounded-full border-2 border-forest/15 bg-cream/50 px-4 py-3 text-sm focus:outline-none focus:border-orange" placeholder="e.g. Women's handbags" />
+        </div>
+        <div>
+          <label class="block text-sm font-semibold mb-1.5">Detailed description</label>
+          <textarea name="description" rows="3" class="w-full rounded-2xl border-2 border-forest/15 bg-cream/50 px-4 py-3 text-sm focus:outline-none focus:border-orange" placeholder="Extra details..."></textarea>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-sm font-semibold mb-1.5">Quantity *</label>
+            <input name="quantity" type="number" min="1" value="1" required class="w-full rounded-full border-2 border-forest/15 bg-cream/50 px-4 py-3 text-sm focus:outline-none focus:border-orange" />
+          </div>
+          <div>
+            <label class="block text-sm font-semibold mb-1.5">Budget (GHS)</label>
+            <input name="budget" type="number" min="0" class="w-full rounded-full border-2 border-forest/15 bg-cream/50 px-4 py-3 text-sm focus:outline-none focus:border-orange" placeholder="e.g. 6000" />
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-sm font-semibold mb-1.5">Quality</label>
+            <select name="quality" class="w-full rounded-full border-2 border-forest/15 bg-cream/50 px-4 py-3 text-sm focus:outline-none focus:border-orange">
+              <option value="">Any</option>
+              <option>Budget</option>
+              <option>Standard</option>
+              <option>Premium</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold mb-1.5">Colour</label>
+            <input name="colour" class="w-full rounded-full border-2 border-forest/15 bg-cream/50 px-4 py-3 text-sm focus:outline-none focus:border-orange" placeholder="Optional" />
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-sm font-semibold mb-1.5">Size</label>
+            <input name="size" class="w-full rounded-full border-2 border-forest/15 bg-cream/50 px-4 py-3 text-sm focus:outline-none focus:border-orange" placeholder="Optional" />
+          </div>
+          <div>
+            <label class="block text-sm font-semibold mb-1.5">Brand</label>
+            <input name="brand" class="w-full rounded-full border-2 border-forest/15 bg-cream/50 px-4 py-3 text-sm focus:outline-none focus:border-orange" placeholder="Optional" />
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold mb-1.5">Delivery timeframe</label>
+          <input name="timeframe" class="w-full rounded-full border-2 border-forest/15 bg-cream/50 px-4 py-3 text-sm focus:outline-none focus:border-orange" placeholder="e.g. Within 3 weeks" />
+        </div>
+      </section>
+
+      <section class="bg-white rounded-3xl border border-forest/10 p-5 space-y-4 shadow-sm">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-forest/50">Reference (optional)</h2>
+        <div>
+          <label class="block text-sm font-semibold mb-1.5">Product URL</label>
+          <input name="url" type="url" class="w-full rounded-full border-2 border-forest/15 bg-cream/50 px-4 py-3 text-sm focus:outline-none focus:border-orange" placeholder="https://..." />
+        </div>
+        <div>
+          <label class="block text-sm font-semibold mb-1.5">Reference image</label>
+          <input type="file" id="img" accept="image/*" class="w-full text-sm file:mr-3 file:py-2.5 file:px-4 file:rounded-full file:border-0 file:bg-softyellow file:text-forest file:font-bold" />
+          <div id="preview" class="mt-3 hidden"><img id="previewImg" class="max-h-36 rounded-2xl" alt="" /></div>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold mb-1.5">Additional notes</label>
+          <textarea name="notes" rows="2" class="w-full rounded-2xl border-2 border-forest/15 bg-cream/50 px-4 py-3 text-sm focus:outline-none focus:border-orange" placeholder='e.g. "Preferably black, under GH₵700"'></textarea>
+        </div>
+      </section>
+
+      <button type="submit" id="btn" class="w-full bg-orange text-white py-4 rounded-full font-bold text-lg hover:opacity-90 transition disabled:opacity-50">
+        Submit request
+      </button>
+    </form>
+
+    <!-- SUCCESS -->
+    <div id="success" class="hidden text-center py-12">
+      <div class="w-16 h-16 bg-softgreen rounded-full flex items-center justify-center text-3xl mx-auto mb-5 font-bold">✓</div>
+      <h2 class="text-2xl font-extrabold mb-2">Request received</h2>
+      <p class="text-forest/60 text-sm mb-6">We'll review and begin sourcing suitable options.</p>
+      <div class="bg-white border border-forest/10 rounded-3xl p-5 inline-block mb-6 shadow-sm">
+        <p class="text-xs font-bold uppercase tracking-wider text-forest/40 mb-1">Request ID</p>
+        <p id="reqId" class="text-xl font-mono font-extrabold text-orange"></p>
+      </div>
+      <p class="text-sm text-forest/50 mb-6">Keep this ID for reference. We'll contact you on WhatsApp.</p>
+      <a href="index.html" class="inline-flex border-2 border-forest px-6 py-3 rounded-full font-bold hover:bg-forest hover:text-cream transition">Back to home</a>
+    </div>
+  </main>
+
+  <script>
+    // ========== CONFIG — paste your Apps Script URL here ==========
+    const API = 'https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec';
+
+    const form = document.getElementById('form');
+    const btn = document.getElementById('btn');
+    const img = document.getElementById('img');
+
+    img.addEventListener('change', () => {
+      if (img.files[0]) {
+        document.getElementById('previewImg').src = URL.createObjectURL(img.files[0]);
+        document.getElementById('preview').classList.remove('hidden');
+      }
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      btn.disabled = true;
+      btn.textContent = 'Submitting...';
+
+      const fd = new FormData(form);
+      const data = Object.fromEntries(fd.entries());
+      data.action = 'submitRequest';
+      data.item_summary = data.item;
+      data.quantity = parseInt(data.quantity) || 1;
+      data.budget_ghs = data.budget ? parseFloat(data.budget) : '';
+
+      // Local fallback ID if API not connected yet
+      const localId = 'SR-' + new Date().getFullYear() + '-' + String(Date.now()).slice(-5);
+
+      try {
+        if (API.includes('YOUR_DEPLOYMENT')) {
+          // Demo mode — no backend yet
+          form.classList.add('hidden');
+          document.getElementById('success').classList.remove('hidden');
+          document.getElementById('reqId').textContent = localId;
+          // Store locally so admin can see it
+          const requests = JSON.parse(localStorage.getItem('cs_requests') || '[]');
+          requests.unshift({
+            id: localId, ...data, status: 'NEW',
+            created: new Date().toISOString()
+          });
+          localStorage.setItem('cs_requests', JSON.stringify(requests));
+        } else {
+          const res = await fetch(API, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify(data)
+          });
+          const json = await res.json();
+          if (json.success) {
+            form.classList.add('hidden');
+            document.getElementById('success').classList.remove('hidden');
+            document.getElementById('reqId').textContent = json.requestId;
+          } else {
+            alert(json.error || 'Failed');
+            btn.disabled = false; btn.textContent = 'Submit request';
+          }
+        }
+      } catch (err) {
+        // Fallback to local
+        form.classList.add('hidden');
+        document.getElementById('success').classList.remove('hidden');
+        document.getElementById('reqId').textContent = localId;
+        const requests = JSON.parse(localStorage.getItem('cs_requests') || '[]');
+        requests.unshift({ id: localId, ...data, status: 'NEW', created: new Date().toISOString() });
+        localStorage.setItem('cs_requests', JSON.stringify(requests));
+      }
+    });
+  </script>
+</body>
+</html>

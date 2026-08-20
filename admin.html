@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — China Source GH</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream: '#FBF6EE', forest: '#1A3A2A', orange: '#F07A3A',
+            softpink: '#F7C9D4', softyellow: '#F5E6A3', softgreen: '#D4E8D8'
+          },
+          fontFamily: { sans: ['DM Sans', 'system-ui', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <style>body { font-family: 'DM Sans', system-ui, sans-serif; }</style>
+</head>
+<body class="bg-cream text-forest antialiased">
+
+  <!-- ========== LOGIN ========== -->
+  <div id="loginView" class="min-h-screen flex items-center justify-center px-4">
+    <div class="w-full max-w-sm">
+      <div class="text-center mb-8">
+        <h1 class="text-xl font-extrabold tracking-tight">CHINA SOURCE <span class="text-orange">GH</span></h1>
+        <p class="text-sm text-forest/50 mt-1 font-medium">Admin</p>
+      </div>
+      <form id="loginForm" class="bg-white rounded-3xl border border-forest/10 shadow-sm p-6 space-y-4">
+        <div>
+          <label class="block text-sm font-semibold mb-1.5">Password</label>
+          <input type="password" id="password" required class="w-full rounded-full border-2 border-forest/15 bg-cream/50 px-4 py-3 text-sm focus:outline-none focus:border-orange" placeholder="Enter admin password" />
+        </div>
+        <button type="submit" class="w-full bg-orange text-white py-3 rounded-full font-bold hover:opacity-90">Sign in</button>
+        <p id="loginError" class="text-sm text-orange text-center font-medium hidden"></p>
+        <p class="text-xs text-forest/40 text-center">Default password: <code class="bg-cream px-1 rounded">admin123</code></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========== APP (hidden until login) ========== -->
+  <div id="appView" class="hidden pb-24">
+    <!-- Header -->
+    <header class="sticky top-0 z-40 bg-cream/95 backdrop-blur border-b border-forest/10">
+      <div class="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
+        <span class="font-extrabold tracking-tight">CHINA SOURCE <span class="text-orange">GH</span></span>
+        <button onclick="logout()" class="text-sm font-medium text-forest/50 hover:text-orange">Logout</button>
+      </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 py-6">
+
+      <!-- DASHBOARD -->
+      <section id="sec-dashboard">
+        <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight mb-1">Good day</h1>
+        <p id="dateEl" class="text-forest/50 text-sm mb-6"></p>
+
+        <h2 class="text-xs font-bold uppercase tracking-wider text-forest/50 mb-3">Operations</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8" id="dashCards"></div>
+
+        <div class="flex flex-col sm:flex-row gap-3">
+          <button onclick="show('requests')" class="flex-1 bg-orange text-white py-3.5 rounded-full font-bold hover:opacity-90">Sourcing Requests</button>
+          <button onclick="show('orders')" class="flex-1 bg-white border-2 border-forest py-3.5 rounded-full font-bold hover:bg-forest hover:text-cream transition">Orders</button>
+        </div>
+      </section>
+
+      <!-- REQUESTS -->
+      <section id="sec-requests" class="hidden">
+        <div class="flex items-center justify-between mb-6">
+          <h1 class="text-2xl font-extrabold tracking-tight">Requests</h1>
+          <button onclick="show('dashboard')" class="text-sm font-medium text-forest/50">← Back</button>
+        </div>
+        <div class="flex gap-2 overflow-x-auto pb-3 mb-4">
+          <button onclick="filterReq('ALL')" class="rf shrink-0 px-4 py-1.5 rounded-full text-xs font-bold bg-forest text-cream" data-f="ALL">All</button>
+          <button onclick="filterReq('NEW')" class="rf shrink-0 px-4 py-1.5 rounded-full text-xs font-bold border-2 border-forest/20" data-f="NEW">New</button>
+          <button onclick="filterReq('SOURCING')" class="rf shrink-0 px-4 py-1.5 rounded-full text-xs font-bold border-2 border-forest/20" data-f="SOURCING">Sourcing</button>
+          <button onclick="filterReq('QUOTED')" class="rf shrink-0 px-4 py-1.5 rounded-full text-xs font-bold border-2 border-forest/20" data-f="QUOTED">Quoted</button>
+        </div>
+        <div id="reqList" class="space-y-3"></div>
+      </section>
+
+      <!-- REQUEST DETAIL -->
+      <section id="sec-detail" class="hidden">
+        <div class="flex items-center justify-between mb-6">
+          <h1 class="text-xl font-extrabold font-mono text-orange" id="detailId"></h1>
+          <button onclick="show('requests')" class="text-sm font-medium text-forest/50">← Back</button>
+        </div>
+        <div id="detailBody" class="space-y-4"></div>
+      </section>
+
+      <!-- ORDERS -->
+      <section id="sec-orders" class="hidden">
+        <div class="flex items-center justify-between mb-6">
+          <h1 class="text-2xl font-extrabold tracking-tight">Orders</h1>
+          <button onclick="show('dashboard')" class="text-sm font-medium text-forest/50">← Back</button>
+        </div>
+        <div id="orderList" class="space-y-3"></div>
+      </section>
+
+    </main>
+
+    <!-- Bottom nav -->
+    <nav class="fixed bottom-0 inset-x-0 bg-cream border-t border-forest/10">
+      <div class="max-w-5xl mx-auto flex justify-around py-2.5 text-xs font-medium">
+        <button onclick="show('dashboard')" class="nav-btn flex flex-col items-center py-1 gap-0.5 text-orange font-bold" data-s="dashboard">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h3m8-10v10h3m-6 0v-4h2v4"/></svg>
+          Home
+        </button>
+        <button onclick="show('requests')" class="nav-btn flex flex-col items-center py-1 gap-0.5 text-forest/50" data-s="requests">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+          Requests
+        </button>
+        <button onclick="show('orders')" class="nav-btn flex flex-col items-center py-1 gap-0.5 text-forest/50" data-s="orders">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+          Orders
+        </button>
+      </div>
+    </nav>
+  </div>
+
+  <script>
+    // ========== SIMPLE AUTH ==========
+    const ADMIN_PASS = 'admin123'; // change this
+
+    function isLoggedIn() { return sessionStorage.getItem('cs_admin') === '1'; }
+    function logout() { sessionStorage.removeItem('cs_admin'); location.reload(); }
+
+    document.getElementById('loginForm').addEventListener('submit', e => {
+      e.preventDefault();
+      if (document.getElementById('password').value === ADMIN_PASS) {
+        sessionStorage.setItem('cs_admin', '1');
+        startApp();
+      } else {
+        document.getElementById('loginError').textContent = 'Wrong password';
+        document.getElementById('loginError').classList.remove('hidden');
+      }
+    });
+
+    if (isLoggedIn()) startApp();
+
+    function startApp() {
+      document.getElementById('loginView').classList.add('hidden');
+      document.getElementById('appView').classList.remove('hidden');
+      document.getElementById('dateEl').textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      show('dashboard');
+    }
+
+    // ========== DATA (localStorage for demo; swap to API later) ==========
+    function getRequests() {
+      return JSON.parse(localStorage.getItem('cs_requests') || '[]');
+    }
+    function saveRequests(arr) {
+      localStorage.setItem('cs_requests', JSON.stringify(arr));
+    }
+    function getOrders() {
+      return JSON.parse(localStorage.getItem('cs_orders') || '[]');
+    }
+    function saveOrders(arr) {
+      localStorage.setItem('cs_orders', JSON.stringify(arr));
+    }
+
+    // ========== NAVIGATION ==========
+    function show(sec) {
+      ['dashboard','requests','detail','orders'].forEach(s => {
+        document.getElementById('sec-' + s).classList.toggle('hidden', s !== sec);
+      });
+      document.querySelectorAll('.nav-btn').forEach(b => {
+        const active = b.dataset.s === sec || (sec === 'detail' && b.dataset.s === 'requests');
+        b.classList.toggle('text-orange', active);
+        b.classList.toggle('font-bold', active);
+        b.classList.toggle('text-forest/50', !active);
+      });
+      if (sec === 'dashboard') renderDash();
+      if (sec === 'requests') renderRequests('ALL');
+      if (sec === 'orders') renderOrders();
+    }
+
+    // ========== DASHBOARD ==========
+    function renderDash() {
+      const reqs = getRequests();
+      const orders = getOrders();
+      const counts = {
+        new: reqs.filter(r => r.status === 'NEW').length,
+        sourcing: reqs.filter(r => r.status === 'SOURCING' || r.status === 'REVIEWING').length,
+        quoted: reqs.filter(r => r.status === 'QUOTED').length,
+        awaiting: orders.filter(o => o.payment_status === 'AWAITING' || o.payment_status === 'SUBMITTED').length,
+        ready: orders.filter(o => o.payment_status === 'CONFIRMED').length
+      };
+      const cards = [
+        { label: 'New Requests', v: counts.new, bg: 'bg-softpink', go: () => { filterReq('NEW'); show('requests'); } },
+        { label: 'To Source', v: counts.sourcing, bg: 'bg-softyellow', go: () => { filterReq('SOURCING'); show('requests'); } },
+        { label: 'Quoted', v: counts.quoted, bg: 'bg-softgreen', go: () => { filterReq('QUOTED'); show('requests'); } },
+        { label: 'Awaiting Payment', v: counts.awaiting, bg: 'bg-orange/20', go: () => show('orders') },
+        { label: 'Ready to Purchase', v: counts.ready, bg: 'bg-softgreen', go: () => show('orders') },
+        { label: 'Total Requests', v: reqs.length, bg: 'bg-softpink', go: () => show('requests') },
+        { label: 'Total Orders', v: orders.length, bg: 'bg-softyellow', go: () => show('orders') }
+      ];
+      document.getElementById('dashCards').innerHTML = cards.map((c, i) =>
+        `<button onclick="(${i})" class="block text-left ${c.bg} rounded-3xl p-4 hover:opacity-90 transition w-full" data-i="${i}">
+          <p class="text-2xl font-extrabold">${c.v}</p>
+          <p class="text-xs font-bold mt-1 text-forest/70">${c.label}</p>
+        </button>`
+      ).join('');
+      // bind clicks
+      document.querySelectorAll('#dashCards button').forEach((btn, i) => {
+        btn.onclick = cards[i].go;
+      });
+    }
+
+    // ========== REQUESTS ==========
+    let reqFilter = 'ALL';
+    function filterReq(f) {
+      reqFilter = f;
+      document.querySelectorAll('.rf').forEach(b => {
+        const on = b.dataset.f === f;
+        b.className = 'rf shrink-0 px-4 py-1.5 rounded-full text-xs font-bold ' + (on ? 'bg-forest text-cream' : 'border-2 border-forest/20');
+      });
+      renderRequests(f);
+    }
+
+    function renderRequests(f) {
+      let list = getRequests();
+      if (f && f !== 'ALL') list = list.filter(r => r.status === f);
+      const el = document.getElementById('reqList');
+      if (!list.length) {
+        el.innerHTML = '<p class="text-center text-forest/40 py-12">No requests yet.<br><span class="text-sm">Submit one from the request form.</span></p>';
+        return;
+      }
+      el.innerHTML = list.map(r => `
+        <button onclick="openDetail('${r.id}')" class="w-full text-left bg-white rounded-3xl border border-forest/10 p-4 shadow-sm hover:border-orange/40 transition">
+          <div class="flex justify-between items-start mb-1">
+            <span class="font-mono text-sm font-bold text-orange">${r.id}</span>
+            <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full ${statusColor(r.status)}">${r.status}</span>
+          </div>
+          <p class="font-bold">${r.item || r.item_summary || '—'}</p>
+          <p class="text-sm text-forest/60 mt-0.5">${r.name || ''} · ${r.whatsapp || ''}</p>
+          <div class="flex gap-3 mt-2 text-xs text-forest/40">
+            <span>Qty ${r.quantity || 1}</span>
+            ${r.budget || r.budget_ghs ? '<span>Budget GH₵' + (r.budget || r.budget_ghs) + '</span>' : ''}
+            <span>${fmtDate(r.created)}</span>
+          </div>
+        </button>
+      `).join('');
+    }
+
+    function statusColor(s) {
+      const m = { NEW: 'bg-softpink', SOURCING: 'bg-softyellow', QUOTED: 'bg-softgreen', ACCEPTED: 'bg-softgreen', AWAITING: 'bg-orange/20' };
+      return m[s] || 'bg-forest/10';
+    }
+    function fmtDate(iso) {
+      if (!iso) return '';
+      try { return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }); } catch(e) { return ''; }
+    }
+
+    // ========== DETAIL ==========
+    function openDetail(id) {
+      const r = getRequests().find(x => x.id === id);
+      if (!r) return;
+      document.getElementById('detailId').textContent = r.id;
+      document.getElementById('detailBody').innerHTML = `
+        <div class="bg-white rounded-3xl border border-forest/10 p-5 shadow-sm">
+          <h2 class="text-xs font-bold uppercase tracking-wider text-forest/40 mb-3">Customer</h2>
+          <p class="font-bold">${r.name || '—'}</p>
+          <p class="text-sm text-forest/60">${r.whatsapp || ''} ${r.email ? '· ' + r.email : ''}</p>
+          <p class="text-sm text-forest/40">${r.location || ''}</p>
+        </div>
+        <div class="bg-white rounded-3xl border border-forest/10 p-5 shadow-sm">
+          <h2 class="text-xs font-bold uppercase tracking-wider text-forest/40 mb-3">Request</h2>
+          <p class="font-bold text-lg">${r.item || r.item_summary || '—'}</p>
+          <p class="text-sm text-forest/60 mt-1 whitespace-pre-line">${r.description || ''}</p>
+          <div class="grid grid-cols-2 gap-2 mt-3 text-sm">
+            <div><span class="text-forest/40">Qty</span> ${r.quantity || 1}</div>
+            <div><span class="text-forest/40">Budget</span> ${r.budget || r.budget_ghs ? 'GH₵' + (r.budget || r.budget_ghs) : '—'}</div>
+            <div><span class="text-forest/40">Quality</span> ${r.quality || '—'}</div>
+            <div><span class="text-forest/40">Colour</span> ${r.colour || '—'}</div>
+          </div>
+          ${r.notes ? '<p class="text-sm text-forest/50 mt-3 italic">"' + r.notes + '"</p>' : ''}
+          ${r.url ? '<a href="' + r.url + '" target="_blank" class="text-sm text-orange mt-2 inline-block">Product link →</a>' : ''}
+        </div>
+        <div class="bg-white rounded-3xl border border-forest/10 p-5 shadow-sm">
+          <h2 class="text-xs font-bold uppercase tracking-wider text-forest/40 mb-3">Update status</h2>
+          <div class="flex flex-wrap gap-2">
+            ${['NEW','SOURCING','QUOTED','ACCEPTED'].map(s =>
+              `<button onclick="setStatus('${r.id}','${s}')" class="text-xs px-3 py-1.5 rounded-full border-2 border-forest/15 font-bold hover:bg-forest hover:text-cream transition">${s}</button>`
+            ).join('')}
+          </div>
+        </div>
+        <div class="bg-white rounded-3xl border border-forest/10 p-5 shadow-sm">
+          <h2 class="text-xs font-bold uppercase tracking-wider text-forest/40 mb-3">Create order from this request</h2>
+          <button onclick="createOrder('${r.id}')" class="w-full bg-orange text-white py-3 rounded-full font-bold hover:opacity-90">Mark accepted → Create order</button>
+        </div>
+      `;
+      show('detail');
+    }
+
+    function setStatus(id, status) {
+      const arr = getRequests();
+      const i = arr.findIndex(x => x.id === id);
+      if (i >= 0) { arr[i].status = status; saveRequests(arr); openDetail(id); }
+    }
+
+    function createOrder(reqId) {
+      const r = getRequests().find(x => x.id === reqId);
+      if (!r) return;
+      const orders = getOrders();
+      const orderId = 'ORD-' + new Date().getFullYear() + '-' + String(Date.now()).slice(-5);
+      orders.unshift({
+        id: orderId, request_id: reqId,
+        customer: r.name, whatsapp: r.whatsapp,
+        item: r.item || r.item_summary,
+        quantity: r.quantity || 1,
+        amount: r.budget || r.budget_ghs || 0,
+        payment_status: 'AWAITING',
+        created: new Date().toISOString()
+      });
+      saveOrders(orders);
+      setStatus(reqId, 'ACCEPTED');
+      alert('Order ' + orderId + ' created');
+      show('orders');
+    }
+
+    // ========== ORDERS ==========
+    function renderOrders() {
+      const list = getOrders();
+      const el = document.getElementById('orderList');
+      if (!list.length) {
+        el.innerHTML = '<p class="text-center text-forest/40 py-12">No orders yet.<br><span class="text-sm">Accept a request to create one.</span></p>';
+        return;
+      }
+      el.innerHTML = list.map(o => `
+        <div class="bg-white rounded-3xl border border-forest/10 p-5 shadow-sm">
+          <div class="flex justify-between items-start mb-1">
+            <span class="font-mono text-sm font-bold text-orange">${o.id}</span>
+            <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full ${o.payment_status === 'CONFIRMED' ? 'bg-softgreen' : o.payment_status === 'SUBMITTED' ? 'bg-orange/20' : 'bg-softyellow'}">${o.payment_status}</span>
+          </div>
+          <p class="font-bold">${o.item || '—'}</p>
+          <p class="text-sm text-forest/60">${o.customer || ''} · ${o.whatsapp || ''}</p>
+          <div class="flex gap-3 mt-2 text-xs text-forest/40">
+            <span class="font-semibold text-forest">GH₵${o.amount || 0}</span>
+            <span>Qty ${o.quantity || 1}</span>
+            <span>${fmtDate(o.created)}</span>
+          </div>
+          ${o.payment_status !== 'CONFIRMED' ? `
+            <div class="mt-4 flex gap-2">
+              <button onclick="confirmPay('${o.id}')" class="flex-1 bg-orange text-white py-2.5 rounded-full text-sm font-bold hover:opacity-90">Confirm payment</button>
+            </div>
+          ` : '<p class="mt-3 text-xs font-bold text-forest/50">✓ Ready to purchase</p>'}
+        </div>
+      `).join('');
+    }
+
+    function confirmPay(id) {
+      const arr = getOrders();
+      const i = arr.findIndex(x => x.id === id);
+      if (i >= 0) { arr[i].payment_status = 'CONFIRMED'; saveOrders(arr); renderOrders(); }
+    }
+  </script>
+</body>
+</html>

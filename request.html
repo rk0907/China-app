@@ -5,78 +5,89 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Request an Item — China Source GH</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&display=swap" rel="stylesheet">
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            brand: { 50: '#f0f9ff', 100: '#e0f2fe', 500: '#0ea5e9', 600: '#0284c7', 700: '#0369a1', 900: '#0c4a6e' }
-          }
+            cream: '#FBF6EE', forest: '#1A3A2A', orange: '#F07A3A', orangsoft: '#F5A06A',
+            softpink: '#F7C9D4', softyellow: '#F5E6A3', softgreen: '#D4E8D8'
+          },
+          fontFamily: { sans: ['DM Sans', 'system-ui', 'sans-serif'] },
+          borderRadius: { '4xl': '2rem' }
         }
       }
     }
   </script>
+  <style>body { font-family: 'DM Sans', system-ui, sans-serif; }</style>
 </head>
-<body class="bg-slate-50 text-slate-900 antialiased">
+<body class="bg-cream text-forest antialiased">
 
-  <nav class="bg-white border-b border-slate-200 sticky top-0 z-40">
-    <div class="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
-      <a href="index.html" class="font-semibold text-lg tracking-tight text-brand-900">China Source <span class="text-brand-600">GH</span></a>
-      <a href="track.html" class="text-sm text-slate-600 hover:text-brand-700">Track request</a>
+  <nav class="sticky top-0 z-40 bg-cream/95 backdrop-blur border-b border-forest/5">
+    <div class="max-w-xl mx-auto px-4 h-14 flex items-center justify-between">
+      <a href="index.html" class="font-extrabold tracking-tight text-forest">CHINA SOURCE <span class="text-orange text-sm">GH</span></a>
+      <a href="track.html" class="text-sm font-medium text-forest/60 hover:text-forest">Track request</a>
     </div>
   </nav>
 
   <main class="max-w-xl mx-auto px-4 py-10">
-    <h1 class="text-2xl md:text-3xl font-bold tracking-tight mb-1">What can we find for you?</h1>
-    <p class="text-slate-600 mb-8 text-sm">Describe the item, add a photo or link if you have one, and tell us your budget.</p>
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center gap-1.5 text-orange mb-2">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.5 6.5L20 10l-6.5 1.5L12 18l-1.5-6.5L4 10l6.5-1.5L12 2z"/></svg>
+        <span class="text-xs font-bold uppercase tracking-wide">New request</span>
+      </div>
+      <h1 class="text-3xl font-extrabold tracking-tight">What can we find for you?</h1>
+      <p class="text-forest/60 text-sm mt-2">Describe the item, add a photo or link, and tell us your budget.</p>
+    </div>
 
-    <form id="requestForm" class="space-y-6">
-      <!-- Customer -->
-      <section class="bg-white rounded-2xl border border-slate-200 p-5 space-y-4">
-        <h2 class="font-semibold text-sm uppercase tracking-wider text-slate-500">Your details</h2>
+    <form id="requestForm" class="space-y-5">
+      <section class="bg-white rounded-4xl border border-forest/10 p-5 space-y-4 shadow-sm">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-forest/50">Your details</h2>
         <div>
-          <label class="block text-sm font-medium mb-1">Full name *</label>
-          <input type="text" name="name" required class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent" placeholder="Ama Mensah" />
+          <label class="block text-sm font-semibold mb-1.5">Full name *</label>
+          <input type="text" name="name" required class="w-full rounded-full border-2 border-forest/15 bg-cream/50 px-4 py-3 text-sm focus:outline-none focus:border-orange" placeholder="Ama Mensah" />
         </div>
         <div>
-          <label class="block text-sm font-medium mb-1">WhatsApp number *</label>
-          <input type="tel" name="whatsapp" required class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" placeholder="024 XXX XXXX" />
+          <label class="block text-sm font-semibold mb-1.5">WhatsApp number *</label>
+          <input type="tel" name="whatsapp" required class="w-full rounded-full border-2 border-forest/15 bg-cream/50 px-4 py-3 text-sm focus:outline-none focus:border-orange" placeholder="024 XXX XXXX" />
         </div>
         <div>
-          <label class="block text-sm font-medium mb-1">Email</label>
-          <input type="email" name="email" class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" placeholder="optional" />
+          <label class="block text-sm font-semibold mb-1.5">Email</label>
+          <input type="email" name="email" class="w-full rounded-full border-2 border-forest/15 bg-cream/50 px-4 py-3 text-sm focus:outline-none focus:border-orange" placeholder="optional" />
         </div>
         <div>
-          <label class="block text-sm font-medium mb-1">Location in Ghana</label>
-          <input type="text" name="location" class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" placeholder="Accra, Kumasi, ..." />
+          <label class="block text-sm font-semibold mb-1.5">Location in Ghana</label>
+          <input type="text" name="location" class="w-full rounded-full border-2 border-forest/15 bg-cream/50 px-4 py-3 text-sm focus:outline-none focus:border-orange" placeholder="Accra, Kumasi, ..." />
         </div>
       </section>
 
-      <!-- Item -->
-      <section class="bg-white rounded-2xl border border-slate-200 p-5 space-y-4">
-        <h2 class="font-semibold text-sm uppercase tracking-wider text-slate-500">Item details</h2>
+      <section class="bg-white rounded-4xl border border-forest/10 p-5 space-y-4 shadow-sm">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-forest/50">Item details</h2>
         <div>
-          <label class="block text-sm font-medium mb-1">What are you looking for? *</label>
-          <input type="text" name="item_summary" required class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" placeholder="e.g. Women’s handbags, phone cases, solar lights" />
+          <label class="block text-sm font-semibold mb-1.5">What are you looking for? *</label>
+          <input type="text" name="item_summary" required class="w-full rounded-full border-2 border-forest/15 bg-cream/50 px-4 py-3 text-sm focus:outline-none focus:border-orange" placeholder="e.g. Women's handbags, solar lights" />
         </div>
         <div>
-          <label class="block text-sm font-medium mb-1">Detailed description</label>
-          <textarea name="description" rows="3" class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" placeholder="Any extra details that help us find the right product..."></textarea>
+          <label class="block text-sm font-semibold mb-1.5">Detailed description</label>
+          <textarea name="description" rows="3" class="w-full rounded-3xl border-2 border-forest/15 bg-cream/50 px-4 py-3 text-sm focus:outline-none focus:border-orange" placeholder="Any extra details that help us find the right product..."></textarea>
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-sm font-medium mb-1">Quantity *</label>
-            <input type="number" name="quantity" min="1" value="1" required class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+            <label class="block text-sm font-semibold mb-1.5">Quantity *</label>
+            <input type="number" name="quantity" min="1" value="1" required class="w-full rounded-full border-2 border-forest/15 bg-cream/50 px-4 py-3 text-sm focus:outline-none focus:border-orange" />
           </div>
           <div>
-            <label class="block text-sm font-medium mb-1">Budget (GHS)</label>
-            <input type="number" name="budget_ghs" min="0" step="1" class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" placeholder="e.g. 6000" />
+            <label class="block text-sm font-semibold mb-1.5">Budget (GHS)</label>
+            <input type="number" name="budget_ghs" min="0" step="1" class="w-full rounded-full border-2 border-forest/15 bg-cream/50 px-4 py-3 text-sm focus:outline-none focus:border-orange" placeholder="e.g. 6000" />
           </div>
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-sm font-medium mb-1">Preferred quality</label>
-            <select name="quality" class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+            <label class="block text-sm font-semibold mb-1.5">Preferred quality</label>
+            <select name="quality" class="w-full rounded-full border-2 border-forest/15 bg-cream/50 px-4 py-3 text-sm focus:outline-none focus:border-orange">
               <option value="">Any</option>
               <option value="Budget">Budget</option>
               <option value="Standard">Standard</option>
@@ -84,65 +95,63 @@
             </select>
           </div>
           <div>
-            <label class="block text-sm font-medium mb-1">Preferred colour</label>
-            <input type="text" name="colour" class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" placeholder="Optional" />
+            <label class="block text-sm font-semibold mb-1.5">Preferred colour</label>
+            <input type="text" name="colour" class="w-full rounded-full border-2 border-forest/15 bg-cream/50 px-4 py-3 text-sm focus:outline-none focus:border-orange" placeholder="Optional" />
           </div>
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-sm font-medium mb-1">Preferred size</label>
-            <input type="text" name="size" class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" placeholder="Optional" />
+            <label class="block text-sm font-semibold mb-1.5">Preferred size</label>
+            <input type="text" name="size" class="w-full rounded-full border-2 border-forest/15 bg-cream/50 px-4 py-3 text-sm focus:outline-none focus:border-orange" placeholder="Optional" />
           </div>
           <div>
-            <label class="block text-sm font-medium mb-1">Preferred brand</label>
-            <input type="text" name="brand" class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" placeholder="Optional" />
+            <label class="block text-sm font-semibold mb-1.5">Preferred brand</label>
+            <input type="text" name="brand" class="w-full rounded-full border-2 border-forest/15 bg-cream/50 px-4 py-3 text-sm focus:outline-none focus:border-orange" placeholder="Optional" />
           </div>
         </div>
         <div>
-          <label class="block text-sm font-medium mb-1">Desired delivery timeframe</label>
-          <input type="text" name="timeframe" class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" placeholder="e.g. Within 3 weeks" />
+          <label class="block text-sm font-semibold mb-1.5">Desired delivery timeframe</label>
+          <input type="text" name="timeframe" class="w-full rounded-full border-2 border-forest/15 bg-cream/50 px-4 py-3 text-sm focus:outline-none focus:border-orange" placeholder="e.g. Within 3 weeks" />
         </div>
       </section>
 
-      <!-- Reference -->
-      <section class="bg-white rounded-2xl border border-slate-200 p-5 space-y-4">
-        <h2 class="font-semibold text-sm uppercase tracking-wider text-slate-500">Reference (optional)</h2>
+      <section class="bg-white rounded-4xl border border-forest/10 p-5 space-y-4 shadow-sm">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-forest/50">Reference (optional)</h2>
         <div>
-          <label class="block text-sm font-medium mb-1">Product URL</label>
-          <input type="url" name="product_url" class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" placeholder="https://..." />
+          <label class="block text-sm font-semibold mb-1.5">Product URL</label>
+          <input type="url" name="product_url" class="w-full rounded-full border-2 border-forest/15 bg-cream/50 px-4 py-3 text-sm focus:outline-none focus:border-orange" placeholder="https://..." />
         </div>
         <div>
-          <label class="block text-sm font-medium mb-1">Reference image</label>
-          <input type="file" id="refImage" accept="image/jpeg,image/png,image/webp,image/gif" class="w-full text-sm text-slate-600 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-brand-50 file:text-brand-700 file:font-medium" />
-          <p class="text-xs text-slate-500 mt-1">JPEG, PNG, WebP or GIF · Max ~6 MB</p>
+          <label class="block text-sm font-semibold mb-1.5">Reference image</label>
+          <input type="file" id="refImage" accept="image/jpeg,image/png,image/webp,image/gif" class="w-full text-sm text-forest/60 file:mr-3 file:py-2.5 file:px-4 file:rounded-full file:border-0 file:bg-softyellow file:text-forest file:font-bold" />
+          <p class="text-xs text-forest/40 mt-1.5">JPEG, PNG, WebP or GIF · Max ~6 MB</p>
           <div id="imagePreview" class="mt-3 hidden">
-            <img id="previewImg" class="max-h-40 rounded-lg border border-slate-200" alt="Preview" />
+            <img id="previewImg" class="max-h-40 rounded-3xl border border-forest/10" alt="Preview" />
           </div>
         </div>
         <div>
-          <label class="block text-sm font-medium mb-1">Additional notes</label>
-          <textarea name="notes" rows="2" class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" placeholder='e.g. "Something similar to the image, preferably in black and under GH₵700"'></textarea>
+          <label class="block text-sm font-semibold mb-1.5">Additional notes</label>
+          <textarea name="notes" rows="2" class="w-full rounded-3xl border-2 border-forest/15 bg-cream/50 px-4 py-3 text-sm focus:outline-none focus:border-orange" placeholder='e.g. "Something similar to the image, preferably in black and under GH₵700"'></textarea>
         </div>
       </section>
 
-      <button type="submit" id="submitBtn" class="w-full bg-brand-600 text-white py-3.5 rounded-xl font-semibold text-lg hover:bg-brand-700 transition disabled:opacity-60 disabled:cursor-not-allowed">
+      <button type="submit" id="submitBtn" class="w-full bg-orange text-white py-4 rounded-full font-bold text-lg hover:bg-orangsoft transition disabled:opacity-60 shadow-sm">
         Submit request
       </button>
     </form>
 
-    <!-- Success state (hidden by default) -->
-    <div id="successState" class="hidden text-center py-10">
-      <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4">✓</div>
-      <h2 class="text-2xl font-bold mb-2">Request received</h2>
-      <p class="text-slate-600 mb-4">We’ll review your request and begin sourcing suitable options.</p>
-      <div class="bg-white border border-slate-200 rounded-xl p-4 inline-block mb-6">
-        <p class="text-xs text-slate-500 uppercase tracking-wider mb-1">Your Request ID</p>
-        <p id="requestIdDisplay" class="text-xl font-mono font-bold text-brand-700"></p>
+    <div id="successState" class="hidden text-center py-12">
+      <div class="w-16 h-16 bg-softgreen text-forest rounded-full flex items-center justify-center text-3xl mx-auto mb-5 font-bold">✓</div>
+      <h2 class="text-2xl font-extrabold mb-2">Request received</h2>
+      <p class="text-forest/60 mb-6 text-sm">We'll review your request and begin sourcing suitable options.</p>
+      <div class="bg-white border border-forest/10 rounded-4xl p-5 inline-block mb-6 shadow-sm">
+        <p class="text-xs font-bold uppercase tracking-wider text-forest/40 mb-1">Your Request ID</p>
+        <p id="requestIdDisplay" class="text-xl font-mono font-extrabold text-orange"></p>
       </div>
-      <p class="text-sm text-slate-500 mb-6">Keep this ID to track your request.</p>
+      <p class="text-sm text-forest/50 mb-6">Keep this ID to track your request.</p>
       <div class="flex flex-col sm:flex-row gap-3 justify-center">
-        <a href="track.html" id="trackLink" class="inline-flex justify-center bg-brand-600 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-brand-700">Track this request</a>
-        <a href="index.html" class="inline-flex justify-center border border-slate-300 px-6 py-2.5 rounded-lg font-medium hover:bg-slate-50">Back to home</a>
+        <a href="track.html" id="trackLink" class="inline-flex justify-center bg-orange text-white px-6 py-3 rounded-full font-bold hover:bg-orangsoft">Track this request</a>
+        <a href="index.html" class="inline-flex justify-center border-2 border-forest px-6 py-3 rounded-full font-bold hover:bg-forest hover:text-cream transition">Back to home</a>
       </div>
     </div>
   </main>
@@ -163,39 +172,30 @@
       if (file) {
         previewImg.src = URL.createObjectURL(file);
         imagePreview.classList.remove('hidden');
-      } else {
-        imagePreview.classList.add('hidden');
-      }
+      } else imagePreview.classList.add('hidden');
     });
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       submitBtn.disabled = true;
       submitBtn.textContent = 'Submitting...';
-
       const fd = new FormData(form);
       const data = Object.fromEntries(fd.entries());
       data.quantity = parseInt(data.quantity, 10) || 1;
       if (data.budget_ghs) data.budget_ghs = parseFloat(data.budget_ghs);
 
-      // Upload image first if present
       if (refImage.files[0]) {
         try {
           const fileData = await fileToBase64(refImage.files[0]);
           const uploadRes = await API.uploadReference(fileData);
-          if (uploadRes.success) {
-            data.reference_file_ids = uploadRes.fileId;
-          } else {
+          if (uploadRes.success) data.reference_file_ids = uploadRes.fileId;
+          else {
             showToast(uploadRes.error || 'Image upload failed', 'error');
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Submit request';
-            return;
+            submitBtn.disabled = false; submitBtn.textContent = 'Submit request'; return;
           }
         } catch (err) {
           showToast('Image upload failed', 'error');
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'Submit request';
-          return;
+          submitBtn.disabled = false; submitBtn.textContent = 'Submit request'; return;
         }
       }
 
@@ -207,8 +207,7 @@
         document.getElementById('trackLink').href = 'track.html?id=' + encodeURIComponent(res.requestId);
       } else {
         showToast(res.error || 'Something went wrong', 'error');
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Submit request';
+        submitBtn.disabled = false; submitBtn.textContent = 'Submit request';
       }
     });
   </script>

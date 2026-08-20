@@ -5,86 +5,94 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>How it works — China Source GH</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&display=swap" rel="stylesheet">
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            brand: { 50: '#f0f9ff', 100: '#e0f2fe', 500: '#0ea5e9', 600: '#0284c7', 700: '#0369a1', 900: '#0c4a6e' }
-          }
+            cream: '#FBF6EE', forest: '#1A3A2A', orange: '#F07A3A', orangsoft: '#F5A06A',
+            softpink: '#F7C9D4', softyellow: '#F5E6A3', softgreen: '#D4E8D8'
+          },
+          fontFamily: { sans: ['DM Sans', 'system-ui', 'sans-serif'] },
+          borderRadius: { '4xl': '2rem' }
         }
       }
     }
   </script>
+  <style>body { font-family: 'DM Sans', system-ui, sans-serif; }</style>
 </head>
-<body class="bg-slate-50 text-slate-900 antialiased">
+<body class="bg-cream text-forest antialiased">
 
-  <nav class="bg-white border-b border-slate-200 sticky top-0 z-40">
-    <div class="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
-      <a href="index.html" class="font-semibold text-lg tracking-tight text-brand-900">China Source <span class="text-brand-600">GH</span></a>
+  <nav class="sticky top-0 z-40 bg-cream/95 backdrop-blur border-b border-forest/5">
+    <div class="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
+      <a href="index.html" class="font-extrabold tracking-tight text-forest">CHINA SOURCE <span class="text-orange text-sm">GH</span></a>
       <div class="flex items-center gap-4 text-sm">
-        <a href="how-it-works.html" class="text-brand-700 font-medium">How it works</a>
-        <a href="track.html" class="text-slate-600 hover:text-brand-700">Track request</a>
-        <a href="request.html" class="bg-brand-600 text-white px-3 py-1.5 rounded-lg font-medium hover:bg-brand-700 transition">Request an item</a>
+        <a href="track.html" class="text-forest/60 hover:text-forest font-medium hidden sm:inline">Track</a>
+        <a href="request.html" class="inline-flex items-center px-4 py-2 rounded-full bg-orange text-white font-bold hover:bg-orangsoft">Request an item</a>
       </div>
     </div>
   </nav>
 
   <main class="max-w-3xl mx-auto px-4 py-12">
-    <h1 class="text-3xl font-bold tracking-tight mb-2">How it works</h1>
-    <p class="text-slate-600 mb-10">Five simple steps from request to delivery in Ghana.</p>
+    <div class="text-center mb-12">
+      <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">How it works</h1>
+      <p class="text-forest/60 mt-2">Five simple steps from request to delivery in Ghana.</p>
+    </div>
 
-    <div class="space-y-6">
-      <div class="bg-white rounded-2xl border border-slate-200 p-6 flex gap-5">
-        <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-brand-100 text-brand-700 flex items-center justify-center font-bold text-lg">01</div>
+    <div class="space-y-4">
+      <div class="bg-softpink rounded-4xl p-6 flex gap-5">
+        <div class="flex-shrink-0 w-12 h-12 rounded-2xl bg-white/60 text-forest flex items-center justify-center font-extrabold text-lg">01</div>
         <div>
-          <h2 class="font-semibold text-lg mb-1">Tell us what you need</h2>
-          <p class="text-slate-600 text-sm leading-relaxed">Submit an item description, image or supplier/product link. Include quantity, budget and any preferences (colour, quality, size, brand).</p>
+          <h2 class="font-extrabold text-lg mb-1">Tell us what you need</h2>
+          <p class="text-forest/70 text-sm leading-relaxed">Submit an item description, image or supplier/product link. Include quantity, budget and any preferences.</p>
         </div>
       </div>
 
-      <div class="bg-white rounded-2xl border border-slate-200 p-6 flex gap-5">
-        <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-brand-100 text-brand-700 flex items-center justify-center font-bold text-lg">02</div>
+      <div class="bg-softyellow rounded-4xl p-6 flex gap-5">
+        <div class="flex-shrink-0 w-12 h-12 rounded-2xl bg-white/60 text-forest flex items-center justify-center font-extrabold text-lg">02</div>
         <div>
-          <h2 class="font-semibold text-lg mb-1">We source it</h2>
-          <p class="text-slate-600 text-sm leading-relaxed">Our team searches Chinese suppliers for suitable options that match your brief and budget.</p>
+          <h2 class="font-extrabold text-lg mb-1">We source it</h2>
+          <p class="text-forest/70 text-sm leading-relaxed">Our team searches Chinese suppliers for suitable options that match your brief and budget.</p>
         </div>
       </div>
 
-      <div class="bg-white rounded-2xl border border-slate-200 p-6 flex gap-5">
-        <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-brand-100 text-brand-700 flex items-center justify-center font-bold text-lg">03</div>
+      <div class="bg-softgreen rounded-4xl p-6 flex gap-5">
+        <div class="flex-shrink-0 w-12 h-12 rounded-2xl bg-white/60 text-forest flex items-center justify-center font-extrabold text-lg">03</div>
         <div>
-          <h2 class="font-semibold text-lg mb-1">You receive a quotation</h2>
-          <p class="text-slate-600 text-sm leading-relaxed">We calculate the estimated landed price in Ghana Cedis (product + shipping + handling + our service fee) and send you clear options.</p>
+          <h2 class="font-extrabold text-lg mb-1">You receive a quotation</h2>
+          <p class="text-forest/70 text-sm leading-relaxed">We calculate the estimated landed price in Ghana Cedis and send you clear options.</p>
         </div>
       </div>
 
-      <div class="bg-white rounded-2xl border border-slate-200 p-6 flex gap-5">
-        <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-brand-100 text-brand-700 flex items-center justify-center font-bold text-lg">04</div>
+      <div class="bg-white border border-forest/10 rounded-4xl p-6 flex gap-5 shadow-sm">
+        <div class="flex-shrink-0 w-12 h-12 rounded-2xl bg-cream text-forest flex items-center justify-center font-extrabold text-lg">04</div>
         <div>
-          <h2 class="font-semibold text-lg mb-1">Approve & pay</h2>
-          <p class="text-slate-600 text-sm leading-relaxed">Choose your preferred option and make payment according to the instructions we provide. No payment is required before you have a quotation.</p>
+          <h2 class="font-extrabold text-lg mb-1">Approve & pay</h2>
+          <p class="text-forest/70 text-sm leading-relaxed">Choose your preferred option and make payment according to the instructions we provide. No payment before you have a quotation.</p>
         </div>
       </div>
 
-      <div class="bg-white rounded-2xl border border-slate-200 p-6 flex gap-5">
-        <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-brand-100 text-brand-700 flex items-center justify-center font-bold text-lg">05</div>
+      <div class="bg-forest text-cream rounded-4xl p-6 flex gap-5">
+        <div class="flex-shrink-0 w-12 h-12 rounded-2xl bg-white/10 text-orange flex items-center justify-center font-extrabold text-lg">05</div>
         <div>
-          <h2 class="font-semibold text-lg mb-1">We handle procurement</h2>
-          <p class="text-slate-600 text-sm leading-relaxed">We purchase, consolidate, ship and update you until your order reaches Ghana and is ready for delivery.</p>
+          <h2 class="font-extrabold text-lg mb-1">We handle procurement</h2>
+          <p class="text-cream/70 text-sm leading-relaxed">We purchase, consolidate, ship and update you until your order reaches Ghana and is ready for delivery.</p>
         </div>
       </div>
     </div>
 
     <div class="mt-12 text-center">
-      <a href="request.html" class="inline-flex bg-brand-600 text-white px-8 py-3.5 rounded-xl font-semibold hover:bg-brand-700 transition">
+      <a href="request.html" class="inline-flex bg-orange text-white px-8 py-3.5 rounded-full font-bold hover:bg-orangsoft transition">
         Request an Item
       </a>
     </div>
   </main>
 
-  <footer class="border-t border-slate-200 bg-white mt-16">
-    <div class="max-w-5xl mx-auto px-4 py-8 text-center text-sm text-slate-500">
+  <footer class="border-t border-forest/10 mt-16">
+    <div class="max-w-3xl mx-auto px-4 py-8 text-center text-sm text-forest/40">
       © 2026 China Source GH
     </div>
   </footer>

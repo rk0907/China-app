@@ -238,7 +238,18 @@
         <p class="page-label">Overview</p>
         <h1 class="page-title" id="greet">Good day</h1>
         <p class="page-sub" id="dateEl"></p>
-        <p class="ops-label">Operations</p>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem">
+          <p class="ops-label" style="margin:0">Revenue snapshot</p>
+          <div class="cur-toggle" style="margin:0;max-width:200px">
+            <button type="button" class="cur-btn active" id="dashCurGhs" onclick="setDashCur('GHS')">GHS</button>
+            <button type="button" class="cur-btn" id="dashCurRmb" onclick="setDashCur('RMB')">RMB</button>
+            <button type="button" class="cur-btn" id="dashCurUsd" onclick="setDashCur('USD')">USD</button>
+          </div>
+        </div>
+        <div class="dash-grid" id="financeCards" style="margin-bottom:1.75rem"></div>
+
+        <p class="ops-label">Pipeline</p>
         <div class="dash-grid" id="dashCards"></div>
         <div class="dash-actions">
           <button class="btn-pill filled" onclick="show('requests')">SOURCING REQUESTS</button>
@@ -376,9 +387,57 @@
       if (sec === 'orders') renderOrders();
     }
 
+    let dashCur = 'GHS';
+
+    function setDashCur(c) {
+      dashCur = c;
+      document.getElementById('dashCurGhs').classList.toggle('active', c === 'GHS');
+      document.getElementById('dashCurRmb').classList.toggle('active', c === 'RMB');
+      document.getElementById('dashCurUsd').classList.toggle('active', c === 'USD');
+      renderDash();
+    }
+
+    // Convert GHS amount → display currency using live rates
+    function toDashCur(ghs) {
+      const n = Number(ghs) || 0;
+      if (dashCur === 'RMB') return { v: RATES.rmb_to_ghs > 0 ? n / RATES.rmb_to_ghs : 0, p: '¥ ' };
+      if (dashCur === 'USD') return { v: RATES.usd_to_ghs > 0 ? n / RATES.usd_to_ghs : 0, p: '$ ' };
+      return { v: n, p: 'GH₵ ' };
+    }
+
     function renderDash() {
       const reqs = getRequests();
       const orders = getOrders();
+
+      // Finance totals (stored in GHS on each order)
+      let commissionGhs = 0, airfreightGhs = 0, revenueGhs = 0, productGhs = 0;
+      orders.forEach(o => {
+        const amt = parseFloat(o.amount) || 0;
+        revenueGhs += amt;
+        commissionGhs += parseFloat(o.commission_ghs) || 0;
+        airfreightGhs += parseFloat(o.airfreight_ghs) || 0;
+        productGhs += parseFloat(o.product_ghs) || 0;
+      });
+      // If older orders lack breakdown, treat remainder as product
+      if (productGhs === 0 && revenueGhs > 0) {
+        productGhs = Math.max(0, revenueGhs - commissionGhs - airfreightGhs);
+      }
+
+      const fin = [
+        { key: 'commission', label: 'Commission earned', ghs: commissionGhs },
+        { key: 'airfreight', label: 'Airfreight collected', ghs: airfreightGhs },
+        { key: 'product', label: 'Product cost (sourced)', ghs: productGhs },
+        { key: 'revenue', label: 'Total invoiced', ghs: revenueGhs }
+      ];
+
+      document.getElementById('financeCards').innerHTML = fin.map(f => {
+        const d = toDashCur(f.ghs);
+        return `<div class="dash-card" style="cursor:default">
+          <div class="num" style="font-size:1.25rem">${d.p}${fmt(d.v)}</div>
+          <div class="lbl">${f.label}</div>
+        </div>`;
+      }).join('');
+
       const cards = [
         { v: reqs.filter(r => r.status === 'NEW').length, l: 'New Requests', go: () => { filterReq('NEW'); show('requests'); } },
         { v: reqs.filter(r => r.status === 'SOURCING').length, l: 'Sourcing', go: () => { filterReq('SOURCING'); show('requests'); } },
@@ -736,24 +795,55 @@
       if (!r) return;
       const orders = getOrders();
       const orderId = 'ORD-' + new Date().getFullYear() + '-' + String(Date.now()).slice(-5);
+
+      // Pull breakdown from calculator if available
       let amount = parseFloat(r.budget || r.budget_ghs) || 0;
-      const landedEl = document.getElementById('rLanded');
-      if (landedEl) {
-        const n = parseFloat(String(landedEl.textContent).replace(/[^0-9.]/g, ''));
-        if (n > 0) amount = n;
+      let product_ghs = 0, commission_ghs = 0, airfreight_ghs = 0;
+      let cost_china = 0, cost_currency = 'RMB';
+
+      const costEl = document.getElementById('cCost');
+      const shipEl = document.getElementById('cShip');
+      const commEl = document.getElementById('cComm');
+      const curEl = document.getElementById('cCurrency');
+      const rateRmbEl = document.getElementById('cRateRmb');
+      const rateUsdEl = document.getElementById('cRateUsd');
+
+      if (costEl && parseFloat(costEl.value) > 0) {
+        cost_china = parseFloat(costEl.value) || 0;
+        cost_currency = curEl ? curEl.value : 'RMB';
+        const rate = cost_currency === 'USD'
+          ? (parseFloat(rateUsdEl?.value) || RATES.usd_to_ghs)
+          : (parseFloat(rateRmbEl?.value) || RATES.rmb_to_ghs);
+        const commPct = parseFloat(commEl?.value) || 0;
+        product_ghs = cost_china * rate;
+        commission_ghs = product_ghs * (commPct / 100);
+        airfreight_ghs = parseFloat(shipEl?.value) || 0;
+        amount = product_ghs + commission_ghs + airfreight_ghs;
+      } else {
+        const landedEl = document.getElementById('rLanded');
+        if (landedEl) {
+          const n = parseFloat(String(landedEl.textContent).replace(/[^0-9.]/g, ''));
+          if (n > 0) amount = n;
+        }
       }
+
       orders.unshift({
         id: orderId, request_id: reqId,
         customer: r.name, whatsapp: r.whatsapp,
         item: r.item || r.item_summary,
         quantity: r.quantity || 1,
         amount: amount,
+        product_ghs: product_ghs,
+        commission_ghs: commission_ghs,
+        airfreight_ghs: airfreight_ghs,
+        cost_china: cost_china,
+        cost_currency: cost_currency,
         payment_status: 'AWAITING',
         created: new Date().toISOString()
       });
       saveOrders(orders);
       setStatus(reqId, 'ACCEPTED');
-      alert('Order ' + orderId + ' created · GH₵ ' + amount);
+      alert('Order ' + orderId + ' created · GH₵ ' + fmt(amount));
       show('orders');
     }
 
@@ -773,10 +863,16 @@
           <div class="list-title">${o.item || '—'}</div>
           <div class="list-meta">${o.customer || ''} · ${o.whatsapp || ''}</div>
           <div class="list-foot">
-            <span style="font-weight:700;color:var(--black)">GH₵${o.amount || 0}</span>
+            <span style="font-weight:700;color:var(--black)">GH₵${fmt(o.amount || 0)}</span>
             <span>Qty ${o.quantity || 1}</span>
             <span>${fmtDate(o.created)}</span>
           </div>
+          ${(o.commission_ghs || o.airfreight_ghs) ? `
+            <div class="list-foot" style="margin-top:0.35rem">
+              ${o.commission_ghs ? '<span>Commission GH₵' + fmt(o.commission_ghs) + '</span>' : ''}
+              ${o.airfreight_ghs ? '<span>Airfreight GH₵' + fmt(o.airfreight_ghs) + '</span>' : ''}
+            </div>
+          ` : ''}
           ${o.payment_status !== 'CONFIRMED' ? `
             <button class="btn-black" style="margin-top:0.85rem;width:100%" onclick="confirmPay('${o.id}')">CONFIRM PAYMENT</button>
           ` : '<p style="margin-top:0.75rem;font-size:0.75rem;font-weight:600;color:var(--gray)">✓ Ready to purchase</p>'}

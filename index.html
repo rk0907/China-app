@@ -66,50 +66,63 @@
 
     .hero {
       min-height: 100vh; display: flex; flex-direction: column;
-      align-items: center; justify-content: flex-start;
-      padding: 5.5rem 1rem 6rem; position: relative; text-align: center;
+      align-items: center; justify-content: center;
+      padding: 6rem 1.5rem 5rem; position: relative; text-align: center;
       overflow: hidden;
     }
     .hero-label {
       font-size: 0.7rem; font-weight: 600; letter-spacing: 0.15em;
-      color: var(--gray); text-transform: uppercase; margin-bottom: 0.75rem;
-      opacity: 0; animation: fadeUp 0.8s 0.15s forwards; position: relative; z-index: 2;
+      color: var(--gray); text-transform: uppercase; margin-bottom: 1.5rem;
+      opacity: 0; animation: fadeUp 0.8s 0.2s forwards; position: relative; z-index: 4;
     }
     .hero-title {
       font-family: 'Montserrat', sans-serif;
-      font-size: clamp(2.6rem, 10vw, 6.5rem);
-      font-weight: 900; letter-spacing: -0.045em; line-height: 0.92;
-      opacity: 0; animation: fadeUp 0.9s 0.3s forwards;
-      position: relative; z-index: 2;
+      font-size: clamp(2.8rem, 9vw, 7rem);
+      font-weight: 900; letter-spacing: -0.04em; line-height: 0.95;
+      opacity: 0; animation: fadeUp 0.9s 0.35s forwards;
+      position: relative; z-index: 4;
     }
     .hero-title em {
       font-family: 'Playfair Display', serif;
       font-style: italic; font-weight: 600;
     }
+    .hero-sub {
+      margin-top: 1.75rem; max-width: 32rem;
+      font-size: 1rem; font-weight: 400; color: var(--gray); line-height: 1.7;
+      opacity: 0; animation: fadeUp 0.8s 0.55s forwards;
+      position: relative; z-index: 4;
+    }
 
-    /* Character stage */
+    /* Character floats on page background — no box */
     .hero-stage {
-      position: relative; width: 100%; max-width: 920px;
-      margin: 0.5rem auto 0; min-height: 380px;
+      position: relative; width: 100%; max-width: 980px;
+      margin: -1rem auto 0; min-height: 420px;
       display: flex; align-items: flex-end; justify-content: center;
+      background: transparent;
     }
     .hero-character {
       position: relative; z-index: 3;
-      width: min(340px, 70vw); height: auto;
-      opacity: 0; animation: fadeUp 1s 0.5s forwards;
-      filter: drop-shadow(0 20px 40px rgba(0,0,0,0.08));
+      width: min(380px, 72vw); height: auto;
+      background: transparent;
+      opacity: 0;
+      animation: fadeUp 0.9s 0.45s forwards, floatY 4.5s 1.4s ease-in-out infinite;
+      filter: drop-shadow(0 28px 50px rgba(0,0,0,0.18));
       pointer-events: none;
+    }
+    @keyframes floatY {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-14px); }
     }
 
     .hero-meta {
-      display: flex; flex-wrap: wrap; gap: 1rem 2rem; justify-content: center;
-      margin-top: 1.25rem; font-size: 0.65rem; font-weight: 600;
+      display: flex; gap: 2.5rem; justify-content: center; flex-wrap: wrap;
+      margin-top: 1.5rem; font-size: 0.7rem; font-weight: 600;
       letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray);
-      opacity: 0; animation: fadeUp 0.8s 0.75s forwards; position: relative; z-index: 2;
+      opacity: 0; animation: fadeUp 0.8s 0.7s forwards; position: relative; z-index: 4;
     }
     .hero-cta {
-      margin-top: 1.5rem; opacity: 0; animation: fadeUp 0.8s 0.9s forwards;
-      position: relative; z-index: 2;
+      margin-top: 2rem; opacity: 0; animation: fadeUp 0.8s 0.85s forwards;
+      position: relative; z-index: 4;
     }
     .btn-pill {
       display: inline-flex; align-items: center; gap: 0.5rem;
@@ -130,18 +143,18 @@
     }
     .btn-explore svg { width: 14px; height: 14px; margin-top: 2px; }
 
-    /* Floating UI cards (s0 style) */
     .float-card {
-      position: absolute; background: var(--white); border: 1px solid var(--border);
+      position: absolute; background: rgba(255,255,255,0.92); border: 1px solid var(--border);
       border-radius: 18px; padding: 0.85rem 1rem;
-      box-shadow: 0 16px 50px rgba(0,0,0,0.07);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+      backdrop-filter: blur(8px);
       opacity: 0; animation: floatIn 1s forwards;
-      z-index: 1; text-align: left;
+      z-index: 2; text-align: left;
     }
-    .float-card.f1 { top: 8%; left: 2%; width: 150px; animation-delay: 0.7s; }
-    .float-card.f2 { top: 12%; right: 2%; width: 155px; animation-delay: 0.85s; }
-    .float-card.f3 { bottom: 18%; left: 0; width: 145px; animation-delay: 1s; }
-    .float-card.f4 { bottom: 14%; right: 0; width: 150px; animation-delay: 1.15s; }
+    .float-card.f1 { top: 6%; left: 4%; width: 150px; animation-delay: 0.7s; }
+    .float-card.f2 { top: 10%; right: 4%; width: 155px; animation-delay: 0.85s; }
+    .float-card.f3 { bottom: 22%; left: 2%; width: 145px; animation-delay: 1s; }
+    .float-card.f4 { bottom: 18%; right: 2%; width: 150px; animation-delay: 1.15s; }
     .fc-label { font-size: 0.55rem; font-weight: 600; color: var(--gray); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.25rem; }
     .fc-value { font-size: 0.8rem; font-weight: 700; }
     .fc-bar { height: 3px; background: var(--light); border-radius: 2px; margin-top: 0.45rem; overflow: hidden; }
@@ -155,10 +168,10 @@
 
     @media (max-width: 700px) {
       .float-card.f1, .float-card.f2 { display: none; }
-      .float-card.f3 { left: 2%; bottom: 8%; width: 120px; }
-      .float-card.f4 { right: 2%; bottom: 6%; width: 120px; }
-      .hero-character { width: min(280px, 75vw); }
-      .hero-stage { min-height: 300px; }
+      .float-card.f3 { left: 2%; bottom: 12%; width: 120px; }
+      .float-card.f4 { right: 2%; bottom: 10%; width: 120px; }
+      .hero-character { width: min(300px, 78vw); }
+      .hero-stage { min-height: 320px; }
     }
 
     .section { padding: 6rem 2rem; max-width: 1100px; margin: 0 auto; }
@@ -270,13 +283,16 @@
   </nav>
 
   <section class="hero">
-    <p class="hero-label">International Wishlist & Sourcing</p>
+    <p class="hero-label">China Sourcing · Ghana Delivery</p>
     <h1 class="hero-title">
-      TELL US<br>WHAT YOU<br>NEED.
+      TELL US<br>WHAT YOU<br>NEED.<br>
+      <em>We'll find it.</em>
     </h1>
+    <p class="hero-sub">
+      Send a product description. We search Chinese suppliers, quote the landed price in Ghana Cedis, and handle procurement through to delivery.
+    </p>
 
     <div class="hero-stage">
-      <!-- Floating UI cards -->
       <div class="float-card f1">
         <div class="fc-label">Request</div>
         <div class="fc-value">SR-2026-00124</div>
@@ -301,12 +317,13 @@
         <div class="fc-bar"><span style="width:60%"></span></div>
       </div>
 
-      <img src="hero-character.png" alt="KAYA sourcing" class="hero-character" />
+      <!-- Transparent cutout — floats on page background -->
+      <img src="hero-float.png" alt="KAYA" class="hero-character" />
     </div>
 
     <div class="hero-meta">
       <span>Sourcing Concierge</span>
-      <span>End-to-End · China → Ghana</span>
+      <span>End-to-End / China → Ghana</span>
     </div>
     <div class="hero-cta">
       <a href="request.html" class="btn-pill filled">REQUEST AN ITEM →</a>

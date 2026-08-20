@@ -26,13 +26,35 @@
 </head>
 <body class="bg-cream text-forest antialiased">
 
-  <nav class="sticky top-0 z-40 bg-cream/95 backdrop-blur border-b border-forest/5">
-    <div class="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
-      <a href="index.html" class="font-extrabold tracking-tight text-forest">CHINA SOURCE <span class="text-orange text-sm">GH</span></a>
-      <div class="flex items-center gap-4 text-sm">
-        <a href="track.html" class="text-forest/60 hover:text-forest font-medium hidden sm:inline">Track</a>
-        <a href="request.html" class="inline-flex items-center px-4 py-2 rounded-full bg-orange text-white font-bold hover:bg-orangsoft">Request an item</a>
+  <nav class="sticky top-0 z-50 bg-cream/95 backdrop-blur border-b border-forest/5">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-2">
+        <span class="font-extrabold text-xl tracking-tight text-forest">CHINA SOURCE</span>
+        <span class="text-orange font-bold text-sm">GH</span>
+      </a>
+
+      <!-- Navigation tabs (desktop) -->
+      <div class="hidden md:flex items-center gap-6">
+        <ul class="inline-flex items-center gap-2 bg-cream rounded-full px-2 py-1 text-sm font-medium text-forest/80">
+          <li><a href="index.html" class="inline-flex items-center px-4 py-2 rounded-full text-forest">Home</a></li>
+          <li><a href="how-it-works.html" class="inline-flex items-center px-4 py-2 rounded-full">How it works</a></li>
+          <li><a href="track.html" class="inline-flex items-center px-4 py-2 rounded-full">Track request</a></li>
+          <li><a href="request.html" class="inline-flex items-center px-4 py-2 rounded-full">Request an item</a></li>
+          <li><a href="admin/login.html" class="inline-flex items-center px-3 py-2 rounded-full text-sm text-forest/70">Admin</a></li>
+        </ul>
       </div>
+
+      <!-- CTA for desktop (right) -->
+      <div class="hidden md:flex items-center">
+        <a href="request.html" class="inline-flex items-center px-5 py-2 rounded-full border-2 border-forest text-forest font-semibold hover:bg-forest hover:text-cream transition">
+          Request an item
+        </a>
+      </div>
+
+      <!-- Mobile: compact button -->
+      <a href="request.html" class="md:hidden inline-flex items-center px-4 py-2 rounded-full bg-orange text-white text-sm font-semibold">
+        Request
+      </a>
     </div>
   </nav>
 
@@ -96,5 +118,20 @@
       © 2026 China Source GH
     </div>
   </footer>
+
+  <script>
+    (function(){
+      const path = window.location.pathname.split('/').pop() || 'index.html';
+      document.querySelectorAll('nav ul a').forEach(a => {
+        const href = a.getAttribute('href') || '';
+        const file = href.split('/').pop();
+        if (file === path) {
+          a.classList.add('border-b-2','border-forest','bg-cream');
+        } else {
+          a.classList.remove('border-b-2','border-forest','bg-cream');
+        }
+      });
+    })();
+  </script>
 </body>
 </html>

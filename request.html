@@ -26,10 +26,35 @@
 </head>
 <body class="bg-cream text-forest antialiased">
 
-  <nav class="sticky top-0 z-40 bg-cream/95 backdrop-blur border-b border-forest/5">
-    <div class="max-w-xl mx-auto px-4 h-14 flex items-center justify-between">
-      <a href="index.html" class="font-extrabold tracking-tight text-forest">CHINA SOURCE <span class="text-orange text-sm">GH</span></a>
-      <a href="track.html" class="text-sm font-medium text-forest/60 hover:text-forest">Track request</a>
+  <nav class="sticky top-0 z-50 bg-cream/95 backdrop-blur border-b border-forest/5">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-2">
+        <span class="font-extrabold text-xl tracking-tight text-forest">CHINA SOURCE</span>
+        <span class="text-orange font-bold text-sm">GH</span>
+      </a>
+
+      <!-- Navigation tabs (desktop) -->
+      <div class="hidden md:flex items-center gap-6">
+        <ul class="inline-flex items-center gap-2 bg-cream rounded-full px-2 py-1 text-sm font-medium text-forest/80">
+          <li><a href="index.html" class="inline-flex items-center px-4 py-2 rounded-full text-forest">Home</a></li>
+          <li><a href="how-it-works.html" class="inline-flex items-center px-4 py-2 rounded-full">How it works</a></li>
+          <li><a href="track.html" class="inline-flex items-center px-4 py-2 rounded-full">Track request</a></li>
+          <li><a href="request.html" class="inline-flex items-center px-4 py-2 rounded-full">Request an item</a></li>
+          <li><a href="admin/login.html" class="inline-flex items-center px-3 py-2 rounded-full text-sm text-forest/70">Admin</a></li>
+        </ul>
+      </div>
+
+      <!-- CTA for desktop (right) -->
+      <div class="hidden md:flex items-center">
+        <a href="request.html" class="inline-flex items-center px-5 py-2 rounded-full border-2 border-forest text-forest font-semibold hover:bg-forest hover:text-cream transition">
+          Request an item
+        </a>
+      </div>
+
+      <!-- Mobile: compact button -->
+      <a href="request.html" class="md:hidden inline-flex items-center px-4 py-2 rounded-full bg-orange text-white text-sm font-semibold">
+        Request
+      </a>
     </div>
   </nav>
 
@@ -60,7 +85,7 @@
         </div>
         <div>
           <label class="block text-sm font-semibold mb-1.5">Location in Ghana</label>
-          <input type="text" name="location" class="w-full rounded-full border-2 border-forest/15 bg-cream/50 px-4 py-3 text-sm focus:outline-none focus:border-orange" placeholder="Accra, Kumasi, ..." />
+          <input type="text" name="location" class="w-full rounded-full border-2 border-forest/15 bg-cream/50 px-4 py-3 text-sm focus:outline-none focus:border-orange" placeholder="Accra, Kumasi, Tamale…" />
         </div>
       </section>
 
@@ -68,11 +93,11 @@
         <h2 class="text-xs font-bold uppercase tracking-wider text-forest/50">Item details</h2>
         <div>
           <label class="block text-sm font-semibold mb-1.5">What are you looking for? *</label>
-          <input type="text" name="item_summary" required class="w-full rounded-full border-2 border-forest/15 bg-cream/50 px-4 py-3 text-sm focus:outline-none focus:border-orange" placeholder="e.g. Women's handbags, solar lights" />
+          <input type="text" name="item_summary" required class="w-full rounded-full border-2 border-forest/15 bg-cream/50 px-4 py-3 text-sm focus:outline-none focus:border-orange" placeholder="e.g. 12" />
         </div>
         <div>
           <label class="block text-sm font-semibold mb-1.5">Detailed description</label>
-          <textarea name="description" rows="3" class="w-full rounded-3xl border-2 border-forest/15 bg-cream/50 px-4 py-3 text-sm focus:outline-none focus:border-orange" placeholder="Any extra details that help us find the right product..."></textarea>
+          <textarea name="description" rows="3" class="w-full rounded-3xl border-2 border-forest/15 bg-cream/50 px-4 py-3 text-sm focus:outline-none focus:border-orange" placeholder="Any extra details…"></textarea>
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
@@ -81,7 +106,7 @@
           </div>
           <div>
             <label class="block text-sm font-semibold mb-1.5">Budget (GHS)</label>
-            <input type="number" name="budget_ghs" min="0" step="1" class="w-full rounded-full border-2 border-forest/15 bg-cream/50 px-4 py-3 text-sm focus:outline-none focus:border-orange" placeholder="e.g. 6000" />
+            <input type="number" name="budget_ghs" min="0" step="1" class="w-full rounded-full border-2 border-forest/15 bg-cream/50 px-4 py-3 text-sm focus:outline-none focus:border-orange" placeholder="optional" />
           </div>
         </div>
         <div class="grid grid-cols-2 gap-3">
@@ -123,7 +148,7 @@
         </div>
         <div>
           <label class="block text-sm font-semibold mb-1.5">Reference image</label>
-          <input type="file" id="refImage" accept="image/jpeg,image/png,image/webp,image/gif" class="w-full text-sm text-forest/60 file:mr-3 file:py-2.5 file:px-4 file:rounded-full file:border-0 file:bg-softyellow file:text-forest file:font-bold" />
+          <input type="file" id="refImage" accept="image/jpeg,image/png,image/webp,image/gif" class="w-full text-sm text-forest/60 file:mr-3 file:py-2.5 file:px-4 file:rounded-full file:border-0" />
           <p class="text-xs text-forest/40 mt-1.5">JPEG, PNG, WebP or GIF · Max ~6 MB</p>
           <div id="imagePreview" class="mt-3 hidden">
             <img id="previewImg" class="max-h-40 rounded-3xl border border-forest/10" alt="Preview" />
@@ -131,7 +156,7 @@
         </div>
         <div>
           <label class="block text-sm font-semibold mb-1.5">Additional notes</label>
-          <textarea name="notes" rows="2" class="w-full rounded-3xl border-2 border-forest/15 bg-cream/50 px-4 py-3 text-sm focus:outline-none focus:border-orange" placeholder='e.g. "Something similar to the image, preferably in black and under GH₵700"'></textarea>
+          <textarea name="notes" rows="2" class="w-full rounded-3xl border-2 border-forest/15 bg-cream/50 px-4 py-3 text-sm focus:outline-none focus:border-orange" placeholder='e.g. "Something simple and sturdy"'></textarea>
         </div>
       </section>
 
@@ -210,6 +235,21 @@
         submitBtn.disabled = false; submitBtn.textContent = 'Submit request';
       }
     });
+  </script>
+
+  <script>
+    (function(){
+      const path = window.location.pathname.split('/').pop() || 'index.html';
+      document.querySelectorAll('nav ul a').forEach(a => {
+        const href = a.getAttribute('href') || '';
+        const file = href.split('/').pop();
+        if (file === path) {
+          a.classList.add('border-b-2','border-forest','bg-cream');
+        } else {
+          a.classList.remove('border-b-2','border-forest','bg-cream');
+        }
+      });
+    })();
   </script>
 </body>
 </html>

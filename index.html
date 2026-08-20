@@ -36,7 +36,7 @@
   <style>
     body { font-family: 'DM Sans', system-ui, sans-serif; }
     .underline-accent {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12' fill='none'%3E%3Cpath d='M2 8C40 2 80 10 120 6C150 3 180 9 198 5' stroke='%23F07A3A' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12' fill='none'%3E%3Cpath d='M2 8C40 2 80 10 120 6C150 3 180 9 198 5' stroke='%23F07A3A' stro[...]" );
       background-repeat: no-repeat;
       background-position: bottom left;
       background-size: 100% 12px;
@@ -53,13 +53,36 @@
         <span class="font-extrabold text-xl tracking-tight text-forest">CHINA SOURCE</span>
         <span class="text-orange font-bold text-sm">GH</span>
       </a>
-      <div class="hidden md:flex items-center gap-8 text-sm font-medium text-forest/80">
-        <a href="how-it-works.html" class="hover:text-forest transition">How it works</a>
-        <a href="track.html" class="hover:text-forest transition">Track request</a>
+
+      <!-- Navigation tabs (desktop) -->
+      <div class="hidden md:flex items-center gap-6">
+        <ul class="inline-flex items-center gap-2 bg-cream rounded-full px-2 py-1 text-sm font-medium text-forest/80">
+          <li>
+            <a href="index.html" class="inline-flex items-center px-4 py-2 rounded-full text-forest border-b-2 border-forest bg-cream">Home</a>
+          </li>
+          <li>
+            <a href="how-it-works.html" class="inline-flex items-center px-4 py-2 rounded-full hover:bg-forest/5 transition">How it works</a>
+          </li>
+          <li>
+            <a href="track.html" class="inline-flex items-center px-4 py-2 rounded-full hover:bg-forest/5 transition">Track request</a>
+          </li>
+          <li>
+            <a href="request.html" class="inline-flex items-center px-4 py-2 rounded-full hover:bg-forest/5 transition">Request an item</a>
+          </li>
+          <li>
+            <a href="admin/login.html" class="inline-flex items-center px-3 py-2 rounded-full text-sm text-forest/70 hover:text-forest transition">Admin</a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- CTA for desktop (right) -->
+      <div class="hidden md:flex items-center">
         <a href="request.html" class="inline-flex items-center px-5 py-2 rounded-full border-2 border-forest text-forest font-semibold hover:bg-forest hover:text-cream transition">
           Request an item
         </a>
       </div>
+
+      <!-- Mobile: compact button -->
       <a href="request.html" class="md:hidden inline-flex items-center px-4 py-2 rounded-full bg-orange text-white text-sm font-semibold">
         Request
       </a>
@@ -87,7 +110,7 @@
         <a href="request.html" class="inline-flex items-center justify-center bg-orange text-white px-8 py-3.5 rounded-full font-bold text-base hover:bg-orangsoft transition shadow-sm min-w-[200px]">
           Request an item
         </a>
-        <a href="how-it-works.html" class="inline-flex items-center justify-center border-2 border-forest text-forest px-8 py-3.5 rounded-full font-bold text-base hover:bg-forest hover:text-cream transition min-w-[200px]">
+        <a href="how-it-works.html" class="inline-flex items-center justify-center border-2 border-forest text-forest px-8 py-3.5 rounded-full font-bold text-base hover:bg-forest hover:text-cream transition">
           How it works
         </a>
       </div>

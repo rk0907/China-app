@@ -198,7 +198,7 @@
   <nav class="nav">
     <div class="nav-left">
       <a href="index.html" class="logo">
-        <img src="logo.PNG" alt="KAYA" />
+        <img src="logo.png" alt="KAYA" />
       </a>
     </div>
     <div class="nav-center">
@@ -306,7 +306,10 @@
   </main>
 
   <script>
-    // Paste Apps Script URL here when ready
+    // ═══════════════════════════════════════════════════════════
+    //  PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL BELOW
+    //  (from Deploy → Web app — see SETUP.md)
+    // ═══════════════════════════════════════════════════════════
     const API = 'https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec';
 
     const form = document.getElementById('form');
@@ -314,7 +317,6 @@
     const category = document.getElementById('category');
     const apparelFields = document.getElementById('apparelFields');
 
-    // Size & colour only for Clothing & Apparel
     category.addEventListener('change', () => {
       const show = category.value === 'Clothing & Apparel';
       apparelFields.style.display = show ? 'block' : 'none';
@@ -338,33 +340,33 @@
       data.quantity = parseInt(data.quantity) || 1;
       data.budget_ghs = data.budget ? parseFloat(data.budget) : '';
 
-      const localId = 'SR-' + new Date().getFullYear() + '-' + String(Date.now()).slice(-5);
+      // Still using placeholder URL?
+      if (API.includes('YOUR_DEPLOYMENT_ID')) {
+        alert('Setup needed: paste your Apps Script Web App URL into request.html (see SETUP.md).');
+        btn.disabled = false;
+        btn.textContent = 'SUBMIT REQUEST';
+        return;
+      }
 
       try {
-        if (API.includes('YOUR_DEPLOYMENT')) {
-          // Demo mode — store locally for admin
-          const requests = JSON.parse(localStorage.getItem('cs_requests') || '[]');
-          requests.unshift({ id: localId, ...data, status: 'NEW', created: new Date().toISOString() });
-          localStorage.setItem('cs_requests', JSON.stringify(requests));
-          showSuccess(localId);
+        const res = await fetch(API, {
+          method: 'POST',
+          // text/plain avoids CORS preflight with Apps Script
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(data)
+        });
+        const json = await res.json();
+        if (json.success) {
+          showSuccess(json.requestId);
         } else {
-          const res = await fetch(API, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain' },
-            body: JSON.stringify(data)
-          });
-          const json = await res.json();
-          if (json.success) showSuccess(json.requestId);
-          else {
-            alert(json.error || 'Failed');
-            btn.disabled = false; btn.textContent = 'SUBMIT REQUEST';
-          }
+          alert(json.error || 'Submit failed. Check SETUP.md.');
+          btn.disabled = false;
+          btn.textContent = 'SUBMIT REQUEST';
         }
       } catch (err) {
-        const requests = JSON.parse(localStorage.getItem('cs_requests') || '[]');
-        requests.unshift({ id: localId, ...data, status: 'NEW', created: new Date().toISOString() });
-        localStorage.setItem('cs_requests', JSON.stringify(requests));
-        showSuccess(localId);
+        alert('Network error. Check your connection and that the API URL is correct.\n\n' + err);
+        btn.disabled = false;
+        btn.textContent = 'SUBMIT REQUEST';
       }
     });
 

@@ -304,6 +304,12 @@
   <script>
     const ADMIN_PASS = 'admin123';
 
+    // ═══════════════════════════════════════════════════════════
+    //  PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL BELOW
+    //  (same URL as in request.html — see SETUP.md)
+    // ═══════════════════════════════════════════════════════════
+    const API = 'https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec';
+
     // Live rates (fetched) + fallbacks
     let RATES = {
       rmb_to_ghs: 1.64,
@@ -312,7 +318,42 @@
       updated: null
     };
 
-    let currentReqBudget = 0; // customer budget for within-budget checks
+    let currentReqBudget = 0;
+    // In-memory cache filled from Google Sheets
+    let CACHE = { requests: [], orders: [] };
+
+    async function apiGet(action) {
+      if (API.includes('YOUR_DEPLOYMENT_ID')) {
+        throw new Error('Paste your Apps Script URL into admin.html (see SETUP.md)');
+      }
+      const res = await fetch(API + '?action=' + encodeURIComponent(action));
+      const json = await res.json();
+      if (!json.success) throw new Error(json.error || 'API error');
+      return json;
+    }
+
+    async function apiPost(payload) {
+      if (API.includes('YOUR_DEPLOYMENT_ID')) {
+        throw new Error('Paste your Apps Script URL into admin.html (see SETUP.md)');
+      }
+      const res = await fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      });
+      const json = await res.json();
+      if (!json.success) throw new Error(json.error || 'API error');
+      return json;
+    }
+
+    async function refreshData() {
+      const [reqJson, ordJson] = await Promise.all([
+        apiGet('listRequests'),
+        apiGet('listOrders')
+      ]);
+      CACHE.requests = reqJson.requests || [];
+      CACHE.orders = ordJson.orders || [];
+    }
 
     async function fetchLiveRates() {
       const status = document.getElementById('rateStatus');
@@ -367,13 +408,16 @@
         weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
       });
       await fetchLiveRates();
+      try {
+        await refreshData();
+      } catch (err) {
+        alert('Could not load data from Google Sheets.\n\n' + err.message + '\n\nSee SETUP.md');
+      }
       show('dashboard');
     }
 
-    function getRequests() { return JSON.parse(localStorage.getItem('cs_requests') || '[]'); }
-    function saveRequests(a) { localStorage.setItem('cs_requests', JSON.stringify(a)); }
-    function getOrders() { return JSON.parse(localStorage.getItem('cs_orders') || '[]'); }
-    function saveOrders(a) { localStorage.setItem('cs_orders', JSON.stringify(a)); }
+    function getRequests() { return CACHE.requests; }
+    function getOrders() { return CACHE.orders; }
 
     function show(sec) {
       document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -515,10 +559,13 @@
           <p class="detail-name">${r.item || r.item_summary || '—'}</p>
           <p class="detail-sub" style="white-space:pre-line;margin-top:0.5rem">${r.description || ''}</p>
           <div class="detail-grid">
+            <div><span>Category</span> ${r.category || '—'}</div>
             <div><span>Qty</span> ${qty}</div>
             <div><span>Budget</span> ${budget ? 'GH₵ ' + budget : '—'}</div>
             <div><span>Quality</span> ${r.quality || '—'}</div>
-            <div><span>Colour</span> ${r.colour || '—'}</div>
+            ${r.size ? '<div><span>Size</span> ' + r.size + '</div>' : ''}
+            ${r.colour ? '<div><span>Colour</span> ' + r.colour + '</div>' : ''}
+            ${r.brand ? '<div><span>Brand</span> ' + r.brand + '</div>' : ''}
           </div>
           ${r.notes ? '<p class="detail-sub" style="margin-top:0.75rem;font-style:italic">"' + r.notes + '"</p>' : ''}
           ${r.url ? '<a href="' + r.url + '" target="_blank" class="detail-sub" style="display:inline-block;margin-top:0.5rem;text-decoration:underline">Product link →</a>' : ''}
@@ -784,19 +831,21 @@
       }
     }
 
-    function setStatus(id, status) {
-      const arr = getRequests();
-      const i = arr.findIndex(x => x.id === id);
-      if (i >= 0) { arr[i].status = status; saveRequests(arr); openDetail(id); }
+    async function setStatus(id, status) {
+      try {
+        await apiPost({ action: 'updateStatus', id: id, status: status });
+        await refreshData();
+        openDetail(id);
+      } catch (err) {
+        alert('Could not update status: ' + err.message);
+      }
     }
 
-    function createOrder(reqId) {
+    async function createOrder(reqId) {
       const r = getRequests().find(x => x.id === reqId);
       if (!r) return;
-      const orders = getOrders();
       const orderId = 'ORD-' + new Date().getFullYear() + '-' + String(Date.now()).slice(-5);
 
-      // Pull breakdown from calculator if available
       let amount = parseFloat(r.budget || r.budget_ghs) || 0;
       let product_ghs = 0, commission_ghs = 0, airfreight_ghs = 0;
       let cost_china = 0, cost_currency = 'RMB';
@@ -812,12 +861,12 @@
         cost_china = parseFloat(costEl.value) || 0;
         cost_currency = curEl ? curEl.value : 'RMB';
         const rate = cost_currency === 'USD'
-          ? (parseFloat(rateUsdEl?.value) || RATES.usd_to_ghs)
-          : (parseFloat(rateRmbEl?.value) || RATES.rmb_to_ghs);
-        const commPct = parseFloat(commEl?.value) || 0;
+          ? (parseFloat(rateUsdEl && rateUsdEl.value) || RATES.usd_to_ghs)
+          : (parseFloat(rateRmbEl && rateRmbEl.value) || RATES.rmb_to_ghs);
+        const commPct = parseFloat(commEl && commEl.value) || 0;
         product_ghs = cost_china * rate;
         commission_ghs = product_ghs * (commPct / 100);
-        airfreight_ghs = parseFloat(shipEl?.value) || 0;
+        airfreight_ghs = parseFloat(shipEl && shipEl.value) || 0;
         amount = product_ghs + commission_ghs + airfreight_ghs;
       } else {
         const landedEl = document.getElementById('rLanded');
@@ -827,24 +876,29 @@
         }
       }
 
-      orders.unshift({
-        id: orderId, request_id: reqId,
-        customer: r.name, whatsapp: r.whatsapp,
-        item: r.item || r.item_summary,
-        quantity: r.quantity || 1,
-        amount: amount,
-        product_ghs: product_ghs,
-        commission_ghs: commission_ghs,
-        airfreight_ghs: airfreight_ghs,
-        cost_china: cost_china,
-        cost_currency: cost_currency,
-        payment_status: 'AWAITING',
-        created: new Date().toISOString()
-      });
-      saveOrders(orders);
-      setStatus(reqId, 'ACCEPTED');
-      alert('Order ' + orderId + ' created · GH₵ ' + fmt(amount));
-      show('orders');
+      try {
+        await apiPost({
+          action: 'createOrder',
+          id: orderId,
+          request_id: reqId,
+          customer: r.name,
+          whatsapp: r.whatsapp,
+          item: r.item || r.item_summary,
+          quantity: r.quantity || 1,
+          amount: amount,
+          product_ghs: product_ghs,
+          commission_ghs: commission_ghs,
+          airfreight_ghs: airfreight_ghs,
+          cost_china: cost_china,
+          cost_currency: cost_currency,
+          payment_status: 'AWAITING'
+        });
+        await refreshData();
+        alert('Order ' + orderId + ' created · GH₵ ' + fmt(amount));
+        show('orders');
+      } catch (err) {
+        alert('Could not create order: ' + err.message);
+      }
     }
 
     function renderOrders() {
@@ -880,10 +934,14 @@
       `).join('');
     }
 
-    function confirmPay(id) {
-      const arr = getOrders();
-      const i = arr.findIndex(x => x.id === id);
-      if (i >= 0) { arr[i].payment_status = 'CONFIRMED'; saveOrders(arr); renderOrders(); }
+    async function confirmPay(id) {
+      try {
+        await apiPost({ action: 'confirmPayment', id: id });
+        await refreshData();
+        renderOrders();
+      } catch (err) {
+        alert('Could not confirm payment: ' + err.message);
+      }
     }
   </script>
 </body>

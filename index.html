@@ -3,111 +3,222 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard — China Source GH</title>
+  <title>China Source GH — Tell us what you need</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet">
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            brand: { 50: '#f0f9ff', 100: '#e0f2fe', 500: '#0ea5e9', 600: '#0284c7', 700: '#0369a1', 900: '#0c4a6e' }
+            cream: '#FBF6EE',
+            forest: '#1A3A2A',
+            forestlight: '#2D5A45',
+            orange: '#F07A3A',
+            orangsoft: '#F5A06A',
+            softpink: '#F7C9D4',
+            softyellow: '#F5E6A3',
+            softgreen: '#D4E8D8'
+          },
+          fontFamily: {
+            sans: ['DM Sans', 'system-ui', 'sans-serif']
+          },
+          borderRadius: {
+            '4xl': '2rem',
+            '5xl': '2.5rem'
           }
         }
       }
     }
   </script>
+  <style>
+    body { font-family: 'DM Sans', system-ui, sans-serif; }
+    .underline-accent {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12' fill='none'%3E%3Cpath d='M2 8C40 2 80 10 120 6C150 3 180 9 198 5' stroke='%23F07A3A' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: bottom left;
+      background-size: 100% 12px;
+      padding-bottom: 6px;
+    }
+  </style>
 </head>
-<body class="bg-slate-100 text-slate-900 antialiased pb-20">
+<body class="bg-cream text-forest antialiased">
 
-  <!-- Top bar -->
-  <header class="bg-white border-b border-slate-200 sticky top-0 z-40">
-    <div class="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
-      <span class="font-semibold text-brand-900">China Source <span class="text-brand-600">GH</span></span>
-      <div class="flex items-center gap-3 text-sm">
-        <span id="adminEmail" class="text-slate-500 hidden sm:inline"></span>
-        <button onclick="logout()" class="text-slate-600 hover:text-red-600">Logout</button>
+  <!-- Nav -->
+  <nav class="sticky top-0 z-50 bg-cream/95 backdrop-blur border-b border-forest/5">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-2">
+        <span class="font-extrabold text-xl tracking-tight text-forest">CHINA SOURCE</span>
+        <span class="text-orange font-bold text-sm">GH</span>
+      </a>
+      <div class="hidden md:flex items-center gap-8 text-sm font-medium text-forest/80">
+        <a href="how-it-works.html" class="hover:text-forest transition">How it works</a>
+        <a href="track.html" class="hover:text-forest transition">Track request</a>
+        <a href="request.html" class="inline-flex items-center px-5 py-2 rounded-full border-2 border-forest text-forest font-semibold hover:bg-forest hover:text-cream transition">
+          Request an item
+        </a>
       </div>
-    </div>
-  </header>
-
-  <main class="max-w-5xl mx-auto px-4 py-6">
-    <div class="mb-6">
-      <h1 class="text-2xl font-bold">Good day</h1>
-      <p id="dateDisplay" class="text-slate-500 text-sm"></p>
-    </div>
-
-    <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-500 mb-3">Today’s operations</h2>
-    <div id="cards" class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
-      <!-- filled by JS -->
-    </div>
-
-    <div class="flex gap-3 mb-4">
-      <a href="requests.html" class="flex-1 bg-brand-600 text-white text-center py-3 rounded-xl font-semibold hover:bg-brand-700">Sourcing Requests</a>
-      <a href="orders.html" class="flex-1 bg-white border border-slate-300 text-center py-3 rounded-xl font-semibold hover:bg-slate-50">Orders</a>
-    </div>
-    <a href="settings.html" class="block text-center text-sm text-slate-500 hover:text-brand-700">Settings</a>
-  </main>
-
-  <!-- Bottom nav (mobile) -->
-  <nav class="fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 safe-area">
-    <div class="max-w-5xl mx-auto flex justify-around py-2 text-xs">
-      <a href="index.html" class="flex flex-col items-center text-brand-600 font-medium py-1">
-        <span class="text-lg">⌂</span> Home
-      </a>
-      <a href="requests.html" class="flex flex-col items-center text-slate-500 py-1">
-        <span class="text-lg">☰</span> Requests
-      </a>
-      <a href="orders.html" class="flex flex-col items-center text-slate-500 py-1">
-        <span class="text-lg">📦</span> Orders
-      </a>
-      <a href="settings.html" class="flex flex-col items-center text-slate-500 py-1">
-        <span class="text-lg">⚙</span> Settings
+      <a href="request.html" class="md:hidden inline-flex items-center px-4 py-2 rounded-full bg-orange text-white text-sm font-semibold">
+        Request
       </a>
     </div>
   </nav>
 
-  <script src="../js/config.js"></script>
-  <script src="../js/api.js"></script>
-  <script src="../js/utils.js"></script>
-  <script>
-    async function init() {
-      if (!(await Auth.requireAuth())) return;
-      document.getElementById('adminEmail').textContent = Auth.getEmail() || '';
+  <!-- Hero -->
+  <section class="relative overflow-hidden">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-14 pb-8 md:pt-20 md:pb-12 text-center relative">
+      <div class="inline-flex items-center gap-1.5 text-orange mb-4">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.5 6.5L20 10l-6.5 1.5L12 18l-1.5-6.5L4 10l6.5-1.5L12 2z"/></svg>
+        <span class="text-sm font-semibold tracking-wide uppercase">China Sourcing · Ghana Delivery</span>
+      </div>
 
-      const res = await API.getDashboard(Auth.getToken());
-      if (!res.success) {
-        showToast(res.error || 'Failed to load', 'error');
-        return;
-      }
+      <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.05] text-forest max-w-4xl mx-auto">
+        Tell us what you need.<br>
+        <span class="underline-accent">We’ll find it in China.</span>
+      </h1>
 
-      document.getElementById('dateDisplay').textContent = res.date || '';
+      <p class="mt-6 text-base md:text-lg text-forest/70 max-w-2xl mx-auto leading-relaxed">
+        Send a product image, link or description, your budget and quantity — we source suitable options from Chinese suppliers and handle procurement all the way to Ghana.
+      </p>
 
-      const c = res.counts || {};
-      const items = [
-        { label: 'New Requests', value: c.newRequests, href: 'requests.html?status=NEW', color: 'bg-blue-50 text-blue-800' },
-        { label: 'To Source', value: c.toSource, href: 'requests.html?status=SOURCING', color: 'bg-purple-50 text-purple-800' },
-        { label: 'Quotes Waiting', value: c.quotesAwaiting, href: 'requests.html?status=QUOTED', color: 'bg-amber-50 text-amber-800' },
-        { label: 'Awaiting Payment', value: c.awaitingPayment, href: 'requests.html?status=AWAITING_PAYMENT', color: 'bg-orange-50 text-orange-800' },
-        { label: 'Ready to Purchase', value: c.readyToPurchase, href: 'orders.html', color: 'bg-emerald-50 text-emerald-800' },
-        { label: 'In Procurement', value: c.inProcurement, href: 'orders.html', color: 'bg-teal-50 text-teal-800' },
-        { label: 'In Transit', value: c.inTransit, href: 'orders.html', color: 'bg-sky-50 text-sky-800' },
-        { label: 'Ready for Delivery', value: c.readyDelivery, href: 'orders.html', color: 'bg-green-50 text-green-800' }
-      ];
-
-      document.getElementById('cards').innerHTML = items.map(item => `
-        <a href="${item.href}" class="block ${item.color} rounded-xl p-4 hover:opacity-90 transition">
-          <p class="text-2xl font-bold">${item.value || 0}</p>
-          <p class="text-xs font-medium mt-1 leading-tight">${item.label}</p>
+      <div class="mt-10 flex flex-col sm:flex-row gap-3 justify-center items-center">
+        <a href="request.html" class="inline-flex items-center justify-center bg-orange text-white px-8 py-3.5 rounded-full font-bold text-base hover:bg-orangsoft transition shadow-sm min-w-[200px]">
+          Request an item
         </a>
-      `).join('');
-    }
+        <a href="how-it-works.html" class="inline-flex items-center justify-center border-2 border-forest text-forest px-8 py-3.5 rounded-full font-bold text-base hover:bg-forest hover:text-cream transition min-w-[200px]">
+          How it works
+        </a>
+      </div>
+    </div>
 
-    function logout() {
-      Auth.clear();
-      window.location.href = 'login.html';
-    }
+    <!-- Decorative steps band -->
+    <div class="relative mt-8 md:mt-12">
+      <div class="max-w-5xl mx-auto px-4">
+        <div class="rounded-t-[2.5rem] md:rounded-t-[3rem] overflow-hidden bg-forest h-32 md:h-48 relative">
+          <div class="absolute inset-0 flex items-center justify-center opacity-20">
+            <svg class="w-full h-full" viewBox="0 0 800 200" preserveAspectRatio="none">
+              <path d="M0 100 Q200 40 400 100 T800 100" fill="none" stroke="#F07A3A" stroke-width="3" stroke-dasharray="10 8"/>
+            </svg>
+          </div>
+          <div class="absolute inset-0 flex items-center justify-center gap-8 md:gap-16 text-cream/90 text-sm md:text-base font-medium px-6">
+            <div class="text-center">
+              <div class="text-2xl md:text-3xl font-extrabold text-orange">01</div>
+              <div class="mt-1">You describe</div>
+            </div>
+            <div class="text-center">
+              <div class="text-2xl md:text-3xl font-extrabold text-orange">02</div>
+              <div class="mt-1">We source</div>
+            </div>
+            <div class="text-center">
+              <div class="text-2xl md:text-3xl font-extrabold text-orange">03</div>
+              <div class="mt-1">You approve</div>
+            </div>
+            <div class="text-center hidden sm:block">
+              <div class="text-2xl md:text-3xl font-extrabold text-orange">04</div>
+              <div class="mt-1">We deliver</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    init();
-  </script>
+  <!-- How it works cards -->
+  <section class="bg-forest text-cream py-16 md:py-24">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-5xl font-extrabold tracking-tight">HOW IT WORKS</h2>
+        <p class="mt-4 text-cream/70 max-w-xl mx-auto">
+          From a simple request to delivery in Ghana — we handle the China side so you don’t have to.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-5">
+        <div class="bg-softpink rounded-4xl p-6 md:p-8 text-forest">
+          <div class="text-4xl font-extrabold text-forest/30 mb-3">01</div>
+          <h3 class="text-xl font-extrabold mb-2">You describe it</h3>
+          <p class="text-forest/80 text-sm leading-relaxed mb-5">
+            Image, link or plain description. Quantity, budget and any preferences — that’s all we need to start.
+          </p>
+          <a href="request.html" class="inline-flex items-center px-4 py-2 rounded-full border-2 border-forest text-sm font-bold hover:bg-forest hover:text-cream transition">
+            Start a request
+          </a>
+        </div>
+
+        <div class="bg-softyellow rounded-4xl p-6 md:p-8 text-forest">
+          <div class="text-4xl font-extrabold text-forest/30 mb-3">02</div>
+          <h3 class="text-xl font-extrabold mb-2">We source & quote</h3>
+          <p class="text-forest/80 text-sm leading-relaxed mb-5">
+            We search Chinese suppliers, calculate the landed cost in Ghana Cedis, and send you clear options.
+          </p>
+          <a href="how-it-works.html" class="inline-flex items-center px-4 py-2 rounded-full border-2 border-forest text-sm font-bold hover:bg-forest hover:text-cream transition">
+            Learn more
+          </a>
+        </div>
+
+        <div class="bg-softgreen rounded-4xl p-6 md:p-8 text-forest">
+          <div class="text-4xl font-extrabold text-forest/30 mb-3">03</div>
+          <h3 class="text-xl font-extrabold mb-2">We handle the rest</h3>
+          <p class="text-forest/80 text-sm leading-relaxed mb-5">
+            Once you approve and pay, we purchase, consolidate, ship and update you until it reaches Ghana.
+          </p>
+          <a href="track.html" class="inline-flex items-center px-4 py-2 rounded-full border-2 border-forest text-sm font-bold hover:bg-forest hover:text-cream transition">
+            Track a request
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Positioning -->
+  <section class="py-16 md:py-20">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 text-center">
+      <div class="inline-flex items-center gap-1.5 text-orange mb-3">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.5 6.5L20 10l-6.5 1.5L12 18l-1.5-6.5L4 10l6.5-1.5L12 2z"/></svg>
+      </div>
+      <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight text-forest mb-4">
+        Not a store. A <span class="underline-accent">sourcing partner</span>.
+      </h2>
+      <p class="text-forest/70 max-w-2xl mx-auto leading-relaxed">
+        We don’t list products for you to browse. You tell us what you need — we find it in China, price it clearly in GHS, and manage procurement through to delivery in Ghana.
+      </p>
+    </div>
+  </section>
+
+  <!-- CTA band -->
+  <section class="pb-16 md:pb-24">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6">
+      <div class="bg-forest rounded-5xl px-8 py-12 md:px-14 md:py-16 text-center text-cream relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-40 h-40 opacity-10">
+          <svg viewBox="0 0 100 100" fill="currentColor" class="text-orange"><circle cx="80" cy="20" r="40"/></svg>
+        </div>
+        <h2 class="text-2xl md:text-4xl font-extrabold tracking-tight mb-3 relative">
+          Ready to source something?
+        </h2>
+        <p class="text-cream/70 mb-8 max-w-md mx-auto relative">
+          From single pieces to bulk orders — tell us what you need and we’ll take it from there.
+        </p>
+        <a href="request.html" class="inline-flex items-center justify-center bg-orange text-white px-8 py-3.5 rounded-full font-bold hover:bg-orangsoft transition relative">
+          Request an item
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="border-t border-forest/10 bg-cream">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-10 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-forest/60">
+      <div class="font-semibold text-forest">China Source <span class="text-orange">GH</span></div>
+      <div class="flex gap-6">
+        <a href="how-it-works.html" class="hover:text-forest">How it works</a>
+        <a href="track.html" class="hover:text-forest">Track</a>
+        <a href="admin/login.html" class="hover:text-forest">Admin</a>
+      </div>
+      <div>© 2026</div>
+    </div>
+  </footer>
+
 </body>
 </html>

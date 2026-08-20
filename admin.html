@@ -10,26 +10,19 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --black: #0a0a0a;
-      --gray: #6b6b6b;
-      --light: #f5f5f5;
-      --white: #ffffff;
-      --border: #e8e8e8;
+      --black: #0a0a0a; --gray: #6b6b6b; --light: #f5f5f5;
+      --white: #ffffff; --border: #e8e8e8;
     }
     body {
       font-family: 'Montserrat', system-ui, sans-serif;
-      background: var(--white);
-      color: var(--black);
-      -webkit-font-smoothing: antialiased;
-      min-height: 100vh;
+      background: var(--white); color: var(--black);
+      -webkit-font-smoothing: antialiased; min-height: 100vh;
     }
     a { text-decoration: none; color: inherit; }
     button { font-family: inherit; cursor: pointer; border: none; background: none; }
 
-    /* ---- LOGIN ---- */
     #loginView {
-      min-height: 100vh; display: flex; align-items: center; justify-content: center;
-      padding: 1.5rem;
+      min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1.5rem;
     }
     .login-box { width: 100%; max-width: 360px; text-align: center; }
     .login-logo {
@@ -37,17 +30,11 @@
       display: inline-flex; align-items: center; justify-content: center;
       font-weight: 900; font-size: 0.8rem; border-radius: 10px; margin-bottom: 1.25rem;
     }
-    .login-title {
-      font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 0.25rem;
-    }
+    .login-title { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 0.25rem; }
     .login-title em { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 600; }
     .login-sub { font-size: 0.8rem; color: var(--gray); margin-bottom: 2rem; }
-    .login-card {
-      border: 1px solid var(--border); border-radius: 20px; padding: 1.75rem; text-align: left;
-    }
-    .login-card label {
-      display: block; font-size: 0.75rem; font-weight: 600; margin-bottom: 0.4rem;
-    }
+    .login-card { border: 1px solid var(--border); border-radius: 20px; padding: 1.75rem; text-align: left; }
+    .login-card label { display: block; font-size: 0.75rem; font-weight: 600; margin-bottom: 0.4rem; }
     .login-card input {
       width: 100%; padding: 0.85rem 1.1rem; border: 1.5px solid var(--border);
       border-radius: 999px; background: var(--light); font-family: inherit; font-size: 0.9rem;
@@ -65,16 +52,12 @@
     .login-hint code { background: var(--light); padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.7rem; }
     #loginError { color: #c00; font-size: 0.8rem; text-align: center; margin-top: 0.75rem; display: none; }
 
-    /* ---- APP ---- */
     #appView { display: none; padding-bottom: 5rem; }
-
     .nav {
       position: sticky; top: 0; z-index: 50;
       display: flex; align-items: center; justify-content: space-between;
-      padding: 1rem 1.5rem;
-      background: rgba(255,255,255,0.92);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
+      padding: 1rem 1.5rem; background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px); border-bottom: 1px solid var(--border);
     }
     .nav-left { display: flex; align-items: center; gap: 0.6rem; }
     .logo {
@@ -90,7 +73,6 @@
     .nav-logout:hover { color: var(--black); }
 
     main { max-width: 720px; margin: 0 auto; padding: 2rem 1.25rem; }
-
     .page-label {
       font-size: 0.6rem; font-weight: 600; letter-spacing: 0.15em;
       text-transform: uppercase; color: var(--gray); margin-bottom: 0.4rem;
@@ -99,10 +81,8 @@
       font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 800;
       letter-spacing: -0.03em; margin-bottom: 0.35rem;
     }
-    .page-title em { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 600; }
     .page-sub { font-size: 0.85rem; color: var(--gray); margin-bottom: 1.75rem; }
 
-    /* Dashboard cards */
     .ops-label {
       font-size: 0.6rem; font-weight: 700; letter-spacing: 0.12em;
       text-transform: uppercase; color: var(--gray); margin-bottom: 0.75rem;
@@ -130,7 +110,6 @@
     .btn-pill.filled:hover { background: #333; }
     .btn-pill:not(.filled):hover { background: var(--black); color: var(--white); }
 
-    /* Filters */
     .filters { display: flex; gap: 0.4rem; overflow-x: auto; padding-bottom: 0.75rem; margin-bottom: 1rem; }
     .filter-btn {
       flex-shrink: 0; padding: 0.4rem 0.9rem; border-radius: 999px;
@@ -140,7 +119,6 @@
     .filter-btn.active { background: var(--black); color: var(--white); border-color: var(--black); }
     .filter-btn:not(.active):hover { border-color: var(--black); color: var(--black); }
 
-    /* List cards */
     .list-card {
       width: 100%; text-align: left;
       border: 1px solid var(--border); border-radius: 16px; padding: 1.15rem;
@@ -156,15 +134,9 @@
     .badge.dark { background: var(--black); color: var(--white); }
     .list-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 0.2rem; }
     .list-meta { font-size: 0.8rem; color: var(--gray); }
-    .list-foot {
-      display: flex; gap: 0.85rem; margin-top: 0.55rem;
-      font-size: 0.7rem; color: var(--gray); font-weight: 500;
-    }
-    .empty {
-      text-align: center; padding: 3.5rem 1rem; color: var(--gray); font-size: 0.9rem; line-height: 1.6;
-    }
+    .list-foot { display: flex; gap: 0.85rem; margin-top: 0.55rem; font-size: 0.7rem; color: var(--gray); font-weight: 500; }
+    .empty { text-align: center; padding: 3.5rem 1rem; color: var(--gray); font-size: 0.9rem; line-height: 1.6; }
 
-    /* Detail */
     .detail-card {
       border: 1px solid var(--border); border-radius: 16px; padding: 1.35rem; margin-bottom: 0.85rem;
     }
@@ -189,7 +161,52 @@
     }
     .back-link:hover { color: var(--black); }
 
-    /* Bottom nav */
+    /* Quote calculator */
+    .calc-field { margin-bottom: 0.85rem; }
+    .calc-field label {
+      display: block; font-size: 0.7rem; font-weight: 600; margin-bottom: 0.3rem;
+    }
+    .calc-field input, .calc-field select {
+      width: 100%; padding: 0.7rem 1rem; border: 1.5px solid var(--border);
+      border-radius: 999px; background: var(--light); font-family: inherit; font-size: 0.85rem;
+      outline: none; transition: border-color 0.2s;
+    }
+    .calc-field input:focus, .calc-field select:focus {
+      border-color: var(--black); background: var(--white);
+    }
+    .calc-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; }
+    .calc-tabs {
+      display: flex; gap: 0.35rem; margin-bottom: 1.15rem;
+    }
+    .calc-tab {
+      flex: 1; padding: 0.55rem; border-radius: 999px; font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.04em; border: 1.5px solid var(--border); color: var(--gray);
+      transition: all 0.2s; text-align: center;
+    }
+    .calc-tab.active { background: var(--black); color: var(--white); border-color: var(--black); }
+    .result-box {
+      background: var(--light); border-radius: 14px; padding: 1.15rem; margin-top: 0.5rem;
+    }
+    .result-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.4rem 0; font-size: 0.85rem; border-bottom: 1px solid var(--border);
+    }
+    .result-row:last-child { border-bottom: none; padding-top: 0.65rem; }
+    .result-row .lbl { color: var(--gray); font-weight: 500; }
+    .result-row .val { font-weight: 700; }
+    .result-row.total .val { font-size: 1.15rem; }
+    .result-row.highlight {
+      background: var(--black); color: var(--white); margin: 0.5rem -1.15rem -1.15rem;
+      padding: 0.9rem 1.15rem; border-radius: 0 0 14px 14px; border: none;
+    }
+    .result-row.highlight .lbl { color: rgba(255,255,255,0.7); }
+    .budget-warn {
+      font-size: 0.75rem; font-weight: 600; margin-top: 0.65rem; padding: 0.5rem 0.75rem;
+      border-radius: 10px; display: none;
+    }
+    .budget-warn.ok { display: block; background: #e8f5e9; color: #2e7d32; }
+    .budget-warn.over { display: block; background: #fce4ec; color: #c62828; }
+
     .bottom-nav {
       position: fixed; bottom: 0; left: 0; right: 0;
       background: rgba(255,255,255,0.95); backdrop-filter: blur(12px);
@@ -203,14 +220,12 @@
     }
     .bn-btn.active { color: var(--black); }
     .bn-btn svg { width: 20px; height: 20px; }
-
     .section { display: none; }
     .section.active { display: block; }
   </style>
 </head>
 <body>
 
-  <!-- LOGIN -->
   <div id="loginView">
     <div class="login-box">
       <div class="login-logo">CS</div>
@@ -226,7 +241,6 @@
     </div>
   </div>
 
-  <!-- APP -->
   <div id="appView">
     <nav class="nav">
       <div class="nav-left">
@@ -237,22 +251,18 @@
     </nav>
 
     <main>
-      <!-- DASHBOARD -->
       <section id="sec-dashboard" class="section">
         <p class="page-label">Overview</p>
         <h1 class="page-title" id="greet">Good day</h1>
         <p class="page-sub" id="dateEl"></p>
-
         <p class="ops-label">Operations</p>
         <div class="dash-grid" id="dashCards"></div>
-
         <div class="dash-actions">
           <button class="btn-pill filled" onclick="show('requests')">SOURCING REQUESTS</button>
           <button class="btn-pill" onclick="show('orders')">ORDERS</button>
         </div>
       </section>
 
-      <!-- REQUESTS -->
       <section id="sec-requests" class="section">
         <button class="back-link" onclick="show('dashboard')">← Dashboard</button>
         <h1 class="page-title">Requests</h1>
@@ -267,14 +277,12 @@
         <div id="reqList"></div>
       </section>
 
-      <!-- DETAIL -->
       <section id="sec-detail" class="section">
         <button class="back-link" onclick="show('requests')">← Requests</button>
         <h1 class="page-title" style="font-family:monospace;font-size:1.3rem" id="detailId"></h1>
         <div id="detailBody"></div>
       </section>
 
-      <!-- ORDERS -->
       <section id="sec-orders" class="section">
         <button class="back-link" onclick="show('dashboard')">← Dashboard</button>
         <h1 class="page-title">Orders</h1>
@@ -283,7 +291,6 @@
       </section>
     </main>
 
-    <!-- Bottom nav -->
     <nav class="bottom-nav">
       <button class="bn-btn active" data-s="dashboard" onclick="show('dashboard')">
         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h3m8-10v10h3m-6 0v-4h2v4"/></svg>
@@ -302,6 +309,14 @@
 
   <script>
     const ADMIN_PASS = 'admin123';
+
+    // Default rates (editable in calculator; stored per session)
+    const DEFAULTS = {
+      rmb_to_ghs: 2.15,   // 1 RMB ≈ 2.15 GHS (adjust as needed)
+      usd_to_ghs: 15.5,   // 1 USD ≈ 15.5 GHS
+      commission_pct: 10, // 10%
+      airfreight_ghs: 0   // per order default; set per quote
+    };
 
     function isLoggedIn() { return sessionStorage.getItem('cs_admin') === '1'; }
     function logout() { sessionStorage.removeItem('cs_admin'); location.reload(); }
@@ -324,7 +339,7 @@
       document.getElementById('loginView').style.display = 'none';
       document.getElementById('appView').style.display = 'block';
       const h = new Date().getHours();
-      document.getElementById('greet').innerHTML = (h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening');
+      document.getElementById('greet').textContent = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
       document.getElementById('dateEl').textContent = new Date().toLocaleDateString('en-GB', {
         weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
       });
@@ -403,9 +418,21 @@
       catch(e) { return ''; }
     }
 
+    function fmt(n) {
+      if (n === null || n === undefined || isNaN(n)) return '—';
+      return Number(n).toLocaleString('en-GH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    // ========== QUOTE CALCULATOR ==========
+    // Forward: cost in China → landed GHS
+    // Reverse: customer budget GHS → max spend in China (after cuts)
+
     function openDetail(id) {
       const r = getRequests().find(x => x.id === id);
       if (!r) return;
+      const budget = parseFloat(r.budget || r.budget_ghs) || 0;
+      const qty = parseInt(r.quantity) || 1;
+
       document.getElementById('detailId').textContent = r.id;
       document.getElementById('detailBody').innerHTML = `
         <div class="detail-card">
@@ -419,14 +446,134 @@
           <p class="detail-name">${r.item || r.item_summary || '—'}</p>
           <p class="detail-sub" style="white-space:pre-line;margin-top:0.5rem">${r.description || ''}</p>
           <div class="detail-grid">
-            <div><span>Qty</span> ${r.quantity || 1}</div>
-            <div><span>Budget</span> ${r.budget || r.budget_ghs ? 'GH₵' + (r.budget || r.budget_ghs) : '—'}</div>
+            <div><span>Qty</span> ${qty}</div>
+            <div><span>Budget</span> ${budget ? 'GH₵' + budget : '—'}</div>
             <div><span>Quality</span> ${r.quality || '—'}</div>
             <div><span>Colour</span> ${r.colour || '—'}</div>
           </div>
           ${r.notes ? '<p class="detail-sub" style="margin-top:0.75rem;font-style:italic">"' + r.notes + '"</p>' : ''}
           ${r.url ? '<a href="' + r.url + '" target="_blank" class="detail-sub" style="display:inline-block;margin-top:0.5rem;text-decoration:underline">Product link →</a>' : ''}
         </div>
+
+        <!-- QUOTE CALCULATOR -->
+        <div class="detail-card">
+          <p class="detail-label">Quote calculator</p>
+          <div class="calc-tabs">
+            <button type="button" class="calc-tab active" id="tabFwd" onclick="switchCalc('fwd')">FORWARD · Landed cost</button>
+            <button type="button" class="calc-tab" id="tabRev" onclick="switchCalc('rev')">REVERSE · Source budget</button>
+          </div>
+
+          <!-- FORWARD -->
+          <div id="calcFwd">
+            <div class="calc-row">
+              <div class="calc-field">
+                <label>Item cost (China)</label>
+                <input type="number" id="cCost" step="0.01" min="0" placeholder="0.00" oninput="runCalc()" />
+              </div>
+              <div class="calc-field">
+                <label>Currency</label>
+                <select id="cCurrency" onchange="runCalc()">
+                  <option value="RMB">RMB / CNY</option>
+                  <option value="USD">USD</option>
+                </select>
+              </div>
+            </div>
+            <div class="calc-row">
+              <div class="calc-field">
+                <label>RMB → GHS rate</label>
+                <input type="number" id="cRateRmb" step="0.01" value="${DEFAULTS.rmb_to_ghs}" oninput="runCalc()" />
+              </div>
+              <div class="calc-field">
+                <label>USD → GHS rate</label>
+                <input type="number" id="cRateUsd" step="0.01" value="${DEFAULTS.usd_to_ghs}" oninput="runCalc()" />
+              </div>
+            </div>
+            <div class="calc-row">
+              <div class="calc-field">
+                <label>Commission %</label>
+                <input type="number" id="cComm" step="0.1" min="0" value="${DEFAULTS.commission_pct}" oninput="runCalc()" />
+              </div>
+              <div class="calc-field">
+                <label>Airfreight (GHS total)</label>
+                <input type="number" id="cShip" step="0.01" min="0" value="0" oninput="runCalc()" />
+              </div>
+            </div>
+            <div class="calc-field">
+              <label>Quantity (for unit price)</label>
+              <input type="number" id="cQty" min="1" value="${qty}" oninput="runCalc()" />
+            </div>
+            <div class="result-box" id="fwdResult">
+              <div class="result-row"><span class="lbl">Product (GHS)</span><span class="val" id="rProduct">—</span></div>
+              <div class="result-row"><span class="lbl">Commission</span><span class="val" id="rComm">—</span></div>
+              <div class="result-row"><span class="lbl">Airfreight</span><span class="val" id="rShip">—</span></div>
+              <div class="result-row total highlight">
+                <span class="lbl">Landed total (GHS)</span>
+                <span class="val" id="rLanded">—</span>
+              </div>
+            </div>
+            <div class="result-row" style="margin-top:0.5rem;font-size:0.8rem;color:var(--gray)">
+              <span>Unit landed</span> <span id="rUnit" style="font-weight:600">—</span>
+            </div>
+            <div class="budget-warn" id="budgetWarn"></div>
+          </div>
+
+          <!-- REVERSE -->
+          <div id="calcRev" style="display:none">
+            <p style="font-size:0.8rem;color:var(--gray);margin-bottom:1rem;line-height:1.5">
+              Start from the customer’s budget. We subtract commission &amp; airfreight, then convert back so you know the max you can spend in China.
+            </p>
+            <div class="calc-field">
+              <label>Customer budget (GHS)</label>
+              <input type="number" id="rBudget" step="0.01" min="0" value="${budget || ''}" placeholder="0.00" oninput="runCalc()" />
+            </div>
+            <div class="calc-row">
+              <div class="calc-field">
+                <label>Commission %</label>
+                <input type="number" id="rCommPct" step="0.1" min="0" value="${DEFAULTS.commission_pct}" oninput="runCalc()" />
+              </div>
+              <div class="calc-field">
+                <label>Airfreight (GHS total)</label>
+                <input type="number" id="rShip" step="0.01" min="0" value="0" oninput="runCalc()" />
+              </div>
+            </div>
+            <div class="calc-row">
+              <div class="calc-field">
+                <label>RMB → GHS rate</label>
+                <input type="number" id="rRateRmb" step="0.01" value="${DEFAULTS.rmb_to_ghs}" oninput="runCalc()" />
+              </div>
+              <div class="calc-field">
+                <label>Target currency</label>
+                <select id="rCurrency" onchange="runCalc()">
+                  <option value="RMB">RMB / CNY</option>
+                  <option value="USD">USD</option>
+                </select>
+              </div>
+            </div>
+            <div class="calc-field" id="rUsdRateWrap" style="display:none">
+              <label>USD → GHS rate</label>
+              <input type="number" id="rRateUsd" step="0.01" value="${DEFAULTS.usd_to_ghs}" oninput="runCalc()" />
+            </div>
+            <div class="result-box">
+              <div class="result-row"><span class="lbl">Budget (GHS)</span><span class="val" id="rvBudget">—</span></div>
+              <div class="result-row"><span class="lbl">− Airfreight</span><span class="val" id="rvShip">—</span></div>
+              <div class="result-row"><span class="lbl">− Commission (embedded)</span><span class="val" id="rvComm">—</span></div>
+              <div class="result-row total highlight">
+                <span class="lbl">Max product spend (GHS)</span>
+                <span class="val" id="rvProductGhs">—</span>
+              </div>
+            </div>
+            <div class="result-box" style="margin-top:0.65rem">
+              <div class="result-row total highlight">
+                <span class="lbl" id="rvChinaLabel">Max spend in China (RMB)</span>
+                <span class="val" id="rvChina">—</span>
+              </div>
+            </div>
+            <p style="font-size:0.75rem;color:var(--gray);margin-top:0.75rem;line-height:1.5">
+              Use this figure when negotiating with suppliers so the final landed price stays within the customer’s budget.
+            </p>
+          </div>
+        </div>
+
         <div class="detail-card">
           <p class="detail-label">Update status</p>
           <div class="status-btns">
@@ -441,6 +588,89 @@
         </div>
       `;
       show('detail');
+      runCalc();
+    }
+
+    function switchCalc(mode) {
+      document.getElementById('calcFwd').style.display = mode === 'fwd' ? 'block' : 'none';
+      document.getElementById('calcRev').style.display = mode === 'rev' ? 'block' : 'none';
+      document.getElementById('tabFwd').classList.toggle('active', mode === 'fwd');
+      document.getElementById('tabRev').classList.toggle('active', mode === 'rev');
+      runCalc();
+    }
+
+    function runCalc() {
+      // ---- FORWARD ----
+      const cost = parseFloat(document.getElementById('cCost')?.value) || 0;
+      const currency = document.getElementById('cCurrency')?.value || 'RMB';
+      const rateRmb = parseFloat(document.getElementById('cRateRmb')?.value) || DEFAULTS.rmb_to_ghs;
+      const rateUsd = parseFloat(document.getElementById('cRateUsd')?.value) || DEFAULTS.usd_to_ghs;
+      const commPct = parseFloat(document.getElementById('cComm')?.value) || 0;
+      const ship = parseFloat(document.getElementById('cShip')?.value) || 0;
+      const qty = parseInt(document.getElementById('cQty')?.value) || 1;
+
+      if (document.getElementById('cCost')) {
+        const rate = currency === 'USD' ? rateUsd : rateRmb;
+        const productGhs = cost * rate;
+        const commission = productGhs * (commPct / 100);
+        const landed = productGhs + commission + ship;
+        const unit = qty > 0 ? landed / qty : landed;
+
+        document.getElementById('rProduct').textContent = 'GH₵ ' + fmt(productGhs);
+        document.getElementById('rComm').textContent = 'GH₵ ' + fmt(commission) + ' (' + commPct + '%)';
+        document.getElementById('rShip').textContent = 'GH₵ ' + fmt(ship);
+        document.getElementById('rLanded').textContent = 'GH₵ ' + fmt(landed);
+        document.getElementById('rUnit').textContent = 'GH₵ ' + fmt(unit);
+
+        // Budget check
+        const budgetEl = document.getElementById('rBudget') || document.querySelector('[id="rBudget"]');
+        // Get budget from the reverse field if present, else from request context
+        const budgetInput = document.getElementById('rBudget');
+        const customerBudget = budgetInput ? parseFloat(budgetInput.value) || 0 : 0;
+        // Also try to read from the request's budget displayed in detail - use reverse budget field when switching
+        const warn = document.getElementById('budgetWarn');
+        if (warn && customerBudget > 0 && cost > 0) {
+          if (landed <= customerBudget) {
+            warn.className = 'budget-warn ok';
+            warn.textContent = 'Within budget · GH₵ ' + fmt(customerBudget - landed) + ' headroom';
+          } else {
+            warn.className = 'budget-warn over';
+            warn.textContent = 'Over budget by GH₵ ' + fmt(landed - customerBudget);
+          }
+        } else if (warn) {
+          warn.className = 'budget-warn';
+          warn.textContent = '';
+        }
+      }
+
+      // ---- REVERSE ----
+      if (document.getElementById('rBudget')) {
+        const budget = parseFloat(document.getElementById('rBudget').value) || 0;
+        const rCommPct = parseFloat(document.getElementById('rCommPct').value) || 0;
+        const rShip = parseFloat(document.getElementById('rShip').value) || 0;
+        const rRateRmb = parseFloat(document.getElementById('rRateRmb').value) || DEFAULTS.rmb_to_ghs;
+        const rRateUsd = parseFloat(document.getElementById('rRateUsd')?.value) || DEFAULTS.usd_to_ghs;
+        const rCur = document.getElementById('rCurrency').value;
+
+        document.getElementById('rUsdRateWrap').style.display = rCur === 'USD' ? 'block' : 'none';
+
+        // After shipping, remaining must cover product + commission on product
+        // product + product*(comm/100) = remaining
+        // product * (1 + comm/100) = remaining
+        // product = remaining / (1 + comm/100)
+        const afterShip = Math.max(0, budget - rShip);
+        const productGhs = rCommPct > 0 ? afterShip / (1 + rCommPct / 100) : afterShip;
+        const commissionAmt = afterShip - productGhs;
+        const rate = rCur === 'USD' ? rRateUsd : rRateRmb;
+        const maxChina = rate > 0 ? productGhs / rate : 0;
+
+        document.getElementById('rvBudget').textContent = 'GH₵ ' + fmt(budget);
+        document.getElementById('rvShip').textContent = 'GH₵ ' + fmt(rShip);
+        document.getElementById('rvComm').textContent = 'GH₵ ' + fmt(commissionAmt) + ' (' + rCommPct + '%)';
+        document.getElementById('rvProductGhs').textContent = 'GH₵ ' + fmt(productGhs);
+        document.getElementById('rvChinaLabel').textContent = 'Max spend in China (' + rCur + ')';
+        document.getElementById('rvChina').textContent = (rCur === 'USD' ? '$' : '¥') + ' ' + fmt(maxChina);
+      }
     }
 
     function setStatus(id, status) {
@@ -454,18 +684,25 @@
       if (!r) return;
       const orders = getOrders();
       const orderId = 'ORD-' + new Date().getFullYear() + '-' + String(Date.now()).slice(-5);
+      // Prefer calculated landed if available
+      let amount = parseFloat(r.budget || r.budget_ghs) || 0;
+      const landedEl = document.getElementById('rLanded');
+      if (landedEl) {
+        const n = parseFloat(String(landedEl.textContent).replace(/[^0-9.]/g, ''));
+        if (n > 0) amount = n;
+      }
       orders.unshift({
         id: orderId, request_id: reqId,
         customer: r.name, whatsapp: r.whatsapp,
         item: r.item || r.item_summary,
         quantity: r.quantity || 1,
-        amount: r.budget || r.budget_ghs || 0,
+        amount: amount,
         payment_status: 'AWAITING',
         created: new Date().toISOString()
       });
       saveOrders(orders);
       setStatus(reqId, 'ACCEPTED');
-      alert('Order ' + orderId + ' created');
+      alert('Order ' + orderId + ' created · GH₵ ' + amount);
       show('orders');
     }
 

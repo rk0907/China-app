@@ -4,125 +4,389 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>China Source GH — Tell us what you need</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            cream: '#FBF6EE', forest: '#1A3A2A', orange: '#F07A3A',
-            softpink: '#F7C9D4', softyellow: '#F5E6A3', softgreen: '#D4E8D8'
-          },
-          fontFamily: { sans: ['DM Sans', 'system-ui', 'sans-serif'] }
-        }
-      }
-    }
-  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'DM Sans', system-ui, sans-serif; }
-    .underline-accent {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12' fill='none'%3E%3Cpath d='M2 8C40 2 80 10 120 6C150 3 180 9 198 5' stroke='%23F07A3A' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E");
-      background-repeat: no-repeat; background-position: bottom left; background-size: 100% 12px; padding-bottom: 6px;
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --black: #0a0a0a;
+      --gray: #6b6b6b;
+      --light: #f5f5f5;
+      --white: #ffffff;
+      --border: #e8e8e8;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Montserrat', system-ui, sans-serif;
+      background: var(--white);
+      color: var(--black);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { text-decoration: none; color: inherit; }
+
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.25rem 2rem;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.3s;
+    }
+    .nav.scrolled { border-bottom-color: var(--border); }
+    .nav-left { display: flex; align-items: center; gap: 0.75rem; }
+    .logo {
+      width: 36px; height: 36px; background: var(--black); color: var(--white);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 0.7rem; letter-spacing: -0.02em; border-radius: 8px;
+    }
+    .nav-loc { font-size: 0.7rem; font-weight: 500; color: var(--gray); letter-spacing: 0.04em; }
+    .nav-center { display: flex; gap: 0.5rem; }
+    .nav-tab {
+      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.08em;
+      padding: 0.4rem 1rem; border-radius: 999px; transition: all 0.2s;
+    }
+    .nav-tab.active { background: var(--black); color: var(--white); }
+    .nav-tab:not(.active):hover { background: var(--light); }
+    .nav-right { display: flex; align-items: center; gap: 1rem; font-size: 0.75rem; font-weight: 500; }
+    .nav-right a { color: var(--gray); transition: color 0.2s; }
+    .nav-right a:hover { color: var(--black); }
+
+    .hero {
+      min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 6rem 1.5rem 5rem; position: relative; text-align: center;
+    }
+    .hero-label {
+      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.15em;
+      color: var(--gray); text-transform: uppercase; margin-bottom: 1.5rem;
+      opacity: 0; animation: fadeUp 0.8s 0.2s forwards;
+    }
+    .hero-title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: clamp(2.8rem, 9vw, 7rem);
+      font-weight: 900; letter-spacing: -0.04em; line-height: 0.95;
+      opacity: 0; animation: fadeUp 0.9s 0.35s forwards;
+    }
+    .hero-title em {
+      font-family: 'Playfair Display', serif;
+      font-style: italic; font-weight: 600;
+    }
+    .hero-sub {
+      margin-top: 1.75rem; max-width: 32rem;
+      font-size: 1rem; font-weight: 400; color: var(--gray); line-height: 1.7;
+      opacity: 0; animation: fadeUp 0.8s 0.55s forwards;
+    }
+    .hero-meta {
+      display: flex; gap: 2.5rem; margin-top: 2.5rem;
+      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+      opacity: 0; animation: fadeUp 0.8s 0.7s forwards;
+    }
+    .hero-meta span { color: var(--gray); }
+    .hero-cta { margin-top: 3rem; opacity: 0; animation: fadeUp 0.8s 0.85s forwards; }
+    .btn-pill {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.85rem 1.75rem; border-radius: 999px;
+      font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em;
+      border: 1.5px solid var(--black); background: transparent;
+      transition: all 0.25s; cursor: pointer;
+    }
+    .btn-pill:hover { background: var(--black); color: var(--white); }
+    .btn-pill.filled { background: var(--black); color: var(--white); }
+    .btn-pill.filled:hover { background: #333; }
+    .btn-explore {
+      position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
+      width: 56px; height: 56px; border-radius: 50%; background: var(--black); color: var(--white);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      font-size: 0.55rem; font-weight: 700; letter-spacing: 0.08em;
+      opacity: 0; animation: fadeUp 0.8s 1s forwards, bounce 2s 2s infinite;
+    }
+    .btn-explore svg { width: 14px; height: 14px; margin-top: 2px; }
+
+    .float-wrap {
+      position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: -1;
+    }
+    .float-card {
+      position: absolute; background: var(--white); border: 1px solid var(--border);
+      border-radius: 20px; padding: 1rem; box-shadow: 0 20px 60px rgba(0,0,0,0.06);
+      opacity: 0; animation: floatIn 1s forwards;
+    }
+    .float-card:nth-child(1) { top: 18%; left: 4%; width: 160px; animation-delay: 0.9s; }
+    .float-card:nth-child(2) { top: 22%; right: 5%; width: 150px; animation-delay: 1.1s; }
+    .float-card:nth-child(3) { bottom: 22%; left: 8%; width: 140px; animation-delay: 1.3s; }
+    .float-card:nth-child(4) { bottom: 18%; right: 6%; width: 155px; animation-delay: 1.5s; }
+    .fc-label { font-size: 0.6rem; font-weight: 600; color: var(--gray); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.35rem; }
+    .fc-value { font-size: 0.85rem; font-weight: 700; }
+    .fc-bar { height: 4px; background: var(--light); border-radius: 2px; margin-top: 0.5rem; overflow: hidden; }
+    .fc-bar span { display: block; height: 100%; background: var(--black); border-radius: 2px; }
+
+    .section { padding: 6rem 2rem; max-width: 1100px; margin: 0 auto; }
+    .section-label {
+      font-size: 0.65rem; font-weight: 600; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--gray); margin-bottom: 1rem;
+    }
+    .section-title {
+      font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800;
+      letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 1.25rem;
+    }
+    .section-title em {
+      font-family: 'Playfair Display', serif; font-style: italic; font-weight: 600;
+    }
+
+    .case {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center;
+      padding: 4rem 0; border-top: 1px solid var(--border);
+      opacity: 0; transform: translateY(40px);
+      transition: opacity 0.7s, transform 0.7s;
+    }
+    .case.visible { opacity: 1; transform: translateY(0); }
+    .case:nth-child(even) .case-visual { order: 2; }
+    .case-num { font-size: 0.65rem; font-weight: 600; letter-spacing: 0.12em; color: var(--gray); margin-bottom: 1rem; }
+    .case-title {
+      font-family: 'Playfair Display', serif; font-size: clamp(1.8rem, 4vw, 2.75rem);
+      font-weight: 600; font-style: italic; line-height: 1.15; margin-bottom: 1rem;
+    }
+    .case-desc { font-size: 0.95rem; color: var(--gray); line-height: 1.7; margin-bottom: 1.5rem; max-width: 28rem; }
+    .case-tags { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    .tag {
+      font-size: 0.65rem; font-weight: 600; letter-spacing: 0.06em;
+      padding: 0.3rem 0.75rem; border-radius: 999px; background: var(--light); color: var(--gray);
+    }
+    .case-visual {
+      background: var(--light); border-radius: 24px; aspect-ratio: 4/3;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+    }
+    .case-visual-inner {
+      width: 70%; background: var(--white); border-radius: 16px;
+      border: 1px solid var(--border); padding: 1.5rem;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.06);
+    }
+    .mock-row { display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0; border-bottom: 1px solid var(--border); font-size: 0.8rem; }
+    .mock-row:last-child { border-bottom: none; }
+    .mock-badge { font-size: 0.6rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 999px; background: var(--black); color: var(--white); }
+
+    .cta-band {
+      text-align: center; padding: 8rem 2rem;
+      border-top: 1px solid var(--border);
+    }
+    .cta-band h2 {
+      font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800;
+      letter-spacing: -0.03em; margin-bottom: 1rem;
+    }
+    .cta-band h2 em { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 600; }
+    .cta-band p { color: var(--gray); max-width: 28rem; margin: 0 auto 2rem; line-height: 1.7; }
+
+    footer {
+      border-top: 1px solid var(--border); padding: 2rem;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.75rem; color: var(--gray); flex-wrap: wrap; gap: 1rem;
+    }
+    footer a:hover { color: var(--black); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes floatIn {
+      from { opacity: 0; transform: translateY(20px) scale(0.95); }
+      to { opacity: 0.85; transform: translateY(0) scale(1); }
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(6px); }
+    }
+
+    @media (max-width: 768px) {
+      .nav { padding: 1rem 1.25rem; }
+      .nav-loc, .nav-right span { display: none; }
+      .float-card { display: none; }
+      .case { grid-template-columns: 1fr; gap: 1.5rem; }
+      .case:nth-child(even) .case-visual { order: 0; }
+      .hero { padding: 5rem 1.25rem 5rem; }
+      .hero-meta { flex-direction: column; gap: 0.75rem; }
     }
   </style>
 </head>
-<body class="bg-cream text-forest antialiased">
+<body>
 
-  <nav class="sticky top-0 z-50 bg-cream/95 backdrop-blur border-b border-forest/5">
-    <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-      <a href="index.html" class="font-extrabold text-xl tracking-tight">CHINA SOURCE <span class="text-orange text-sm">GH</span></a>
-      <div class="hidden md:flex items-center gap-6 text-sm font-medium text-forest/80">
-        <a href="#how" class="hover:text-forest">How it works</a>
-        <a href="request.html" class="px-5 py-2 rounded-full border-2 border-forest font-semibold hover:bg-forest hover:text-cream transition">Request an item</a>
-      </div>
-      <a href="request.html" class="md:hidden px-4 py-2 rounded-full bg-orange text-white text-sm font-semibold">Request</a>
+  <nav class="nav" id="nav">
+    <div class="nav-left">
+      <a href="index.html" class="logo">CS</a>
+      <span class="nav-loc">● ACCRA, GHANA</span>
+    </div>
+    <div class="nav-center">
+      <a href="index.html" class="nav-tab active">HOME</a>
+      <a href="#process" class="nav-tab">PROCESS</a>
+      <a href="request.html" class="nav-tab">REQUEST</a>
+    </div>
+    <div class="nav-right">
+      <span>China → Ghana</span>
+      <a href="admin.html">Admin</a>
     </div>
   </nav>
 
-  <!-- Hero -->
-  <section class="max-w-6xl mx-auto px-4 pt-14 pb-8 md:pt-20 text-center">
-    <div class="inline-flex items-center gap-1.5 text-orange mb-4">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.5 6.5L20 10l-6.5 1.5L12 18l-1.5-6.5L4 10l6.5-1.5L12 2z"/></svg>
-      <span class="text-sm font-semibold uppercase tracking-wide">China Sourcing · Ghana Delivery</span>
+  <section class="hero">
+    <div class="float-wrap">
+      <div class="float-card">
+        <div class="fc-label">Request</div>
+        <div class="fc-value">SR-2026-00124</div>
+        <div class="fc-bar"><span style="width:30%"></span></div>
+      </div>
+      <div class="float-card">
+        <div class="fc-label">Budget</div>
+        <div class="fc-value">GH₵ 6,000</div>
+        <div class="fc-bar"><span style="width:65%"></span></div>
+      </div>
+      <div class="float-card">
+        <div class="fc-label">Status</div>
+        <div class="fc-value">Sourcing</div>
+        <div class="fc-bar"><span style="width:45%"></span></div>
+      </div>
+      <div class="float-card">
+        <div class="fc-label">Landed cost</div>
+        <div class="fc-value">GH₵ 740</div>
+        <div class="fc-bar"><span style="width:80%"></span></div>
+      </div>
     </div>
-    <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.05] max-w-4xl mx-auto">
-      Tell us what you need.<br>
-      <span class="underline-accent">We'll find it in China.</span>
+
+    <p class="hero-label">China Sourcing · Ghana Delivery</p>
+    <h1 class="hero-title">
+      TELL US<br>WHAT YOU<br>NEED.<br>
+      <em>We'll find it.</em>
     </h1>
-    <p class="mt-6 text-base md:text-lg text-forest/70 max-w-2xl mx-auto leading-relaxed">
-      Send a product image, link or description, your budget and quantity — we source suitable options from Chinese suppliers and handle procurement all the way to Ghana.
+    <p class="hero-sub">
+      Send a product image, link or description. We search Chinese suppliers, quote the landed price in Ghana Cedis, and handle procurement through to delivery.
     </p>
-    <div class="mt-10 flex flex-col sm:flex-row gap-3 justify-center">
-      <a href="request.html" class="inline-flex justify-center bg-orange text-white px-8 py-3.5 rounded-full font-bold hover:opacity-90 transition min-w-[200px]">Request an item</a>
-      <a href="#how" class="inline-flex justify-center border-2 border-forest px-8 py-3.5 rounded-full font-bold hover:bg-forest hover:text-cream transition min-w-[200px]">How it works</a>
+    <div class="hero-meta">
+      <span>Sourcing Concierge</span>
+      <span>End-to-End / China → Ghana</span>
     </div>
+    <div class="hero-cta">
+      <a href="request.html" class="btn-pill filled">REQUEST AN ITEM →</a>
+    </div>
+    <a href="#process" class="btn-explore">
+      EXPLORE
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+    </a>
   </section>
 
-  <!-- Steps band -->
-  <div class="max-w-5xl mx-auto px-4 mt-10">
-    <div class="rounded-t-[2.5rem] bg-forest h-36 md:h-44 flex items-center justify-center gap-8 md:gap-16 text-cream text-sm font-medium">
-      <div class="text-center"><div class="text-2xl md:text-3xl font-extrabold text-orange">01</div><div class="mt-1">You describe</div></div>
-      <div class="text-center"><div class="text-2xl md:text-3xl font-extrabold text-orange">02</div><div class="mt-1">We source</div></div>
-      <div class="text-center"><div class="text-2xl md:text-3xl font-extrabold text-orange">03</div><div class="mt-1">You approve</div></div>
-      <div class="text-center hidden sm:block"><div class="text-2xl md:text-3xl font-extrabold text-orange">04</div><div class="mt-1">We deliver</div></div>
-    </div>
-  </div>
+  <section class="section" id="process">
+    <p class="section-label">How it works</p>
+    <h2 class="section-title">From request to<br><em>delivery in Ghana</em></h2>
 
-  <!-- How it works -->
-  <section id="how" class="bg-forest text-cream py-16 md:py-20">
-    <div class="max-w-6xl mx-auto px-4">
-      <div class="text-center mb-12">
-        <h2 class="text-3xl md:text-5xl font-extrabold tracking-tight">HOW IT WORKS</h2>
-        <p class="mt-4 text-cream/70 max-w-xl mx-auto">From a simple request to delivery in Ghana — we handle the China side so you don't have to.</p>
+    <div class="case" data-reveal>
+      <div>
+        <p class="case-num">STEP 01</p>
+        <h3 class="case-title">You describe it</h3>
+        <p class="case-desc">Image, product link, or plain description. Quantity, budget, colour, quality — whatever helps us find the right item. No account required.</p>
+        <div class="case-tags">
+          <span class="tag">#REQUEST</span>
+          <span class="tag">#IMAGE</span>
+          <span class="tag">#BUDGET</span>
+        </div>
+        <a href="request.html" class="btn-pill">START A REQUEST →</a>
       </div>
-      <div class="grid md:grid-cols-3 gap-5">
-        <div class="bg-softpink rounded-3xl p-6 md:p-8 text-forest">
-          <div class="text-4xl font-extrabold text-forest/25 mb-3">01</div>
-          <h3 class="text-xl font-extrabold mb-2">You describe it</h3>
-          <p class="text-forest/80 text-sm leading-relaxed mb-5">Image, link or plain description. Quantity, budget and any preferences — that's all we need.</p>
-          <a href="request.html" class="inline-flex px-4 py-2 rounded-full border-2 border-forest text-sm font-bold hover:bg-forest hover:text-cream transition">Start a request</a>
-        </div>
-        <div class="bg-softyellow rounded-3xl p-6 md:p-8 text-forest">
-          <div class="text-4xl font-extrabold text-forest/25 mb-3">02</div>
-          <h3 class="text-xl font-extrabold mb-2">We source & quote</h3>
-          <p class="text-forest/80 text-sm leading-relaxed mb-5">We search Chinese suppliers, calculate the landed cost in Ghana Cedis, and send you clear options.</p>
-        </div>
-        <div class="bg-softgreen rounded-3xl p-6 md:p-8 text-forest">
-          <div class="text-4xl font-extrabold text-forest/25 mb-3">03</div>
-          <h3 class="text-xl font-extrabold mb-2">We handle the rest</h3>
-          <p class="text-forest/80 text-sm leading-relaxed mb-5">Once you approve and pay, we purchase, consolidate, ship and update you until it reaches Ghana.</p>
+      <div class="case-visual">
+        <div class="case-visual-inner">
+          <div class="mock-row"><span>Item</span><strong>Women's handbags</strong></div>
+          <div class="mock-row"><span>Qty</span><strong>20</strong></div>
+          <div class="mock-row"><span>Budget</span><strong>GH₵ 6,000</strong></div>
+          <div class="mock-row"><span>Status</span><span class="mock-badge">NEW</span></div>
         </div>
       </div>
     </div>
-  </section>
 
-  <!-- Positioning -->
-  <section class="py-16 md:py-20 text-center px-4">
-    <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-4">Not a store. A <span class="underline-accent">sourcing partner</span>.</h2>
-    <p class="text-forest/70 max-w-2xl mx-auto leading-relaxed">We don't list products for you to browse. You tell us what you need — we find it in China, price it clearly in GHS, and manage procurement through to delivery in Ghana.</p>
-  </section>
-
-  <!-- CTA -->
-  <section class="pb-16 md:pb-24 px-4">
-    <div class="max-w-4xl mx-auto bg-forest rounded-[2.5rem] px-8 py-12 md:py-16 text-center text-cream">
-      <h2 class="text-2xl md:text-4xl font-extrabold tracking-tight mb-3">Ready to source something?</h2>
-      <p class="text-cream/70 mb-8 max-w-md mx-auto">From single pieces to bulk orders — tell us what you need and we'll take it from there.</p>
-      <a href="request.html" class="inline-flex bg-orange text-white px-8 py-3.5 rounded-full font-bold hover:opacity-90 transition">Request an item</a>
-    </div>
-  </section>
-
-  <footer class="border-t border-forest/10 py-8">
-    <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-3 text-sm text-forest/50">
-      <div class="font-semibold text-forest">China Source <span class="text-orange">GH</span></div>
-      <div class="flex gap-6">
-        <a href="#how" class="hover:text-forest">How it works</a>
-        <a href="request.html" class="hover:text-forest">Request</a>
-        <a href="admin.html" class="hover:text-forest">Admin</a>
+    <div class="case" data-reveal>
+      <div>
+        <p class="case-num">STEP 02</p>
+        <h3 class="case-title">We source & quote</h3>
+        <p class="case-desc">Our team searches Chinese suppliers (1688, Alibaba and more). We calculate product cost, shipping, and service fee — then send you clear options in Ghana Cedis.</p>
+        <div class="case-tags">
+          <span class="tag">#1688</span>
+          <span class="tag">#ALIBABA</span>
+          <span class="tag">#QUOTE</span>
+        </div>
       </div>
-      <div>© 2026</div>
+      <div class="case-visual">
+        <div class="case-visual-inner">
+          <div class="mock-row"><span>Option A</span><strong>GH₵ 740</strong></div>
+          <div class="mock-row"><span>Option B</span><strong>GH₵ 820</strong></div>
+          <div class="mock-row"><span>Delivery</span><strong>2–3 weeks</strong></div>
+          <div class="mock-row"><span>Valid until</span><strong>22 Aug 2026</strong></div>
+        </div>
+      </div>
     </div>
+
+    <div class="case" data-reveal>
+      <div>
+        <p class="case-num">STEP 03</p>
+        <h3 class="case-title">Approve & pay</h3>
+        <p class="case-desc">Pick the option that fits. Pay via Mobile Money or bank transfer using our instructions. No payment is required before you have a quotation.</p>
+        <div class="case-tags">
+          <span class="tag">#MOMO</span>
+          <span class="tag">#BANK</span>
+          <span class="tag">#CONFIRM</span>
+        </div>
+      </div>
+      <div class="case-visual">
+        <div class="case-visual-inner">
+          <div class="mock-row"><span>Amount</span><strong>GH₵ 820</strong></div>
+          <div class="mock-row"><span>Method</span><strong>Mobile Money</strong></div>
+          <div class="mock-row"><span>Reference</span><strong>Submitted</strong></div>
+          <div class="mock-row"><span>Status</span><span class="mock-badge">PAID</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="case" data-reveal>
+      <div>
+        <p class="case-num">STEP 04</p>
+        <h3 class="case-title">We handle the rest</h3>
+        <p class="case-desc">Purchase, consolidate, ship from China, and update you until your order arrives in Ghana and is ready for delivery.</p>
+        <div class="case-tags">
+          <span class="tag">#PROCUREMENT</span>
+          <span class="tag">#SHIPPING</span>
+          <span class="tag">#GHANA</span>
+        </div>
+      </div>
+      <div class="case-visual">
+        <div class="case-visual-inner">
+          <div class="mock-row"><span>Purchased</span><strong>✓</strong></div>
+          <div class="mock-row"><span>At warehouse</span><strong>✓</strong></div>
+          <div class="mock-row"><span>Shipped</span><strong>✓</strong></div>
+          <div class="mock-row"><span>Arrived Ghana</span><span class="mock-badge">NEXT</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-band" data-reveal>
+    <h2>Ready to source<br><em>something?</em></h2>
+    <p>From single pieces to bulk orders — tell us what you need and we'll take it from there.</p>
+    <a href="request.html" class="btn-pill filled">REQUEST AN ITEM →</a>
+  </section>
+
+  <footer>
+    <div><strong style="color:var(--black)">China Source GH</strong> · Accra</div>
+    <div style="display:flex;gap:1.5rem">
+      <a href="#process">Process</a>
+      <a href="request.html">Request</a>
+      <a href="admin.html">Admin</a>
+    </div>
+    <div>© 2026</div>
   </footer>
 
+  <script>
+    window.addEventListener('scroll', () => {
+      document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 20);
+    });
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('[data-reveal]').forEach(el => observer.observe(el));
+  </script>
 </body>
 </html>

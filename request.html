@@ -213,7 +213,7 @@
     <div id="formWrap">
       <p class="page-label">New request</p>
       <h1 class="page-title">What can we<br><em>find for you?</em></h1>
-      <p class="page-sub">Describe the item, add a photo or link, and tell us your budget.</p>
+      <p class="page-sub">Describe the item, add a product link if you have one, and tell us your budget.</p>
 
       <form id="form">
         <!-- Customer -->
@@ -240,6 +240,23 @@
         <!-- Item -->
         <div class="card">
           <p class="card-label">Item details</p>
+          <div class="field">
+            <label>Category *</label>
+            <select name="category" id="category" required>
+              <option value="">Select a category</option>
+              <option value="Clothing & Apparel">Clothing & Apparel</option>
+              <option value="Shoes & Footwear">Shoes & Footwear</option>
+              <option value="Bags & Accessories">Bags & Accessories</option>
+              <option value="Electronics">Electronics</option>
+              <option value="Home & Kitchen">Home & Kitchen</option>
+              <option value="Beauty & Personal Care">Beauty & Personal Care</option>
+              <option value="Sports & Outdoor">Sports & Outdoor</option>
+              <option value="Toys & Kids">Toys & Kids</option>
+              <option value="Automotive">Automotive</option>
+              <option value="Industrial & Tools">Industrial & Tools</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
           <div class="field">
             <label>What are you looking for? *</label>
             <input name="item" required placeholder="e.g. Women's handbags" />
@@ -269,23 +286,22 @@
               </select>
             </div>
             <div class="field">
-              <label>Colour</label>
-              <input name="colour" placeholder="Optional" />
-            </div>
-          </div>
-          <div class="grid-2">
-            <div class="field">
-              <label>Size</label>
-              <input name="size" placeholder="Optional" />
-            </div>
-            <div class="field">
               <label>Brand</label>
               <input name="brand" placeholder="Optional" />
             </div>
           </div>
-          <div class="field">
-            <label>Delivery timeframe</label>
-            <input name="timeframe" placeholder="e.g. Within 3 weeks" />
+          <!-- Size & colour only for Clothing & Apparel -->
+          <div id="apparelFields" style="display:none">
+            <div class="grid-2">
+              <div class="field">
+                <label>Size</label>
+                <input name="size" placeholder="e.g. M, L, 42" />
+              </div>
+              <div class="field">
+                <label>Colour</label>
+                <input name="colour" placeholder="e.g. Black" />
+              </div>
+            </div>
           </div>
         </div>
 
@@ -297,16 +313,8 @@
             <input name="url" type="url" placeholder="https://..." />
           </div>
           <div class="field">
-            <label>Reference image</label>
-            <label class="file-wrap" for="img">
-              <input type="file" id="img" accept="image/*" />
-              <p class="file-hint"><strong>Click to upload</strong> · JPEG, PNG, WebP · Max 6 MB</p>
-            </label>
-            <div id="preview"><img id="previewImg" alt="" /></div>
-          </div>
-          <div class="field">
             <label>Additional notes</label>
-            <textarea name="notes" placeholder='e.g. "Preferably black, under GH₵700"'></textarea>
+            <textarea name="notes" placeholder='e.g. "Preferably under GH₵700"'></textarea>
           </div>
         </div>
 
@@ -335,12 +343,18 @@
 
     const form = document.getElementById('form');
     const btn = document.getElementById('btn');
-    const img = document.getElementById('img');
+    const category = document.getElementById('category');
+    const apparelFields = document.getElementById('apparelFields');
 
-    img.addEventListener('change', () => {
-      if (img.files[0]) {
-        document.getElementById('previewImg').src = URL.createObjectURL(img.files[0]);
-        document.getElementById('preview').style.display = 'block';
+    // Size & colour only for Clothing & Apparel
+    category.addEventListener('change', () => {
+      const show = category.value === 'Clothing & Apparel';
+      apparelFields.style.display = show ? 'block' : 'none';
+      if (!show) {
+        const size = form.querySelector('[name="size"]');
+        const colour = form.querySelector('[name="colour"]');
+        if (size) size.value = '';
+        if (colour) colour.value = '';
       }
     });
 

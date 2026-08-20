@@ -4,127 +4,304 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin — China Source GH</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            cream: '#FBF6EE', forest: '#1A3A2A', orange: '#F07A3A',
-            softpink: '#F7C9D4', softyellow: '#F5E6A3', softgreen: '#D4E8D8'
-          },
-          fontFamily: { sans: ['DM Sans', 'system-ui', 'sans-serif'] }
-        }
-      }
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --black: #0a0a0a;
+      --gray: #6b6b6b;
+      --light: #f5f5f5;
+      --white: #ffffff;
+      --border: #e8e8e8;
     }
-  </script>
-  <style>body { font-family: 'DM Sans', system-ui, sans-serif; }</style>
-</head>
-<body class="bg-cream text-forest antialiased">
+    body {
+      font-family: 'Montserrat', system-ui, sans-serif;
+      background: var(--white);
+      color: var(--black);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+    a { text-decoration: none; color: inherit; }
+    button { font-family: inherit; cursor: pointer; border: none; background: none; }
 
-  <!-- ========== LOGIN ========== -->
-  <div id="loginView" class="min-h-screen flex items-center justify-center px-4">
-    <div class="w-full max-w-sm">
-      <div class="text-center mb-8">
-        <h1 class="text-xl font-extrabold tracking-tight">CHINA SOURCE <span class="text-orange">GH</span></h1>
-        <p class="text-sm text-forest/50 mt-1 font-medium">Admin</p>
-      </div>
-      <form id="loginForm" class="bg-white rounded-3xl border border-forest/10 shadow-sm p-6 space-y-4">
-        <div>
-          <label class="block text-sm font-semibold mb-1.5">Password</label>
-          <input type="password" id="password" required class="w-full rounded-full border-2 border-forest/15 bg-cream/50 px-4 py-3 text-sm focus:outline-none focus:border-orange" placeholder="Enter admin password" />
-        </div>
-        <button type="submit" class="w-full bg-orange text-white py-3 rounded-full font-bold hover:opacity-90">Sign in</button>
-        <p id="loginError" class="text-sm text-orange text-center font-medium hidden"></p>
-        <p class="text-xs text-forest/40 text-center">Default password: <code class="bg-cream px-1 rounded">admin123</code></p>
+    /* ---- LOGIN ---- */
+    #loginView {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      padding: 1.5rem;
+    }
+    .login-box { width: 100%; max-width: 360px; text-align: center; }
+    .login-logo {
+      width: 44px; height: 44px; background: var(--black); color: var(--white);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 0.8rem; border-radius: 10px; margin-bottom: 1.25rem;
+    }
+    .login-title {
+      font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 0.25rem;
+    }
+    .login-title em { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 600; }
+    .login-sub { font-size: 0.8rem; color: var(--gray); margin-bottom: 2rem; }
+    .login-card {
+      border: 1px solid var(--border); border-radius: 20px; padding: 1.75rem; text-align: left;
+    }
+    .login-card label {
+      display: block; font-size: 0.75rem; font-weight: 600; margin-bottom: 0.4rem;
+    }
+    .login-card input {
+      width: 100%; padding: 0.85rem 1.1rem; border: 1.5px solid var(--border);
+      border-radius: 999px; background: var(--light); font-family: inherit; font-size: 0.9rem;
+      outline: none; margin-bottom: 1rem; transition: border-color 0.2s;
+    }
+    .login-card input:focus { border-color: var(--black); background: var(--white); }
+    .btn-black {
+      width: 100%; padding: 0.9rem; border-radius: 999px; background: var(--black);
+      color: var(--white); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em;
+      transition: background 0.2s;
+    }
+    .btn-black:hover { background: #333; }
+    .btn-black:disabled { opacity: 0.5; cursor: not-allowed; }
+    .login-hint { font-size: 0.7rem; color: var(--gray); margin-top: 1rem; text-align: center; }
+    .login-hint code { background: var(--light); padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.7rem; }
+    #loginError { color: #c00; font-size: 0.8rem; text-align: center; margin-top: 0.75rem; display: none; }
+
+    /* ---- APP ---- */
+    #appView { display: none; padding-bottom: 5rem; }
+
+    .nav {
+      position: sticky; top: 0; z-index: 50;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 1.5rem;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-left { display: flex; align-items: center; gap: 0.6rem; }
+    .logo {
+      width: 32px; height: 32px; background: var(--black); color: var(--white);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 0.65rem; border-radius: 7px;
+    }
+    .nav-badge {
+      font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em;
+      padding: 0.25rem 0.65rem; border-radius: 999px; background: var(--light); color: var(--gray);
+    }
+    .nav-logout { font-size: 0.75rem; font-weight: 500; color: var(--gray); }
+    .nav-logout:hover { color: var(--black); }
+
+    main { max-width: 720px; margin: 0 auto; padding: 2rem 1.25rem; }
+
+    .page-label {
+      font-size: 0.6rem; font-weight: 600; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--gray); margin-bottom: 0.4rem;
+    }
+    .page-title {
+      font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 800;
+      letter-spacing: -0.03em; margin-bottom: 0.35rem;
+    }
+    .page-title em { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 600; }
+    .page-sub { font-size: 0.85rem; color: var(--gray); margin-bottom: 1.75rem; }
+
+    /* Dashboard cards */
+    .ops-label {
+      font-size: 0.6rem; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--gray); margin-bottom: 0.75rem;
+    }
+    .dash-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 1.75rem;
+    }
+    @media (min-width: 560px) { .dash-grid { grid-template-columns: repeat(3, 1fr); } }
+    .dash-card {
+      border: 1px solid var(--border); border-radius: 16px; padding: 1.15rem;
+      text-align: left; transition: border-color 0.2s, background 0.2s; width: 100%;
+    }
+    .dash-card:hover { border-color: var(--black); background: var(--light); }
+    .dash-card .num { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.02em; }
+    .dash-card .lbl { font-size: 0.7rem; font-weight: 600; color: var(--gray); margin-top: 0.25rem; }
+
+    .dash-actions { display: flex; flex-direction: column; gap: 0.6rem; }
+    @media (min-width: 480px) { .dash-actions { flex-direction: row; } }
+    .btn-pill {
+      flex: 1; padding: 0.9rem 1.25rem; border-radius: 999px;
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.04em;
+      border: 1.5px solid var(--black); transition: all 0.2s; text-align: center;
+    }
+    .btn-pill.filled { background: var(--black); color: var(--white); }
+    .btn-pill.filled:hover { background: #333; }
+    .btn-pill:not(.filled):hover { background: var(--black); color: var(--white); }
+
+    /* Filters */
+    .filters { display: flex; gap: 0.4rem; overflow-x: auto; padding-bottom: 0.75rem; margin-bottom: 1rem; }
+    .filter-btn {
+      flex-shrink: 0; padding: 0.4rem 0.9rem; border-radius: 999px;
+      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.04em;
+      border: 1.5px solid var(--border); color: var(--gray); transition: all 0.2s;
+    }
+    .filter-btn.active { background: var(--black); color: var(--white); border-color: var(--black); }
+    .filter-btn:not(.active):hover { border-color: var(--black); color: var(--black); }
+
+    /* List cards */
+    .list-card {
+      width: 100%; text-align: left;
+      border: 1px solid var(--border); border-radius: 16px; padding: 1.15rem;
+      margin-bottom: 0.65rem; transition: border-color 0.2s;
+    }
+    .list-card:hover { border-color: var(--black); }
+    .list-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.35rem; }
+    .list-id { font-family: 'Montserrat', monospace; font-size: 0.8rem; font-weight: 700; }
+    .badge {
+      font-size: 0.6rem; font-weight: 700; letter-spacing: 0.04em;
+      padding: 0.2rem 0.55rem; border-radius: 999px; background: var(--light); color: var(--gray);
+    }
+    .badge.dark { background: var(--black); color: var(--white); }
+    .list-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 0.2rem; }
+    .list-meta { font-size: 0.8rem; color: var(--gray); }
+    .list-foot {
+      display: flex; gap: 0.85rem; margin-top: 0.55rem;
+      font-size: 0.7rem; color: var(--gray); font-weight: 500;
+    }
+    .empty {
+      text-align: center; padding: 3.5rem 1rem; color: var(--gray); font-size: 0.9rem; line-height: 1.6;
+    }
+
+    /* Detail */
+    .detail-card {
+      border: 1px solid var(--border); border-radius: 16px; padding: 1.35rem; margin-bottom: 0.85rem;
+    }
+    .detail-label {
+      font-size: 0.6rem; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--gray); margin-bottom: 0.75rem;
+    }
+    .detail-name { font-weight: 700; font-size: 1rem; }
+    .detail-sub { font-size: 0.85rem; color: var(--gray); margin-top: 0.2rem; }
+    .detail-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-top: 0.85rem; font-size: 0.85rem;
+    }
+    .detail-grid span { color: var(--gray); }
+    .status-btns { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .status-btn {
+      padding: 0.4rem 0.85rem; border-radius: 999px; font-size: 0.7rem; font-weight: 600;
+      border: 1.5px solid var(--border); transition: all 0.2s;
+    }
+    .status-btn:hover, .status-btn.active { background: var(--black); color: var(--white); border-color: var(--black); }
+    .back-link {
+      font-size: 0.8rem; font-weight: 500; color: var(--gray); margin-bottom: 1.25rem; display: inline-block;
+    }
+    .back-link:hover { color: var(--black); }
+
+    /* Bottom nav */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: rgba(255,255,255,0.95); backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border);
+      display: flex; justify-content: space-around; padding: 0.6rem 0;
+    }
+    .bn-btn {
+      display: flex; flex-direction: column; align-items: center; gap: 0.2rem;
+      font-size: 0.6rem; font-weight: 600; letter-spacing: 0.04em; color: var(--gray);
+      padding: 0.35rem 1rem; transition: color 0.2s;
+    }
+    .bn-btn.active { color: var(--black); }
+    .bn-btn svg { width: 20px; height: 20px; }
+
+    .section { display: none; }
+    .section.active { display: block; }
+  </style>
+</head>
+<body>
+
+  <!-- LOGIN -->
+  <div id="loginView">
+    <div class="login-box">
+      <div class="login-logo">CS</div>
+      <h1 class="login-title">Admin <em>panel</em></h1>
+      <p class="login-sub">China Source GH</p>
+      <form id="loginForm" class="login-card">
+        <label>Password</label>
+        <input type="password" id="password" required placeholder="Enter password" autofocus />
+        <button type="submit" class="btn-black">SIGN IN</button>
+        <p id="loginError"></p>
       </form>
+      <p class="login-hint">Default: <code>admin123</code></p>
     </div>
   </div>
 
-  <!-- ========== APP (hidden until login) ========== -->
-  <div id="appView" class="hidden pb-24">
-    <!-- Header -->
-    <header class="sticky top-0 z-40 bg-cream/95 backdrop-blur border-b border-forest/10">
-      <div class="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
-        <span class="font-extrabold tracking-tight">CHINA SOURCE <span class="text-orange">GH</span></span>
-        <button onclick="logout()" class="text-sm font-medium text-forest/50 hover:text-orange">Logout</button>
+  <!-- APP -->
+  <div id="appView">
+    <nav class="nav">
+      <div class="nav-left">
+        <span class="logo">CS</span>
+        <span class="nav-badge">ADMIN</span>
       </div>
-    </header>
+      <button class="nav-logout" onclick="logout()">Logout</button>
+    </nav>
 
-    <main class="max-w-5xl mx-auto px-4 py-6">
-
+    <main>
       <!-- DASHBOARD -->
-      <section id="sec-dashboard">
-        <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight mb-1">Good day</h1>
-        <p id="dateEl" class="text-forest/50 text-sm mb-6"></p>
+      <section id="sec-dashboard" class="section">
+        <p class="page-label">Overview</p>
+        <h1 class="page-title" id="greet">Good day</h1>
+        <p class="page-sub" id="dateEl"></p>
 
-        <h2 class="text-xs font-bold uppercase tracking-wider text-forest/50 mb-3">Operations</h2>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8" id="dashCards"></div>
+        <p class="ops-label">Operations</p>
+        <div class="dash-grid" id="dashCards"></div>
 
-        <div class="flex flex-col sm:flex-row gap-3">
-          <button onclick="show('requests')" class="flex-1 bg-orange text-white py-3.5 rounded-full font-bold hover:opacity-90">Sourcing Requests</button>
-          <button onclick="show('orders')" class="flex-1 bg-white border-2 border-forest py-3.5 rounded-full font-bold hover:bg-forest hover:text-cream transition">Orders</button>
+        <div class="dash-actions">
+          <button class="btn-pill filled" onclick="show('requests')">SOURCING REQUESTS</button>
+          <button class="btn-pill" onclick="show('orders')">ORDERS</button>
         </div>
       </section>
 
       <!-- REQUESTS -->
-      <section id="sec-requests" class="hidden">
-        <div class="flex items-center justify-between mb-6">
-          <h1 class="text-2xl font-extrabold tracking-tight">Requests</h1>
-          <button onclick="show('dashboard')" class="text-sm font-medium text-forest/50">← Back</button>
+      <section id="sec-requests" class="section">
+        <button class="back-link" onclick="show('dashboard')">← Dashboard</button>
+        <h1 class="page-title">Requests</h1>
+        <p class="page-sub">All customer sourcing requests</p>
+        <div class="filters">
+          <button class="filter-btn active" data-f="ALL" onclick="filterReq('ALL')">All</button>
+          <button class="filter-btn" data-f="NEW" onclick="filterReq('NEW')">New</button>
+          <button class="filter-btn" data-f="SOURCING" onclick="filterReq('SOURCING')">Sourcing</button>
+          <button class="filter-btn" data-f="QUOTED" onclick="filterReq('QUOTED')">Quoted</button>
+          <button class="filter-btn" data-f="ACCEPTED" onclick="filterReq('ACCEPTED')">Accepted</button>
         </div>
-        <div class="flex gap-2 overflow-x-auto pb-3 mb-4">
-          <button onclick="filterReq('ALL')" class="rf shrink-0 px-4 py-1.5 rounded-full text-xs font-bold bg-forest text-cream" data-f="ALL">All</button>
-          <button onclick="filterReq('NEW')" class="rf shrink-0 px-4 py-1.5 rounded-full text-xs font-bold border-2 border-forest/20" data-f="NEW">New</button>
-          <button onclick="filterReq('SOURCING')" class="rf shrink-0 px-4 py-1.5 rounded-full text-xs font-bold border-2 border-forest/20" data-f="SOURCING">Sourcing</button>
-          <button onclick="filterReq('QUOTED')" class="rf shrink-0 px-4 py-1.5 rounded-full text-xs font-bold border-2 border-forest/20" data-f="QUOTED">Quoted</button>
-        </div>
-        <div id="reqList" class="space-y-3"></div>
+        <div id="reqList"></div>
       </section>
 
-      <!-- REQUEST DETAIL -->
-      <section id="sec-detail" class="hidden">
-        <div class="flex items-center justify-between mb-6">
-          <h1 class="text-xl font-extrabold font-mono text-orange" id="detailId"></h1>
-          <button onclick="show('requests')" class="text-sm font-medium text-forest/50">← Back</button>
-        </div>
-        <div id="detailBody" class="space-y-4"></div>
+      <!-- DETAIL -->
+      <section id="sec-detail" class="section">
+        <button class="back-link" onclick="show('requests')">← Requests</button>
+        <h1 class="page-title" style="font-family:monospace;font-size:1.3rem" id="detailId"></h1>
+        <div id="detailBody"></div>
       </section>
 
       <!-- ORDERS -->
-      <section id="sec-orders" class="hidden">
-        <div class="flex items-center justify-between mb-6">
-          <h1 class="text-2xl font-extrabold tracking-tight">Orders</h1>
-          <button onclick="show('dashboard')" class="text-sm font-medium text-forest/50">← Back</button>
-        </div>
-        <div id="orderList" class="space-y-3"></div>
+      <section id="sec-orders" class="section">
+        <button class="back-link" onclick="show('dashboard')">← Dashboard</button>
+        <h1 class="page-title">Orders</h1>
+        <p class="page-sub">Payment and procurement pipeline</p>
+        <div id="orderList"></div>
       </section>
-
     </main>
 
     <!-- Bottom nav -->
-    <nav class="fixed bottom-0 inset-x-0 bg-cream border-t border-forest/10">
-      <div class="max-w-5xl mx-auto flex justify-around py-2.5 text-xs font-medium">
-        <button onclick="show('dashboard')" class="nav-btn flex flex-col items-center py-1 gap-0.5 text-orange font-bold" data-s="dashboard">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h3m8-10v10h3m-6 0v-4h2v4"/></svg>
-          Home
-        </button>
-        <button onclick="show('requests')" class="nav-btn flex flex-col items-center py-1 gap-0.5 text-forest/50" data-s="requests">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
-          Requests
-        </button>
-        <button onclick="show('orders')" class="nav-btn flex flex-col items-center py-1 gap-0.5 text-forest/50" data-s="orders">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
-          Orders
-        </button>
-      </div>
+    <nav class="bottom-nav">
+      <button class="bn-btn active" data-s="dashboard" onclick="show('dashboard')">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h3m8-10v10h3m-6 0v-4h2v4"/></svg>
+        Home
+      </button>
+      <button class="bn-btn" data-s="requests" onclick="show('requests')">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+        Requests
+      </button>
+      <button class="bn-btn" data-s="orders" onclick="show('orders')">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+        Orders
+      </button>
     </nav>
   </div>
 
   <script>
-    // ========== SIMPLE AUTH ==========
-    const ADMIN_PASS = 'admin123'; // change this
+    const ADMIN_PASS = 'admin123';
 
     function isLoggedIn() { return sessionStorage.getItem('cs_admin') === '1'; }
     function logout() { sessionStorage.removeItem('cs_admin'); location.reload(); }
@@ -135,90 +312,63 @@
         sessionStorage.setItem('cs_admin', '1');
         startApp();
       } else {
-        document.getElementById('loginError').textContent = 'Wrong password';
-        document.getElementById('loginError').classList.remove('hidden');
+        const err = document.getElementById('loginError');
+        err.textContent = 'Wrong password';
+        err.style.display = 'block';
       }
     });
 
     if (isLoggedIn()) startApp();
 
     function startApp() {
-      document.getElementById('loginView').classList.add('hidden');
-      document.getElementById('appView').classList.remove('hidden');
-      document.getElementById('dateEl').textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      document.getElementById('loginView').style.display = 'none';
+      document.getElementById('appView').style.display = 'block';
+      const h = new Date().getHours();
+      document.getElementById('greet').innerHTML = (h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening');
+      document.getElementById('dateEl').textContent = new Date().toLocaleDateString('en-GB', {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+      });
       show('dashboard');
     }
 
-    // ========== DATA (localStorage for demo; swap to API later) ==========
-    function getRequests() {
-      return JSON.parse(localStorage.getItem('cs_requests') || '[]');
-    }
-    function saveRequests(arr) {
-      localStorage.setItem('cs_requests', JSON.stringify(arr));
-    }
-    function getOrders() {
-      return JSON.parse(localStorage.getItem('cs_orders') || '[]');
-    }
-    function saveOrders(arr) {
-      localStorage.setItem('cs_orders', JSON.stringify(arr));
-    }
+    function getRequests() { return JSON.parse(localStorage.getItem('cs_requests') || '[]'); }
+    function saveRequests(a) { localStorage.setItem('cs_requests', JSON.stringify(a)); }
+    function getOrders() { return JSON.parse(localStorage.getItem('cs_orders') || '[]'); }
+    function saveOrders(a) { localStorage.setItem('cs_orders', JSON.stringify(a)); }
 
-    // ========== NAVIGATION ==========
     function show(sec) {
-      ['dashboard','requests','detail','orders'].forEach(s => {
-        document.getElementById('sec-' + s).classList.toggle('hidden', s !== sec);
-      });
-      document.querySelectorAll('.nav-btn').forEach(b => {
-        const active = b.dataset.s === sec || (sec === 'detail' && b.dataset.s === 'requests');
-        b.classList.toggle('text-orange', active);
-        b.classList.toggle('font-bold', active);
-        b.classList.toggle('text-forest/50', !active);
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.getElementById('sec-' + sec).classList.add('active');
+      document.querySelectorAll('.bn-btn').forEach(b => {
+        const on = b.dataset.s === sec || (sec === 'detail' && b.dataset.s === 'requests');
+        b.classList.toggle('active', on);
       });
       if (sec === 'dashboard') renderDash();
-      if (sec === 'requests') renderRequests('ALL');
+      if (sec === 'requests') renderRequests(reqFilter);
       if (sec === 'orders') renderOrders();
     }
 
-    // ========== DASHBOARD ==========
     function renderDash() {
       const reqs = getRequests();
       const orders = getOrders();
-      const counts = {
-        new: reqs.filter(r => r.status === 'NEW').length,
-        sourcing: reqs.filter(r => r.status === 'SOURCING' || r.status === 'REVIEWING').length,
-        quoted: reqs.filter(r => r.status === 'QUOTED').length,
-        awaiting: orders.filter(o => o.payment_status === 'AWAITING' || o.payment_status === 'SUBMITTED').length,
-        ready: orders.filter(o => o.payment_status === 'CONFIRMED').length
-      };
       const cards = [
-        { label: 'New Requests', v: counts.new, bg: 'bg-softpink', go: () => { filterReq('NEW'); show('requests'); } },
-        { label: 'To Source', v: counts.sourcing, bg: 'bg-softyellow', go: () => { filterReq('SOURCING'); show('requests'); } },
-        { label: 'Quoted', v: counts.quoted, bg: 'bg-softgreen', go: () => { filterReq('QUOTED'); show('requests'); } },
-        { label: 'Awaiting Payment', v: counts.awaiting, bg: 'bg-orange/20', go: () => show('orders') },
-        { label: 'Ready to Purchase', v: counts.ready, bg: 'bg-softgreen', go: () => show('orders') },
-        { label: 'Total Requests', v: reqs.length, bg: 'bg-softpink', go: () => show('requests') },
-        { label: 'Total Orders', v: orders.length, bg: 'bg-softyellow', go: () => show('orders') }
+        { v: reqs.filter(r => r.status === 'NEW').length, l: 'New Requests', go: () => { filterReq('NEW'); show('requests'); } },
+        { v: reqs.filter(r => r.status === 'SOURCING').length, l: 'Sourcing', go: () => { filterReq('SOURCING'); show('requests'); } },
+        { v: reqs.filter(r => r.status === 'QUOTED').length, l: 'Quoted', go: () => { filterReq('QUOTED'); show('requests'); } },
+        { v: orders.filter(o => o.payment_status !== 'CONFIRMED').length, l: 'Awaiting Payment', go: () => show('orders') },
+        { v: orders.filter(o => o.payment_status === 'CONFIRMED').length, l: 'Ready to Buy', go: () => show('orders') },
+        { v: reqs.length, l: 'Total Requests', go: () => show('requests') }
       ];
       document.getElementById('dashCards').innerHTML = cards.map((c, i) =>
-        `<button onclick="(${i})" class="block text-left ${c.bg} rounded-3xl p-4 hover:opacity-90 transition w-full" data-i="${i}">
-          <p class="text-2xl font-extrabold">${c.v}</p>
-          <p class="text-xs font-bold mt-1 text-forest/70">${c.label}</p>
-        </button>`
+        `<button class="dash-card" data-i="${i}"><div class="num">${c.v}</div><div class="lbl">${c.l}</div></button>`
       ).join('');
-      // bind clicks
-      document.querySelectorAll('#dashCards button').forEach((btn, i) => {
-        btn.onclick = cards[i].go;
-      });
+      document.querySelectorAll('#dashCards .dash-card').forEach((btn, i) => { btn.onclick = cards[i].go; });
     }
 
-    // ========== REQUESTS ==========
     let reqFilter = 'ALL';
     function filterReq(f) {
       reqFilter = f;
-      document.querySelectorAll('.rf').forEach(b => {
-        const on = b.dataset.f === f;
-        b.className = 'rf shrink-0 px-4 py-1.5 rounded-full text-xs font-bold ' + (on ? 'bg-forest text-cream' : 'border-2 border-forest/20');
-      });
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.f === f));
       renderRequests(f);
     }
 
@@ -227,71 +377,67 @@
       if (f && f !== 'ALL') list = list.filter(r => r.status === f);
       const el = document.getElementById('reqList');
       if (!list.length) {
-        el.innerHTML = '<p class="text-center text-forest/40 py-12">No requests yet.<br><span class="text-sm">Submit one from the request form.</span></p>';
+        el.innerHTML = '<div class="empty">No requests yet.<br>Submit one from the request form.</div>';
         return;
       }
       el.innerHTML = list.map(r => `
-        <button onclick="openDetail('${r.id}')" class="w-full text-left bg-white rounded-3xl border border-forest/10 p-4 shadow-sm hover:border-orange/40 transition">
-          <div class="flex justify-between items-start mb-1">
-            <span class="font-mono text-sm font-bold text-orange">${r.id}</span>
-            <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full ${statusColor(r.status)}">${r.status}</span>
+        <button class="list-card" onclick="openDetail('${r.id}')">
+          <div class="list-top">
+            <span class="list-id">${r.id}</span>
+            <span class="badge ${r.status === 'NEW' ? 'dark' : ''}">${r.status}</span>
           </div>
-          <p class="font-bold">${r.item || r.item_summary || '—'}</p>
-          <p class="text-sm text-forest/60 mt-0.5">${r.name || ''} · ${r.whatsapp || ''}</p>
-          <div class="flex gap-3 mt-2 text-xs text-forest/40">
+          <div class="list-title">${r.item || r.item_summary || '—'}</div>
+          <div class="list-meta">${r.name || ''} · ${r.whatsapp || ''}</div>
+          <div class="list-foot">
             <span>Qty ${r.quantity || 1}</span>
-            ${r.budget || r.budget_ghs ? '<span>Budget GH₵' + (r.budget || r.budget_ghs) + '</span>' : ''}
+            ${r.budget || r.budget_ghs ? '<span>GH₵' + (r.budget || r.budget_ghs) + '</span>' : ''}
             <span>${fmtDate(r.created)}</span>
           </div>
         </button>
       `).join('');
     }
 
-    function statusColor(s) {
-      const m = { NEW: 'bg-softpink', SOURCING: 'bg-softyellow', QUOTED: 'bg-softgreen', ACCEPTED: 'bg-softgreen', AWAITING: 'bg-orange/20' };
-      return m[s] || 'bg-forest/10';
-    }
     function fmtDate(iso) {
       if (!iso) return '';
-      try { return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }); } catch(e) { return ''; }
+      try { return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }); }
+      catch(e) { return ''; }
     }
 
-    // ========== DETAIL ==========
     function openDetail(id) {
       const r = getRequests().find(x => x.id === id);
       if (!r) return;
       document.getElementById('detailId').textContent = r.id;
       document.getElementById('detailBody').innerHTML = `
-        <div class="bg-white rounded-3xl border border-forest/10 p-5 shadow-sm">
-          <h2 class="text-xs font-bold uppercase tracking-wider text-forest/40 mb-3">Customer</h2>
-          <p class="font-bold">${r.name || '—'}</p>
-          <p class="text-sm text-forest/60">${r.whatsapp || ''} ${r.email ? '· ' + r.email : ''}</p>
-          <p class="text-sm text-forest/40">${r.location || ''}</p>
+        <div class="detail-card">
+          <p class="detail-label">Customer</p>
+          <p class="detail-name">${r.name || '—'}</p>
+          <p class="detail-sub">${r.whatsapp || ''} ${r.email ? '· ' + r.email : ''}</p>
+          <p class="detail-sub">${r.location || ''}</p>
         </div>
-        <div class="bg-white rounded-3xl border border-forest/10 p-5 shadow-sm">
-          <h2 class="text-xs font-bold uppercase tracking-wider text-forest/40 mb-3">Request</h2>
-          <p class="font-bold text-lg">${r.item || r.item_summary || '—'}</p>
-          <p class="text-sm text-forest/60 mt-1 whitespace-pre-line">${r.description || ''}</p>
-          <div class="grid grid-cols-2 gap-2 mt-3 text-sm">
-            <div><span class="text-forest/40">Qty</span> ${r.quantity || 1}</div>
-            <div><span class="text-forest/40">Budget</span> ${r.budget || r.budget_ghs ? 'GH₵' + (r.budget || r.budget_ghs) : '—'}</div>
-            <div><span class="text-forest/40">Quality</span> ${r.quality || '—'}</div>
-            <div><span class="text-forest/40">Colour</span> ${r.colour || '—'}</div>
+        <div class="detail-card">
+          <p class="detail-label">Request</p>
+          <p class="detail-name">${r.item || r.item_summary || '—'}</p>
+          <p class="detail-sub" style="white-space:pre-line;margin-top:0.5rem">${r.description || ''}</p>
+          <div class="detail-grid">
+            <div><span>Qty</span> ${r.quantity || 1}</div>
+            <div><span>Budget</span> ${r.budget || r.budget_ghs ? 'GH₵' + (r.budget || r.budget_ghs) : '—'}</div>
+            <div><span>Quality</span> ${r.quality || '—'}</div>
+            <div><span>Colour</span> ${r.colour || '—'}</div>
           </div>
-          ${r.notes ? '<p class="text-sm text-forest/50 mt-3 italic">"' + r.notes + '"</p>' : ''}
-          ${r.url ? '<a href="' + r.url + '" target="_blank" class="text-sm text-orange mt-2 inline-block">Product link →</a>' : ''}
+          ${r.notes ? '<p class="detail-sub" style="margin-top:0.75rem;font-style:italic">"' + r.notes + '"</p>' : ''}
+          ${r.url ? '<a href="' + r.url + '" target="_blank" class="detail-sub" style="display:inline-block;margin-top:0.5rem;text-decoration:underline">Product link →</a>' : ''}
         </div>
-        <div class="bg-white rounded-3xl border border-forest/10 p-5 shadow-sm">
-          <h2 class="text-xs font-bold uppercase tracking-wider text-forest/40 mb-3">Update status</h2>
-          <div class="flex flex-wrap gap-2">
+        <div class="detail-card">
+          <p class="detail-label">Update status</p>
+          <div class="status-btns">
             ${['NEW','SOURCING','QUOTED','ACCEPTED'].map(s =>
-              `<button onclick="setStatus('${r.id}','${s}')" class="text-xs px-3 py-1.5 rounded-full border-2 border-forest/15 font-bold hover:bg-forest hover:text-cream transition">${s}</button>`
+              `<button class="status-btn ${r.status === s ? 'active' : ''}" onclick="setStatus('${r.id}','${s}')">${s}</button>`
             ).join('')}
           </div>
         </div>
-        <div class="bg-white rounded-3xl border border-forest/10 p-5 shadow-sm">
-          <h2 class="text-xs font-bold uppercase tracking-wider text-forest/40 mb-3">Create order from this request</h2>
-          <button onclick="createOrder('${r.id}')" class="w-full bg-orange text-white py-3 rounded-full font-bold hover:opacity-90">Mark accepted → Create order</button>
+        <div class="detail-card">
+          <p class="detail-label">Create order</p>
+          <button class="btn-black" style="margin-top:0.25rem" onclick="createOrder('${r.id}')">MARK ACCEPTED → CREATE ORDER</button>
         </div>
       `;
       show('detail');
@@ -323,32 +469,29 @@
       show('orders');
     }
 
-    // ========== ORDERS ==========
     function renderOrders() {
       const list = getOrders();
       const el = document.getElementById('orderList');
       if (!list.length) {
-        el.innerHTML = '<p class="text-center text-forest/40 py-12">No orders yet.<br><span class="text-sm">Accept a request to create one.</span></p>';
+        el.innerHTML = '<div class="empty">No orders yet.<br>Accept a request to create one.</div>';
         return;
       }
       el.innerHTML = list.map(o => `
-        <div class="bg-white rounded-3xl border border-forest/10 p-5 shadow-sm">
-          <div class="flex justify-between items-start mb-1">
-            <span class="font-mono text-sm font-bold text-orange">${o.id}</span>
-            <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full ${o.payment_status === 'CONFIRMED' ? 'bg-softgreen' : o.payment_status === 'SUBMITTED' ? 'bg-orange/20' : 'bg-softyellow'}">${o.payment_status}</span>
+        <div class="list-card" style="cursor:default">
+          <div class="list-top">
+            <span class="list-id">${o.id}</span>
+            <span class="badge ${o.payment_status === 'CONFIRMED' ? 'dark' : ''}">${o.payment_status}</span>
           </div>
-          <p class="font-bold">${o.item || '—'}</p>
-          <p class="text-sm text-forest/60">${o.customer || ''} · ${o.whatsapp || ''}</p>
-          <div class="flex gap-3 mt-2 text-xs text-forest/40">
-            <span class="font-semibold text-forest">GH₵${o.amount || 0}</span>
+          <div class="list-title">${o.item || '—'}</div>
+          <div class="list-meta">${o.customer || ''} · ${o.whatsapp || ''}</div>
+          <div class="list-foot">
+            <span style="font-weight:700;color:var(--black)">GH₵${o.amount || 0}</span>
             <span>Qty ${o.quantity || 1}</span>
             <span>${fmtDate(o.created)}</span>
           </div>
           ${o.payment_status !== 'CONFIRMED' ? `
-            <div class="mt-4 flex gap-2">
-              <button onclick="confirmPay('${o.id}')" class="flex-1 bg-orange text-white py-2.5 rounded-full text-sm font-bold hover:opacity-90">Confirm payment</button>
-            </div>
-          ` : '<p class="mt-3 text-xs font-bold text-forest/50">✓ Ready to purchase</p>'}
+            <button class="btn-black" style="margin-top:0.85rem;width:100%" onclick="confirmPay('${o.id}')">CONFIRM PAYMENT</button>
+          ` : '<p style="margin-top:0.75rem;font-size:0.75rem;font-weight:600;color:var(--gray)">✓ Ready to purchase</p>'}
         </div>
       `).join('');
     }

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Request Detail — China Source GH</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50: '#f0f9ff', 100: '#e0f2fe', 500: '#0ea5e9', 600: '#0284c7', 700: '#0369a1', 900: '#0c4a6e' }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-100 text-slate-900 antialiased pb-24">
+
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-40">
+    <div class="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
+      <a href="requests.html" class="text-brand-700 font-medium">← Requests</a>
+      <span id="headerId" class="font-mono text-sm font-semibold"></span>
+      <span class="w-16"></span>
+    </div>
+  </header>
+
+  <main class="max-w-2xl mx-auto px-4 py-4 space-y-4" id="main">
+    <p class="text-center text-slate-500 py-8">Loading...</p>
+  </main>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/utils.js"></script>
+  <script>
+    const requestId = qs('id');
+    let pricingDefaults = null;
+    let currentOptions = [];
+
+    async function init() {
+      if (!(await Auth.requireAuth())) return;
+      if (!requestId) {
+        document.getElementById('main').innerHTML = '<p class="text-red-600">Missing request ID</p>';
+        return;
+      }
+      pricingDefaults = (await API.getPricingDefaults(Auth.getToken())) || {};
+      await load();
+    }
+
+    async function load() {
+      const res = await API.getRequest(Auth.getToken(), requestId);
+      if (!res.success) {
+        document.getElementById('main').innerHTML = `<p class="text-red-600">${res.error}</p>`;
+        return;
+      }
+
+      const r = res.request;
+      currentOptions = res.options || [];
+      document.getElementById('headerId').textContent = r.request_id;
+
+      const budget = parseFloat(r.budget_ghs) || 0;
+
+      let optionsHtml = currentOptions.map((o, i) => {
+        const within = budget > 0 ? (parseFloat(o.final_price_ghs) <= budget) : null;
+        return `
+          <div class="border border-slate-200 rounded-xl p-4 bg-slate-50">
+            <div class="flex justify-between items-start mb-2">
+              <span class="text-xs font-semibold text-slate-500">Option ${String.fromCharCode(65 + i)}</span>
+              <span class="font-bold text-brand-700">${formatMoney(o.final_price_ghs)}</span>
+            </div>
+            <p class="text-sm font-medium">${o.supplier_name || '—'}</p>
+            <p class="text-xs text-slate-500 mt-1">¥${o.china_price_rmb} · Rate ${o.exchange_rate} · Comm ${formatMoney(o.commission_ghs)}</p>
+            ${within === true ? '<p class="text-xs text-emerald-600 mt-1">Within budget ✓</p>' : ''}
+            ${within === false ? '<p class="text-xs text-amber-600 mt-1">Above budget</p>' : ''}
+            ${o.supplier_url ? `<a href="${o.supplier_url}" target="_blank" class="text-xs text-brand-600 mt-1 inline-block">View supplier →</a>` : ''}
+          </div>
+        `;
+      }).join('') || '<p class="text-sm text-slate-500">No options yet</p>';
+
+      const quote = res.quotation;
+      let quoteHtml = '';
+      if (quote) {
+        quoteHtml = `
+          <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
+            <p class="text-sm font-semibold text-amber-900">Quotation ${quote.quotation_id}</p>
+            <p class="text-xs text-amber-800 mt-1">Status: ${quote.status} · Expires ${formatDate(quote.expires_at)}</p>
+            <p class="text-xs mt-2">
+              <a href="../quotation.html?id=${quote.quotation_id}&token=${quote.public_token}" target="_blank" class="text-brand-700 font-medium">Open customer link →</a>
+            </p>
+            <button onclick="copyQuoteLink('${quote.quotation_id}', '${quote.public_token}')" class="mt-2 text-xs bg-white border border-amber-300 px-3 py-1.5 rounded-lg">Copy WhatsApp message</button>
+          </div>
+        `;
+      }
+
+      document.getElementById('main').innerHTML = `
+        <!-- Customer -->
+        <section class="bg-white rounded-2xl border border-slate-200 p-4">
+          <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3">Customer</h2>
+          <p class="font-medium">${r.name}</p>
+          <p class="text-sm text-slate-600">${r.whatsapp || ''} ${r.email ? '· ' + r.email : ''}</p>
+          <p class="text-sm text-slate-500">${r.location || ''}</p>
+        </section>
+
+        <!-- Request -->
+        <section class="bg-white rounded-2xl border border-slate-200 p-4">
+          <div class="flex justify-between items-start mb-2">
+            <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-500">Request</h2>
+            ${statusBadge(r.status)}
+          </div>
+          <p class="font-medium text-lg">${r.item_summary}</p>
+          <p class="text-sm text-slate-600 mt-1 whitespace-pre-line">${r.description || ''}</p>
+          <div class="grid grid-cols-2 gap-2 mt-3 text-sm">
+            <div><span class="text-slate-500">Qty</span> ${r.quantity || 1}</div>
+            <div><span class="text-slate-500">Budget</span> ${r.budget_ghs ? formatMoney(r.budget_ghs) : '—'}</div>
+            <div><span class="text-slate-500">Quality</span> ${r.quality || '—'}</div>
+            <div><span class="text-slate-500">Colour</span> ${r.colour || '—'}</div>
+            <div><span class="text-slate-500">Size</span> ${r.size || '—'}</div>
+            <div><span class="text-slate-500">Brand</span> ${r.brand || '—'}</div>
+          </div>
+          ${r.product_url ? `<a href="${r.product_url}" target="_blank" class="text-sm text-brand-600 mt-2 inline-block">Product link →</a>` : ''}
+          ${r.notes ? `<p class="text-sm text-slate-500 mt-2 italic">“${r.notes}”</p>` : ''}
+          ${r.reference_file_ids ? `<p class="text-xs mt-2"><a href="https://drive.google.com/file/d/${r.reference_file_ids}/view" target="_blank" class="text-brand-600">View reference image →</a></p>` : ''}
+        </section>
+
+        <!-- Status actions -->
+        <section class="bg-white rounded-2xl border border-slate-200 p-4">
+          <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Update status</h2>
+          <div class="flex flex-wrap gap-2">
+            ${['REVIEWING','SOURCING','OPTIONS_FOUND','QUOTED'].map(s => `
+              <button onclick="setStatus('${s}')" class="text-xs px-3 py-1.5 rounded-lg border border-slate-300 hover:bg-slate-50">${s.replace(/_/g,' ')}</button>
+            `).join('')}
+          </div>
+        </section>
+
+        <!-- Options -->
+        <section class="bg-white rounded-2xl border border-slate-200 p-4">
+          <div class="flex justify-between items-center mb-3">
+            <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-500">Sourcing options</h2>
+            <button onclick="showAddOption()" class="text-sm bg-brand-600 text-white px-3 py-1.5 rounded-lg font-medium">+ Add option</button>
+          </div>
+          <div class="space-y-3" id="optionsList">${optionsHtml}</div>
+          ${currentOptions.length > 0 && !quote ? `
+            <button onclick="createQuote()" class="w-full mt-4 bg-emerald-600 text-white py-2.5 rounded-xl font-semibold hover:bg-emerald-700">
+              Generate quotation
+            </button>
+          ` : ''}
+          ${quoteHtml}
+        </section>
+
+        <!-- Add option form (hidden) -->
+        <section id="addOptionForm" class="hidden bg-white rounded-2xl border border-brand-300 p-4 space-y-3">
+          <h2 class="font-semibold">Add sourcing option</h2>
+          <input type="text" id="opt_supplier" placeholder="Supplier / product name" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          <input type="url" id="opt_url" placeholder="Supplier URL" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          <select id="opt_platform" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
+            <option value="1688">1688</option>
+            <option value="Alibaba">Alibaba</option>
+            <option value="Taobao">Taobao</option>
+            <option value="Other">Other</option>
+          </select>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="text-xs text-slate-500">China price (RMB) *</label>
+              <input type="number" id="opt_rmb" step="0.01" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+            </div>
+            <div>
+              <label class="text-xs text-slate-500">Exchange rate</label>
+              <input type="number" id="opt_rate" step="0.01" value="${pricingDefaults.rmb_to_ghs || 1.82}" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+            </div>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <div>
+              <label class="text-xs text-slate-500">China ship</label>
+              <input type="number" id="opt_china_ship" step="1" value="${pricingDefaults.default_china_shipping || 20}" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+            </div>
+            <div>
+              <label class="text-xs text-slate-500">Intl ship</label>
+              <input type="number" id="opt_intl_ship" step="1" value="${pricingDefaults.default_intl_shipping || 80}" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+            </div>
+            <div>
+              <label class="text-xs text-slate-500">Other</label>
+              <input type="number" id="opt_other" step="1" value="${pricingDefaults.default_other_costs || 30}" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+            </div>
+          </div>
+          <div>
+            <label class="text-xs text-slate-500">Commission (leave blank for default)</label>
+            <input type="number" id="opt_commission" step="1" placeholder="Default from settings" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          </div>
+          <input type="text" id="opt_delivery" placeholder="Delivery estimate e.g. 2–3 weeks" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          <textarea id="opt_notes" rows="2" placeholder="Notes for customer" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"></textarea>
+          <div class="flex gap-2">
+            <button onclick="saveOption()" class="flex-1 bg-brand-600 text-white py-2.5 rounded-lg font-medium">Save option</button>
+            <button onclick="hideAddOption()" class="px-4 border border-slate-300 rounded-lg">Cancel</button>
+          </div>
+        </section>
+      `;
+    }
+
+    function showAddOption() {
+      document.getElementById('addOptionForm').classList.remove('hidden');
+      document.getElementById('addOptionForm').scrollIntoView({ behavior: 'smooth' });
+    }
+    function hideAddOption() {
+      document.getElementById('addOptionForm').classList.add('hidden');
+    }
+
+    async function saveOption() {
+      const data = {
+        requestId,
+        supplier_name: document.getElementById('opt_supplier').value,
+        supplier_url: document.getElementById('opt_url').value,
+        platform: document.getElementById('opt_platform').value,
+        china_price_rmb: document.getElementById('opt_rmb').value,
+        china_shipping_ghs: document.getElementById('opt_china_ship').value,
+        intl_shipping_ghs: document.getElementById('opt_intl_ship').value,
+        other_costs_ghs: document.getElementById('opt_other').value,
+        commission_ghs: document.getElementById('opt_commission').value || undefined,
+        delivery_estimate: document.getElementById('opt_delivery').value,
+        notes: document.getElementById('opt_notes').value
+      };
+      // Override exchange if user changed it — for V1 the server uses settings rate primarily
+      const res = await API.addSourcingOption(Auth.getToken(), data);
+      if (res.success) {
+        showToast('Option added · Final: ' + formatMoney(res.finalPriceGhs));
+        hideAddOption();
+        load();
+      } else {
+        showToast(res.error || 'Failed', 'error');
+      }
+    }
+
+    async function createQuote() {
+      const optionIds = currentOptions.map(o => o.option_id);
+      if (!optionIds.length) return;
+      const res = await API.createQuotation(Auth.getToken(), { requestId, optionIds });
+      if (res.success) {
+        showToast('Quotation created: ' + res.quotationId);
+        load();
+      } else {
+        showToast(res.error || 'Failed', 'error');
+      }
+    }
+
+    async function setStatus(status) {
+      const res = await API.updateRequestStatus(Auth.getToken(), { requestId, status });
+      if (res.success) {
+        showToast('Status updated');
+        load();
+      } else {
+        showToast(res.error || 'Failed', 'error');
+      }
+    }
+
+    function copyQuoteLink(qId, token) {
+      const url = window.location.origin + window.location.pathname.replace(/admin\/.*/, '') + 'quotation.html?id=' + qId + '&token=' + token;
+      // Better: construct relative
+      const link = '../quotation.html?id=' + qId + '&token=' + token;
+      const full = new URL(link, window.location.href).href;
+      const msg = `Hi, we've found suitable options for your sourcing request ${requestId}. Your quotation is ready:\n${full}`;
+      navigator.clipboard.writeText(msg).then(() => showToast('WhatsApp message copied'));
+    }
+
+    init();
+  </script>
+</body>
+</html>

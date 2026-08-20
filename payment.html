@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payment — China Source GH</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50: '#f0f9ff', 100: '#e0f2fe', 500: '#0ea5e9', 600: '#0284c7', 700: '#0369a1', 900: '#0c4a6e' }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+  <nav class="bg-white border-b border-slate-200 sticky top-0 z-40">
+    <div class="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
+      <a href="index.html" class="font-semibold text-lg tracking-tight text-brand-900">China Source <span class="text-brand-600">GH</span></a>
+    </div>
+  </nav>
+
+  <main class="max-w-lg mx-auto px-4 py-10">
+    <h1 class="text-2xl font-bold mb-2">Payment</h1>
+    <p class="text-slate-600 text-sm mb-6">Complete payment using the instructions below, then confirm here.</p>
+
+    <div class="bg-white rounded-2xl border border-slate-200 p-5 mb-6">
+      <p class="text-xs text-slate-500 uppercase tracking-wider">Amount to pay</p>
+      <p id="amountDisplay" class="text-3xl font-bold text-brand-700 mt-1">—</p>
+      <p id="orderDisplay" class="text-sm text-slate-500 mt-1 font-mono"></p>
+    </div>
+
+    <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5 mb-6">
+      <h2 class="font-semibold text-amber-900 mb-2">Payment instructions</h2>
+      <div id="instructions" class="text-sm text-amber-900 whitespace-pre-line leading-relaxed">
+        Loading...
+      </div>
+      <p class="text-xs text-amber-700 mt-3">These instructions are set by the business operator. Contact them on WhatsApp if anything is unclear.</p>
+    </div>
+
+    <form id="payForm" class="bg-white rounded-2xl border border-slate-200 p-5 space-y-4">
+      <h2 class="font-semibold text-sm uppercase tracking-wider text-slate-500">I have made payment</h2>
+      <div>
+        <label class="block text-sm font-medium mb-1">Payment method</label>
+        <select name="method" class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+          <option value="Mobile Money">Mobile Money</option>
+          <option value="Bank Transfer">Bank Transfer</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-1">Payment reference / transaction ID *</label>
+        <input type="text" name="reference" required class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" placeholder="e.g. 1234567890" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-1">Amount paid (GHS)</label>
+        <input type="number" name="amount" step="0.01" class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-1">Proof of payment (optional)</label>
+        <input type="file" id="proofFile" accept="image/*" class="w-full text-sm file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-brand-50 file:text-brand-700" />
+      </div>
+      <button type="submit" id="submitBtn" class="w-full bg-brand-600 text-white py-3 rounded-xl font-semibold hover:bg-brand-700 disabled:opacity-60">
+        Submit payment confirmation
+      </button>
+    </form>
+
+    <div id="success" class="hidden text-center py-10">
+      <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4">✓</div>
+      <h2 class="text-xl font-bold mb-2">Payment confirmation submitted</h2>
+      <p class="text-slate-600 text-sm">We will verify your payment and update you shortly.</p>
+    </div>
+  </main>
+
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/utils.js"></script>
+  <script>
+    const orderId = qs('order');
+    const amount = qs('amount');
+
+    document.getElementById('orderDisplay').textContent = orderId ? 'Order ' + orderId : '';
+    document.getElementById('amountDisplay').textContent = amount ? formatMoney(amount) : '—';
+    if (amount) {
+      document.querySelector('[name="amount"]').value = amount;
+    }
+
+    // Load payment instructions from settings via a lightweight public endpoint would be ideal.
+    // For V1 we show a placeholder; admin sets real instructions in Settings.
+    // We'll fetch via a simple approach: instructions can be hard-coded fallback or loaded if we add a public settings endpoint later.
+    document.getElementById('instructions').textContent =
+      'Please contact the business on WhatsApp for current payment details, or use the instructions provided in your quotation message.\n\n(Admin can set permanent instructions in Settings.)';
+
+    const form = document.getElementById('payForm');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!orderId) {
+        showToast('Missing order ID', 'error');
+        return;
+      }
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.textContent = 'Submitting...';
+
+      const fd = new FormData(form);
+      const data = {
+        orderId,
+        method: fd.get('method'),
+        reference: fd.get('reference'),
+        amount: fd.get('amount') || amount
+      };
+
+      if (document.getElementById('proofFile').files[0]) {
+        try {
+          const fileData = await fileToBase64(document.getElementById('proofFile').files[0]);
+          const up = await API.uploadReference(fileData);
+          if (up.success) data.proof_file_id = up.fileId;
+        } catch (err) { /* optional */ }
+      }
+
+      const res = await API.submitPayment(data);
+      if (res.success) {
+        form.classList.add('hidden');
+        document.getElementById('success').classList.remove('hidden');
+      } else {
+        showToast(res.error || 'Failed', 'error');
+        btn.disabled = false;
+        btn.textContent = 'Submit payment confirmation';
+      }
+    });
+  </script>
+</body>
+</html>

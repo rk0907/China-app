@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Requests — China Source GH</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50: '#f0f9ff', 100: '#e0f2fe', 500: '#0ea5e9', 600: '#0284c7', 700: '#0369a1', 900: '#0c4a6e' }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-100 text-slate-900 antialiased pb-20">
+
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-40">
+    <div class="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
+      <a href="index.html" class="font-semibold text-brand-900">← Dashboard</a>
+      <span class="font-medium">Requests</span>
+      <span class="w-16"></span>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 py-4">
+    <div class="flex gap-2 mb-4 overflow-x-auto pb-1">
+      <button onclick="filterStatus('ALL')" class="filter-btn shrink-0 px-3 py-1.5 rounded-full text-xs font-medium bg-brand-600 text-white" data-status="ALL">All</button>
+      <button onclick="filterStatus('NEW')" class="filter-btn shrink-0 px-3 py-1.5 rounded-full text-xs font-medium bg-white border border-slate-300" data-status="NEW">New</button>
+      <button onclick="filterStatus('SOURCING')" class="filter-btn shrink-0 px-3 py-1.5 rounded-full text-xs font-medium bg-white border border-slate-300" data-status="SOURCING">Sourcing</button>
+      <button onclick="filterStatus('QUOTED')" class="filter-btn shrink-0 px-3 py-1.5 rounded-full text-xs font-medium bg-white border border-slate-300" data-status="QUOTED">Quoted</button>
+      <button onclick="filterStatus('AWAITING_PAYMENT')" class="filter-btn shrink-0 px-3 py-1.5 rounded-full text-xs font-medium bg-white border border-slate-300" data-status="AWAITING_PAYMENT">Payment</button>
+      <button onclick="filterStatus('PAYMENT_CONFIRMED')" class="filter-btn shrink-0 px-3 py-1.5 rounded-full text-xs font-medium bg-white border border-slate-300" data-status="PAYMENT_CONFIRMED">Paid</button>
+    </div>
+
+    <input type="search" id="search" placeholder="Search ID, name, WhatsApp, item..." class="w-full mb-4 rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+
+    <div id="list" class="space-y-3">
+      <p class="text-center text-slate-500 py-8">Loading...</p>
+    </div>
+  </main>
+
+  <nav class="fixed bottom-0 inset-x-0 bg-white border-t border-slate-200">
+    <div class="max-w-5xl mx-auto flex justify-around py-2 text-xs">
+      <a href="index.html" class="flex flex-col items-center text-slate-500 py-1"><span class="text-lg">⌂</span> Home</a>
+      <a href="requests.html" class="flex flex-col items-center text-brand-600 font-medium py-1"><span class="text-lg">☰</span> Requests</a>
+      <a href="orders.html" class="flex flex-col items-center text-slate-500 py-1"><span class="text-lg">📦</span> Orders</a>
+      <a href="settings.html" class="flex flex-col items-center text-slate-500 py-1"><span class="text-lg">⚙</span> Settings</a>
+    </div>
+  </nav>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/utils.js"></script>
+  <script>
+    let currentStatus = qs('status') || 'ALL';
+    let searchTimer;
+
+    async function init() {
+      if (!(await Auth.requireAuth())) return;
+      highlightFilter();
+      load();
+      document.getElementById('search').addEventListener('input', () => {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(load, 300);
+      });
+    }
+
+    function filterStatus(s) {
+      currentStatus = s;
+      highlightFilter();
+      load();
+    }
+
+    function highlightFilter() {
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        if (btn.dataset.status === currentStatus) {
+          btn.className = 'filter-btn shrink-0 px-3 py-1.5 rounded-full text-xs font-medium bg-brand-600 text-white';
+        } else {
+          btn.className = 'filter-btn shrink-0 px-3 py-1.5 rounded-full text-xs font-medium bg-white border border-slate-300';
+        }
+      });
+    }
+
+    async function load() {
+      const search = document.getElementById('search').value.trim();
+      const res = await API.getRequests(Auth.getToken(), {
+        status: currentStatus,
+        search: search || undefined
+      });
+      const list = document.getElementById('list');
+      if (!res.success) {
+        list.innerHTML = `<p class="text-red-600 text-center py-6">${res.error}</p>`;
+        return;
+      }
+      if (!res.requests.length) {
+        list.innerHTML = `<p class="text-slate-500 text-center py-8">No requests found</p>`;
+        return;
+      }
+      list.innerHTML = res.requests.map(r => `
+        <a href="request-detail.html?id=${encodeURIComponent(r.requestId)}" class="block bg-white rounded-xl border border-slate-200 p-4 hover:border-brand-300 transition">
+          <div class="flex justify-between items-start gap-2 mb-1">
+            <span class="font-mono text-sm font-semibold text-brand-700">${r.requestId}</span>
+            ${statusBadge(r.status)}
+          </div>
+          <p class="font-medium">${r.item || '—'}</p>
+          <p class="text-sm text-slate-600 mt-0.5">${r.name} · ${r.whatsapp || ''}</p>
+          <div class="flex gap-3 mt-2 text-xs text-slate-500">
+            <span>Qty: ${r.quantity || 1}</span>
+            ${r.budget ? `<span>Budget: ${formatMoney(r.budget)}</span>` : ''}
+            <span>${formatDate(r.createdAt)}</span>
+          </div>
+        </a>
+      `).join('');
+    }
+
+    init();
+  </script>
+</body>
+</html>

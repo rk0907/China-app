@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Orders — China Source GH</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50: '#f0f9ff', 100: '#e0f2fe', 500: '#0ea5e9', 600: '#0284c7', 700: '#0369a1', 900: '#0c4a6e' }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-100 text-slate-900 antialiased pb-20">
+
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-40">
+    <div class="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
+      <a href="index.html" class="font-semibold text-brand-900">← Dashboard</a>
+      <span class="font-medium">Orders</span>
+      <span class="w-16"></span>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 py-4">
+    <div id="list" class="space-y-3">
+      <p class="text-center text-slate-500 py-8">Loading...</p>
+    </div>
+  </main>
+
+  <nav class="fixed bottom-0 inset-x-0 bg-white border-t border-slate-200">
+    <div class="max-w-5xl mx-auto flex justify-around py-2 text-xs">
+      <a href="index.html" class="flex flex-col items-center text-slate-500 py-1"><span class="text-lg">⌂</span> Home</a>
+      <a href="requests.html" class="flex flex-col items-center text-slate-500 py-1"><span class="text-lg">☰</span> Requests</a>
+      <a href="orders.html" class="flex flex-col items-center text-brand-600 font-medium py-1"><span class="text-lg">📦</span> Orders</a>
+      <a href="settings.html" class="flex flex-col items-center text-slate-500 py-1"><span class="text-lg">⚙</span> Settings</a>
+    </div>
+  </nav>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/utils.js"></script>
+  <script>
+    async function init() {
+      if (!(await Auth.requireAuth())) return;
+      const res = await API.getOrders(Auth.getToken());
+      const list = document.getElementById('list');
+      if (!res.success) {
+        list.innerHTML = `<p class="text-red-600 text-center">${res.error}</p>`;
+        return;
+      }
+      if (!res.orders.length) {
+        list.innerHTML = `<p class="text-slate-500 text-center py-8">No orders yet</p>`;
+        return;
+      }
+      list.innerHTML = res.orders.map(o => `
+        <div class="bg-white rounded-xl border border-slate-200 p-4">
+          <div class="flex justify-between items-start mb-1">
+            <span class="font-mono text-sm font-semibold text-brand-700">${o.order_id}</span>
+            ${statusBadge(o.payment_status)}
+          </div>
+          <p class="font-medium">${o.item_summary || '—'}</p>
+          <p class="text-sm text-slate-600">${o.customer_name} · ${o.whatsapp || ''}</p>
+          <div class="flex flex-wrap gap-2 mt-2 text-xs text-slate-500">
+            <span>${formatMoney(o.amount_ghs)}</span>
+            <span>Proc: ${o.procurement_status || '—'}</span>
+            <span>Ship: ${o.shipping_status || '—'}</span>
+          </div>
+          ${o.payment_status === 'PAYMENT_SUBMITTED' ? `
+            <div class="mt-3 flex gap-2">
+              <button onclick="confirmPay('${o.order_id}')" class="text-xs bg-emerald-600 text-white px-3 py-1.5 rounded-lg">Confirm payment</button>
+              <button onclick="rejectPay('${o.order_id}')" class="text-xs border border-slate-300 px-3 py-1.5 rounded-lg">Reject</button>
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
+    }
+
+    async function confirmPay(orderId) {
+      const res = await API.confirmPayment(Auth.getToken(), { orderId, action: 'confirm' });
+      if (res.success) {
+        showToast(res.message || 'Confirmed');
+        init();
+      } else showToast(res.error || 'Failed', 'error');
+    }
+
+    async function rejectPay(orderId) {
+      const res = await API.confirmPayment(Auth.getToken(), { orderId, action: 'reject' });
+      if (res.success) {
+        showToast(res.message || 'Rejected');
+        init();
+      } else showToast(res.error || 'Failed', 'error');
+    }
+
+    init();
+  </script>
+</body>
+</html>

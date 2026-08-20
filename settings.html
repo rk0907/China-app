@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Settings — China Source GH</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50: '#f0f9ff', 100: '#e0f2fe', 500: '#0ea5e9', 600: '#0284c7', 700: '#0369a1', 900: '#0c4a6e' }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-100 text-slate-900 antialiased pb-20">
+
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-40">
+    <div class="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
+      <a href="index.html" class="font-semibold text-brand-900">← Dashboard</a>
+      <span class="font-medium">Settings</span>
+      <span class="w-16"></span>
+    </div>
+  </header>
+
+  <main class="max-w-lg mx-auto px-4 py-6 space-y-6" id="main">
+    <p class="text-center text-slate-500">Loading...</p>
+  </main>
+
+  <nav class="fixed bottom-0 inset-x-0 bg-white border-t border-slate-200">
+    <div class="max-w-5xl mx-auto flex justify-around py-2 text-xs">
+      <a href="index.html" class="flex flex-col items-center text-slate-500 py-1"><span class="text-lg">⌂</span> Home</a>
+      <a href="requests.html" class="flex flex-col items-center text-slate-500 py-1"><span class="text-lg">☰</span> Requests</a>
+      <a href="orders.html" class="flex flex-col items-center text-slate-500 py-1"><span class="text-lg">📦</span> Orders</a>
+      <a href="settings.html" class="flex flex-col items-center text-brand-600 font-medium py-1"><span class="text-lg">⚙</span> Settings</a>
+    </div>
+  </nav>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/utils.js"></script>
+  <script>
+    async function init() {
+      if (!(await Auth.requireAuth())) return;
+      const res = await API.getSettings(Auth.getToken());
+      if (!res.success) {
+        document.getElementById('main').innerHTML = '<p class="text-red-600">' + (res.error || 'Error') + '</p>';
+        return;
+      }
+      const s = res.settings || {};
+
+      document.getElementById('main').innerHTML = `
+        <section class="bg-white rounded-2xl border border-slate-200 p-5 space-y-4">
+          <h2 class="font-semibold">Business</h2>
+          <div>
+            <label class="text-sm font-medium">Business name</label>
+            <input id="business_name" value="${s.business_name || ''}" class="w-full mt-1 rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          </div>
+          <div>
+            <label class="text-sm font-medium">WhatsApp number</label>
+            <input id="whatsapp_number" value="${s.whatsapp_number || ''}" class="w-full mt-1 rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          </div>
+          <div>
+            <label class="text-sm font-medium">Support email</label>
+            <input id="support_email" value="${s.support_email || ''}" class="w-full mt-1 rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          </div>
+          <div>
+            <label class="text-sm font-medium">Payment instructions</label>
+            <textarea id="payment_instructions" rows="5" class="w-full mt-1 rounded-lg border border-slate-300 px-3 py-2 text-sm">${s.payment_instructions || ''}</textarea>
+          </div>
+        </section>
+
+        <section class="bg-white rounded-2xl border border-slate-200 p-5 space-y-4">
+          <h2 class="font-semibold">Pricing</h2>
+          <div>
+            <label class="text-sm font-medium">RMB → GHS exchange rate</label>
+            <input id="rmb_to_ghs" type="number" step="0.01" value="${s.rmb_to_ghs || 1.82}" class="w-full mt-1 rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-sm font-medium">Commission type</label>
+              <select id="commission_type" class="w-full mt-1 rounded-lg border border-slate-300 px-3 py-2 text-sm">
+                <option value="fixed" ${s.commission_type === 'fixed' ? 'selected' : ''}>Fixed (GH₵)</option>
+                <option value="percent" ${s.commission_type === 'percent' ? 'selected' : ''}>Percentage (%)</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-sm font-medium">Commission value</label>
+              <input id="commission_value" type="number" step="0.01" value="${s.commission_value || 100}" class="w-full mt-1 rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+            </div>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <div>
+              <label class="text-xs text-slate-500">Default China ship</label>
+              <input id="default_china_shipping" type="number" value="${s.default_china_shipping || 20}" class="w-full mt-1 rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+            </div>
+            <div>
+              <label class="text-xs text-slate-500">Default intl ship</label>
+              <input id="default_intl_shipping" type="number" value="${s.default_intl_shipping || 80}" class="w-full mt-1 rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+            </div>
+            <div>
+              <label class="text-xs text-slate-500">Default other</label>
+              <input id="default_other_costs" type="number" value="${s.default_other_costs || 30}" class="w-full mt-1 rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+            </div>
+          </div>
+          <div>
+            <label class="text-sm font-medium">Quotation validity (days)</label>
+            <input id="quotation_validity_days" type="number" value="${s.quotation_validity_days || 3}" class="w-full mt-1 rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          </div>
+        </section>
+
+        <button onclick="save()" class="w-full bg-brand-600 text-white py-3 rounded-xl font-semibold hover:bg-brand-700">
+          Save settings
+        </button>
+      `;
+    }
+
+    async function save() {
+      const settings = {
+        business_name: document.getElementById('business_name').value,
+        whatsapp_number: document.getElementById('whatsapp_number').value,
+        support_email: document.getElementById('support_email').value,
+        payment_instructions: document.getElementById('payment_instructions').value,
+        rmb_to_ghs: document.getElementById('rmb_to_ghs').value,
+        commission_type: document.getElementById('commission_type').value,
+        commission_value: document.getElementById('commission_value').value,
+        default_china_shipping: document.getElementById('default_china_shipping').value,
+        default_intl_shipping: document.getElementById('default_intl_shipping').value,
+        default_other_costs: document.getElementById('default_other_costs').value,
+        quotation_validity_days: document.getElementById('quotation_validity_days').value
+      };
+      const res = await API.updateSettings(Auth.getToken(), settings);
+      if (res.success) showToast('Settings saved');
+      else showToast(res.error || 'Failed', 'error');
+    }
+
+    init();
+  </script>
+</body>
+</html>

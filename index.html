@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard — China Source GH</title>
+  <title>China Source GH — Tell us what you need</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -16,98 +16,89 @@
       }
     }
   </script>
+  <style>
+    body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+  </style>
 </head>
-<body class="bg-slate-100 text-slate-900 antialiased pb-20">
+<body class="bg-slate-50 text-slate-900 antialiased">
 
-  <!-- Top bar -->
-  <header class="bg-white border-b border-slate-200 sticky top-0 z-40">
+  <!-- Nav -->
+  <nav class="bg-white border-b border-slate-200 sticky top-0 z-40">
     <div class="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
-      <span class="font-semibold text-brand-900">China Source <span class="text-brand-600">GH</span></span>
-      <div class="flex items-center gap-3 text-sm">
-        <span id="adminEmail" class="text-slate-500 hidden sm:inline"></span>
-        <button onclick="logout()" class="text-slate-600 hover:text-red-600">Logout</button>
+      <a href="index.html" class="font-semibold text-lg tracking-tight text-brand-900">China Source <span class="text-brand-600">GH</span></a>
+      <div class="flex items-center gap-4 text-sm">
+        <a href="how-it-works.html" class="text-slate-600 hover:text-brand-700">How it works</a>
+        <a href="track.html" class="text-slate-600 hover:text-brand-700">Track request</a>
+        <a href="request.html" class="bg-brand-600 text-white px-3 py-1.5 rounded-lg font-medium hover:bg-brand-700 transition">Request an item</a>
       </div>
-    </div>
-  </header>
-
-  <main class="max-w-5xl mx-auto px-4 py-6">
-    <div class="mb-6">
-      <h1 class="text-2xl font-bold">Good day</h1>
-      <p id="dateDisplay" class="text-slate-500 text-sm"></p>
-    </div>
-
-    <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-500 mb-3">Today’s operations</h2>
-    <div id="cards" class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
-      <!-- filled by JS -->
-    </div>
-
-    <div class="flex gap-3 mb-4">
-      <a href="requests.html" class="flex-1 bg-brand-600 text-white text-center py-3 rounded-xl font-semibold hover:bg-brand-700">Sourcing Requests</a>
-      <a href="orders.html" class="flex-1 bg-white border border-slate-300 text-center py-3 rounded-xl font-semibold hover:bg-slate-50">Orders</a>
-    </div>
-    <a href="settings.html" class="block text-center text-sm text-slate-500 hover:text-brand-700">Settings</a>
-  </main>
-
-  <!-- Bottom nav (mobile) -->
-  <nav class="fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 safe-area">
-    <div class="max-w-5xl mx-auto flex justify-around py-2 text-xs">
-      <a href="index.html" class="flex flex-col items-center text-brand-600 font-medium py-1">
-        <span class="text-lg">⌂</span> Home
-      </a>
-      <a href="requests.html" class="flex flex-col items-center text-slate-500 py-1">
-        <span class="text-lg">☰</span> Requests
-      </a>
-      <a href="orders.html" class="flex flex-col items-center text-slate-500 py-1">
-        <span class="text-lg">📦</span> Orders
-      </a>
-      <a href="settings.html" class="flex flex-col items-center text-slate-500 py-1">
-        <span class="text-lg">⚙</span> Settings
-      </a>
     </div>
   </nav>
 
-  <script src="../js/config.js"></script>
-  <script src="../js/api.js"></script>
-  <script src="../js/utils.js"></script>
-  <script>
-    async function init() {
-      if (!(await Auth.requireAuth())) return;
-      document.getElementById('adminEmail').textContent = Auth.getEmail() || '';
-
-      const res = await API.getDashboard(Auth.getToken());
-      if (!res.success) {
-        showToast(res.error || 'Failed to load', 'error');
-        return;
-      }
-
-      document.getElementById('dateDisplay').textContent = res.date || '';
-
-      const c = res.counts || {};
-      const items = [
-        { label: 'New Requests', value: c.newRequests, href: 'requests.html?status=NEW', color: 'bg-blue-50 text-blue-800' },
-        { label: 'To Source', value: c.toSource, href: 'requests.html?status=SOURCING', color: 'bg-purple-50 text-purple-800' },
-        { label: 'Quotes Waiting', value: c.quotesAwaiting, href: 'requests.html?status=QUOTED', color: 'bg-amber-50 text-amber-800' },
-        { label: 'Awaiting Payment', value: c.awaitingPayment, href: 'requests.html?status=AWAITING_PAYMENT', color: 'bg-orange-50 text-orange-800' },
-        { label: 'Ready to Purchase', value: c.readyToPurchase, href: 'orders.html', color: 'bg-emerald-50 text-emerald-800' },
-        { label: 'In Procurement', value: c.inProcurement, href: 'orders.html', color: 'bg-teal-50 text-teal-800' },
-        { label: 'In Transit', value: c.inTransit, href: 'orders.html', color: 'bg-sky-50 text-sky-800' },
-        { label: 'Ready for Delivery', value: c.readyDelivery, href: 'orders.html', color: 'bg-green-50 text-green-800' }
-      ];
-
-      document.getElementById('cards').innerHTML = items.map(item => `
-        <a href="${item.href}" class="block ${item.color} rounded-xl p-4 hover:opacity-90 transition">
-          <p class="text-2xl font-bold">${item.value || 0}</p>
-          <p class="text-xs font-medium mt-1 leading-tight">${item.label}</p>
+  <!-- Hero -->
+  <section class="bg-white">
+    <div class="max-w-5xl mx-auto px-4 py-16 md:py-24 text-center">
+      <p class="text-brand-600 font-medium text-sm uppercase tracking-wider mb-3">China Sourcing · Ghana Delivery</p>
+      <h1 class="text-4xl md:text-5xl font-bold tracking-tight text-slate-900 leading-tight">
+        Tell us what you need.<br>
+        <span class="text-brand-600">We’ll find it in China.</span>
+      </h1>
+      <p class="mt-6 text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
+        Send us a product image, link or description, tell us your budget and quantity, and we’ll source suitable options for you — then handle procurement all the way to Ghana.
+      </p>
+      <div class="mt-10 flex flex-col sm:flex-row gap-3 justify-center">
+        <a href="request.html" class="inline-flex items-center justify-center bg-brand-600 text-white px-8 py-3.5 rounded-xl font-semibold text-lg hover:bg-brand-700 transition shadow-sm">
+          Request an Item
         </a>
-      `).join('');
-    }
+        <a href="how-it-works.html" class="inline-flex items-center justify-center bg-white text-slate-700 border border-slate-300 px-8 py-3.5 rounded-xl font-semibold text-lg hover:bg-slate-50 transition">
+          How it works
+        </a>
+      </div>
+    </div>
+  </section>
 
-    function logout() {
-      Auth.clear();
-      window.location.href = 'login.html';
-    }
+  <!-- Value props -->
+  <section class="max-w-5xl mx-auto px-4 py-16">
+    <div class="grid md:grid-cols-3 gap-6">
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+        <div class="w-10 h-10 rounded-xl bg-brand-100 text-brand-700 flex items-center justify-center text-xl font-bold mb-4">1</div>
+        <h3 class="font-semibold text-lg mb-2">You describe it</h3>
+        <p class="text-slate-600 text-sm leading-relaxed">Image, link, or plain description. Quantity, budget, and any preferences — that’s all we need to start.</p>
+      </div>
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+        <div class="w-10 h-10 rounded-xl bg-brand-100 text-brand-700 flex items-center justify-center text-xl font-bold mb-4">2</div>
+        <h3 class="font-semibold text-lg mb-2">We source & quote</h3>
+        <p class="text-slate-600 text-sm leading-relaxed">We search Chinese suppliers, calculate the landed cost in Ghana Cedis, and send you clear options.</p>
+      </div>
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+        <div class="w-10 h-10 rounded-xl bg-brand-100 text-brand-700 flex items-center justify-center text-xl font-bold mb-4">3</div>
+        <h3 class="font-semibold text-lg mb-2">We handle the rest</h3>
+        <p class="text-slate-600 text-sm leading-relaxed">Once you approve and pay, we purchase, consolidate, ship and update you until it reaches Ghana.</p>
+      </div>
+    </div>
+  </section>
 
-    init();
-  </script>
+  <!-- CTA band -->
+  <section class="bg-brand-900 text-white">
+    <div class="max-w-5xl mx-auto px-4 py-14 text-center">
+      <h2 class="text-2xl md:text-3xl font-bold mb-3">Ready to source something?</h2>
+      <p class="text-brand-100 mb-8 max-w-xl mx-auto">From single pieces to bulk orders — tell us what you need and we’ll take it from there.</p>
+      <a href="request.html" class="inline-flex bg-white text-brand-900 px-8 py-3.5 rounded-xl font-semibold hover:bg-brand-50 transition">
+        Request an Item
+      </a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-200 bg-white">
+    <div class="max-w-5xl mx-auto px-4 py-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-slate-500">
+      <div>© 2026 China Source GH</div>
+      <div class="flex gap-6">
+        <a href="how-it-works.html" class="hover:text-slate-800">How it works</a>
+        <a href="track.html" class="hover:text-slate-800">Track request</a>
+        <a href="admin/login.html" class="hover:text-slate-800">Admin</a>
+      </div>
+    </div>
+  </footer>
+
 </body>
 </html>

@@ -264,8 +264,6 @@
         <div class="filters">
           <button class="filter-btn active" data-f="ALL" onclick="filterReq('ALL')">All</button>
           <button class="filter-btn" data-f="NEW" onclick="filterReq('NEW')">New</button>
-          <button class="filter-btn" data-f="SOURCING" onclick="filterReq('SOURCING')">Sourcing</button>
-          <button class="filter-btn" data-f="QUOTED" onclick="filterReq('QUOTED')">Quoted</button>
           <button class="filter-btn" data-f="ACCEPTED" onclick="filterReq('ACCEPTED')">Accepted</button>
         </div>
         <div id="reqList"></div>
@@ -501,8 +499,6 @@
 
       const cards = [
         { v: reqs.filter(r => r.status === 'NEW').length, l: 'New Requests', go: () => { filterReq('NEW'); show('requests'); } },
-        { v: reqs.filter(r => r.status === 'SOURCING').length, l: 'Sourcing', go: () => { filterReq('SOURCING'); show('requests'); } },
-        { v: reqs.filter(r => r.status === 'QUOTED').length, l: 'Quoted', go: () => { filterReq('QUOTED'); show('requests'); } },
         { v: orders.filter(o => o.payment_status !== 'CONFIRMED').length, l: 'Awaiting Payment', go: () => show('orders') },
         { v: orders.filter(o => o.payment_status === 'CONFIRMED').length, l: 'Ready to Buy', go: () => show('orders') },
         { v: reqs.length, l: 'Total Requests', go: () => show('requests') }
@@ -719,7 +715,7 @@
         <div class="detail-card">
           <p class="detail-label">Update status</p>
           <div class="status-btns">
-            ${['NEW','SOURCING','QUOTED','ACCEPTED'].map(s =>
+            ${['NEW','ACCEPTED'].map(s =>
               `<button class="status-btn ${r.status === s ? 'active' : ''}" onclick="setStatus('${r.id}','${s}')">${s}</button>`
             ).join('')}
           </div>
@@ -958,11 +954,18 @@
         el.innerHTML = '<div class="empty">No orders yet.<br>Accept a request to create one.</div>';
         return;
       }
-      el.innerHTML = list.map(o => `
+      el.innerHTML = list.map(o => {
+        const comm = parseFloat(o.commission_ghs) || 0;
+        const ship = parseFloat(o.airfreight_ghs) || 0;
+        const china = parseFloat(o.cost_china) || 0;
+        const cur = (o.cost_currency || 'RMB').toUpperCase();
+        const chinaPrefix = cur === 'USD' ? '$' : (cur === 'GHS' ? 'GH₵' : '¥');
+        const payLabel = o.payment_status === 'CONFIRMED' ? 'READY TO BUY' : 'AWAITING PAYMENT';
+        return `
         <div class="list-card" style="cursor:default">
           <div class="list-top">
             <span class="list-id">${o.id}</span>
-            <span class="badge ${o.payment_status === 'CONFIRMED' ? 'dark' : ''}">${o.payment_status}</span>
+            <span class="badge ${o.payment_status === 'CONFIRMED' ? 'dark' : ''}">${payLabel}</span>
           </div>
           <div class="list-title">${o.item || '—'}</div>
           <div class="list-meta">${o.customer || ''} · ${o.whatsapp || ''}</div>
@@ -971,17 +974,21 @@
             <span>Qty ${o.quantity || 1}</span>
             <span>${fmtDate(o.created)}</span>
           </div>
-          ${(o.commission_ghs || o.airfreight_ghs) ? `
-            <div class="list-foot" style="margin-top:0.35rem">
-              ${o.commission_ghs ? '<span>Commission GH₵' + fmt(o.commission_ghs) + '</span>' : ''}
-              ${o.airfreight_ghs ? '<span>Airfreight GH₵' + fmt(o.airfreight_ghs) + '</span>' : ''}
+          <div class="list-foot" style="margin-top:0.35rem;flex-wrap:wrap">
+            <span>Commission GH₵${fmt(comm)}</span>
+            <span>Airfreight GH₵${fmt(ship)}</span>
+          </div>
+          ${china > 0 ? `
+            <div class="list-foot" style="margin-top:0.25rem">
+              <span style="font-weight:600;color:var(--black)">China budget ${chinaPrefix}${fmt(china)}</span>
             </div>
           ` : ''}
           ${o.payment_status !== 'CONFIRMED' ? `
             <button class="btn-black" style="margin-top:0.85rem;width:100%" onclick="confirmPay('${o.id}')">CONFIRM PAYMENT</button>
-          ` : '<p style="margin-top:0.75rem;font-size:0.75rem;font-weight:600;color:var(--gray)">✓ Ready to purchase</p>'}
+          ` : '<p style="margin-top:0.75rem;font-size:0.75rem;font-weight:600;color:var(--gray)">✓ Ready to purchase in China</p>'}
         </div>
-      `).join('');
+      `;
+      }).join('');
     }
 
     async function confirmPay(id) {

@@ -453,31 +453,48 @@
       const reqs = getRequests();
       const orders = getOrders();
 
-      // Finance totals (stored in GHS on each order)
-      let commissionGhs = 0, airfreightGhs = 0, revenueGhs = 0, productGhs = 0;
+      // Finance totals (GHS). Per-order: fill product if missing; track unallocated.
+      let commissionGhs = 0, airfreightGhs = 0, revenueGhs = 0, productGhs = 0, unallocatedGhs = 0;
       orders.forEach(o => {
         const amt = parseFloat(o.amount) || 0;
+        const comm = parseFloat(o.commission_ghs) || 0;
+        const ship = parseFloat(o.airfreight_ghs) || 0;
+        let prod = parseFloat(o.product_ghs) || 0;
+
         revenueGhs += amt;
-        commissionGhs += parseFloat(o.commission_ghs) || 0;
-        airfreightGhs += parseFloat(o.airfreight_ghs) || 0;
-        productGhs += parseFloat(o.product_ghs) || 0;
+        commissionGhs += comm;
+        airfreightGhs += ship;
+
+        if (prod > 0) {
+          productGhs += prod;
+        } else if (amt > 0 && (comm > 0 || ship > 0)) {
+          // Partial breakdown: remainder of invoice is product
+          prod = Math.max(0, amt - comm - ship);
+          productGhs += prod;
+        } else if (amt > 0) {
+          // No breakdown at all — don't invent commission/freight
+          unallocatedGhs += amt;
+        }
       });
-      // If older orders lack breakdown, treat remainder as product
-      if (productGhs === 0 && revenueGhs > 0) {
-        productGhs = Math.max(0, revenueGhs - commissionGhs - airfreightGhs);
-      }
+
+      const earningsGhs = commissionGhs + airfreightGhs;
 
       const fin = [
+        { key: 'earnings', label: 'Your earnings', ghs: earningsGhs },
         { key: 'commission', label: 'Commission earned', ghs: commissionGhs },
         { key: 'airfreight', label: 'Airfreight collected', ghs: airfreightGhs },
         { key: 'product', label: 'Product cost (sourced)', ghs: productGhs },
         { key: 'revenue', label: 'Total invoiced', ghs: revenueGhs }
       ];
+      if (unallocatedGhs > 0) {
+        fin.push({ key: 'unalloc', label: 'Unallocated (no breakdown)', ghs: unallocatedGhs });
+      }
 
       document.getElementById('financeCards').innerHTML = fin.map(f => {
         const d = toDashCur(f.ghs);
+        const accent = f.key === 'earnings' ? 'font-weight:800' : '';
         return `<div class="dash-card" style="cursor:default">
-          <div class="num" style="font-size:1.25rem">${d.p}${fmt(d.v)}</div>
+          <div class="num" style="font-size:1.25rem;${accent}">${d.p}${fmt(d.v)}</div>
           <div class="lbl">${f.label}</div>
         </div>`;
       }).join('');

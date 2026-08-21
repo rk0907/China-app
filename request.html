@@ -47,6 +47,21 @@
     .nav-tab:not(.active):hover { background: var(--light); }
     .nav-back { font-size: 0.75rem; font-weight: 500; color: var(--gray); }
     .nav-back:hover { color: var(--black); }
+    .hamburger {
+      display: none; width: 40px; height: 40px; border: none; background: none;
+      cursor: pointer; align-items: center; justify-content: center; flex-direction: column; gap: 5px; z-index: 120;
+    }
+    .hamburger span { display: block; width: 20px; height: 2px; background: var(--black); transition: 0.25s; }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    .mobile-menu {
+      display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.98); z-index: 110;
+      flex-direction: column; align-items: center; justify-content: center; gap: 1.25rem;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a { font-size: 1.35rem; font-weight: 700; padding: 0.55rem 1.25rem; border-radius: 999px; }
+    .mobile-menu a.active { background: var(--black); color: var(--white); }
 
     /* Main */
     main { max-width: 520px; margin: 0 auto; padding: 3rem 1.25rem 5rem; }
@@ -187,9 +202,10 @@
     }
     .btn-outline:hover { background: var(--black); color: var(--white); }
 
-    @media (max-width: 480px) {
+    @media (max-width: 768px) {
       .grid-2 { grid-template-columns: 1fr; }
-      .nav-center { display: none; }
+      .nav-center, .nav-back { display: none; }
+      .hamburger { display: flex; }
     }
   </style>
 </head>
@@ -203,11 +219,19 @@
     </div>
     <div class="nav-center">
       <a href="index.html" class="nav-tab">HOME</a>
-      <a href="index.html#process" class="nav-tab">PROCESS</a>
       <a href="request.html" class="nav-tab active">REQUEST</a>
+      <a href="terms.html" class="nav-tab">TERMS</a>
     </div>
     <a href="index.html" class="nav-back">← Home</a>
+    <button class="hamburger" id="hamburger" aria-label="Menu" type="button">
+      <span></span><span></span><span></span>
+    </button>
   </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html">Home</a>
+    <a href="request.html" class="active">Request</a>
+    <a href="terms.html">Terms &amp; Conditions</a>
+  </div>
 
   <main>
     <div id="formWrap">
@@ -310,7 +334,7 @@
     //  PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL BELOW
     //  (from Deploy → Web app — see SETUP.md)
     // ═══════════════════════════════════════════════════════════
-    const API = 'https://script.google.com/macros/s/AKfycbz0IbJf3EFUe34AnzYCcwHwIOHoLGATdDhvRFFgLQkF5sEWYMkffY48F5XZPa07PLXToA/exec';
+    const API = 'https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec';
 
     const form = document.getElementById('form');
     const btn = document.getElementById('btn');
@@ -374,6 +398,21 @@
       document.getElementById('formWrap').style.display = 'none';
       document.getElementById('success').style.display = 'block';
       document.getElementById('reqId').textContent = id;
+    }
+
+    const ham = document.getElementById('hamburger');
+    const menu = document.getElementById('mobileMenu');
+    if (ham && menu) {
+      ham.addEventListener('click', () => {
+        ham.classList.toggle('open');
+        menu.classList.toggle('open');
+        document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
+      });
+      menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+        ham.classList.remove('open');
+        menu.classList.remove('open');
+        document.body.style.overflow = '';
+      }));
     }
   </script>
 </body>

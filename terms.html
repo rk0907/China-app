@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Terms &amp; Conditions — KAYA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --black: #0a0a0a; --gray: #6b6b6b; --light: #f5f5f5;
+      --white: #ffffff; --border: #e8e8e8;
+    }
+    body {
+      font-family: 'Montserrat', system-ui, sans-serif;
+      background: var(--white); color: var(--black);
+      -webkit-font-smoothing: antialiased; line-height: 1.6;
+    }
+    a { text-decoration: none; color: inherit; }
+
+    .nav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.1rem 1.5rem;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .logo img { height: 40px; width: auto; display: block; }
+    .nav-center { display: flex; gap: 0.35rem; }
+    .nav-tab {
+      font-size: 0.65rem; font-weight: 600; letter-spacing: 0.08em;
+      padding: 0.35rem 0.9rem; border-radius: 999px; transition: all 0.2s;
+    }
+    .nav-tab.active { background: var(--black); color: var(--white); }
+    .nav-tab:not(.active):hover { background: var(--light); }
+
+    .hamburger {
+      display: none; width: 40px; height: 40px; border: none; background: none;
+      cursor: pointer; align-items: center; justify-content: center; flex-direction: column; gap: 5px;
+      z-index: 120;
+    }
+    .hamburger span {
+      display: block; width: 20px; height: 2px; background: var(--black);
+      transition: transform 0.25s, opacity 0.25s;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .mobile-menu {
+      display: none; position: fixed; inset: 0;
+      background: rgba(255,255,255,0.98); z-index: 110;
+      flex-direction: column; align-items: center; justify-content: center; gap: 1.25rem;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      font-size: 1.35rem; font-weight: 700; padding: 0.55rem 1.25rem; border-radius: 999px;
+    }
+    .mobile-menu a.active { background: var(--black); color: var(--white); }
+
+    main { max-width: 640px; margin: 0 auto; padding: 3rem 1.25rem 5rem; }
+    .page-label {
+      font-size: 0.65rem; font-weight: 600; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--gray); margin-bottom: 0.75rem;
+    }
+    h1 {
+      font-size: clamp(1.9rem, 5vw, 2.6rem); font-weight: 800;
+      letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 0.5rem;
+    }
+    h1 em { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 600; }
+    .updated { font-size: 0.8rem; color: var(--gray); margin-bottom: 2.5rem; }
+
+    h2 {
+      font-size: 1rem; font-weight: 700; margin: 2rem 0 0.75rem;
+      letter-spacing: -0.01em;
+    }
+    p, li { font-size: 0.9rem; color: #333; margin-bottom: 0.75rem; }
+    ul { padding-left: 1.25rem; margin-bottom: 1rem; }
+    li { margin-bottom: 0.4rem; }
+    strong { color: var(--black); }
+
+    .note {
+      background: var(--light); border-radius: 14px; padding: 1.15rem 1.25rem;
+      margin: 1.5rem 0; font-size: 0.85rem; color: #333;
+    }
+
+    footer {
+      border-top: 1px solid var(--border); padding: 1.5rem;
+      text-align: center; font-size: 0.75rem; color: var(--gray);
+    }
+
+    @media (max-width: 768px) {
+      .nav-center { display: none; }
+      .hamburger { display: flex; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <a href="index.html" class="logo"><img src="logo.png" alt="KAYA" /></a>
+    <div class="nav-center">
+      <a href="index.html" class="nav-tab">HOME</a>
+      <a href="request.html" class="nav-tab">REQUEST</a>
+      <a href="terms.html" class="nav-tab active">TERMS</a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Menu" type="button">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html">Home</a>
+    <a href="request.html">Request</a>
+    <a href="terms.html" class="active">Terms &amp; Conditions</a>
+  </div>
+
+  <main>
+    <p class="page-label">Legal</p>
+    <h1>Terms &amp;<br><em>Conditions</em></h1>
+    <p class="updated">Last updated: August 2026 · KAYA International Wishlist &amp; Sourcing</p>
+
+    <p>By submitting a sourcing request or placing an order with KAYA (“we”, “us”, “our”), you agree to these Terms &amp; Conditions. Please read them carefully before using our service.</p>
+
+    <h2>1. Service description</h2>
+    <p>KAYA is a sourcing and procurement concierge. We help customers in Ghana find, purchase, and ship products from China (including Guangzhou suppliers, 1688, Alibaba, and related channels). We quote landed prices in Ghana Cedis where possible and coordinate procurement and delivery.</p>
+
+    <h2>2. Requests and quotations</h2>
+    <ul>
+      <li>Submitting a request does <strong>not</strong> create a binding purchase until you accept a written quotation and we confirm payment instructions.</li>
+      <li>Quotations are based on supplier prices, estimated shipping, and our service fee at the time of sourcing. Prices can change if suppliers update stock or rates.</li>
+      <li>We may decline requests that are illegal, restricted, or impractical to fulfil.</li>
+    </ul>
+
+    <h2>3. Commission and fees</h2>
+    <p>Our standard service commission is <strong>10% of the product cost</strong> (in Ghana Cedis equivalent), unless we agree a different rate with you for a specific order. The quotation will show:</p>
+    <ul>
+      <li>Product / supplier cost</li>
+      <li>Our commission (adjustable per item where agreed)</li>
+      <li>Airfreight or shipping estimate</li>
+      <li><strong>Landed total</strong> you are asked to pay</li>
+    </ul>
+    <p>Currency conversion (e.g. RMB or USD to GHS) uses rates current at the time of quoting; minor differences may occur by the time payment is made.</p>
+
+    <h2>4. Payment</h2>
+    <ul>
+      <li>No payment is required before you receive and accept a quotation.</li>
+      <li>Payment is typically via Mobile Money or bank transfer as instructed on your order.</li>
+      <li>Orders move to procurement only after we confirm receipt of funds.</li>
+    </ul>
+
+    <h2>5. Delivery times — important disclaimer</h2>
+    <div class="note">
+      <strong>Delivery timelines are estimates only.</strong> Typical airfreight from China to Ghana may take around 2–3 weeks or longer, but this is <strong>not guaranteed</strong>. Delays can occur due to supplier production, consolidation, carrier schedules, public holidays, weather, or customs processing. We will keep you updated, but we are not liable for losses arising solely from delay beyond our reasonable control.
+    </div>
+
+    <h2>6. Customs, immigration and inspections</h2>
+    <p>Goods entering Ghana are subject to checks by Ghana Customs and other authorities. Inspection, detention, or additional duties may apply depending on the product and prevailing rules.</p>
+    <ul>
+      <li>We <strong>always try to deliver</strong> every order that has been paid for and shipped.</li>
+      <li>We cannot control or guarantee the outcome of official inspections or regulatory decisions.</li>
+      <li>Any duties, taxes, or clearance fees charged by authorities are the customer’s responsibility unless our quotation explicitly stated otherwise.</li>
+      <li>Restricted or prohibited items may be seized; in such cases refunds are limited to amounts we can recover after costs.</li>
+    </ul>
+
+    <h2>7. Product quality and descriptions</h2>
+    <p>We source according to your description, photos, or links. Factory or marketplace quality can vary. Where possible we share options before you pay. Once you approve an option and we purchase, changes or returns depend on the supplier’s policy and shipping stage — many China-to-Ghana shipments are final sale after purchase.</p>
+
+    <h2>8. Cancellations and refunds</h2>
+    <ul>
+      <li><strong>Before payment:</strong> you may cancel a request at any time.</li>
+      <li><strong>After payment, before purchase:</strong> we may refund less any non-recoverable costs already incurred.</li>
+      <li><strong>After purchase:</strong> refunds are only possible to the extent the supplier refunds us; shipping already paid is usually non-refundable.</li>
+    </ul>
+
+    <h2>9. Liability</h2>
+    <p>To the fullest extent permitted by law, KAYA is not liable for indirect or consequential losses (including lost profits). Our total liability for any order is limited to the amount you paid us for that order.</p>
+
+    <h2>10. Communication</h2>
+    <p>We primarily contact you via WhatsApp using the number you provide on the request form. Please keep that number reachable for quotes and delivery updates.</p>
+
+    <h2>11. Changes</h2>
+    <p>We may update these Terms from time to time. The version published on this page applies to new requests from the update date.</p>
+
+    <h2>12. Contact</h2>
+    <p>Questions about these Terms or an order: reach us on the WhatsApp number used for your request, or through the contact details we provide after you submit.</p>
+
+    <div class="note">
+      By clicking <strong>Submit Request</strong> or paying against a KAYA quotation, you confirm that you have read and agree to these Terms &amp; Conditions.
+    </div>
+  </main>
+
+  <footer>© 2026 KAYA · Tema, Ghana</footer>
+
+  <script>
+    const ham = document.getElementById('hamburger');
+    const menu = document.getElementById('mobileMenu');
+    ham.addEventListener('click', () => {
+      ham.classList.toggle('open');
+      menu.classList.toggle('open');
+      document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
+    });
+    menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+      ham.classList.remove('open');
+      menu.classList.remove('open');
+      document.body.style.overflow = '';
+    }));
+  </script>
+</body>
+</html>

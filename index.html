@@ -64,6 +64,36 @@
     .nav-right a { color: var(--gray); transition: color 0.2s; }
     .nav-right a:hover { color: var(--black); }
 
+    .hamburger {
+      display: none; width: 40px; height: 40px; border: none; background: none;
+      cursor: pointer; align-items: center; justify-content: center; flex-direction: column; gap: 5px;
+      z-index: 120; position: relative;
+    }
+    .hamburger span {
+      display: block; width: 20px; height: 2px; background: var(--black);
+      transition: transform 0.25s, opacity 0.25s;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .mobile-menu {
+      display: none; position: fixed; inset: 0;
+      background: rgba(255,255,255,0.98); z-index: 110;
+      flex-direction: column; align-items: center; justify-content: center; gap: 1.25rem;
+      padding: 5rem 2rem;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em;
+      padding: 0.55rem 1.25rem; border-radius: 999px; transition: background 0.2s, color 0.2s;
+    }
+    .mobile-menu a:hover, .mobile-menu a.active { background: var(--black); color: var(--white); }
+    .mobile-menu .mm-sub {
+      font-size: 0.7rem; font-weight: 500; color: var(--gray); margin-top: 1.25rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+    }
+
     .hero {
       min-height: auto; display: flex; flex-direction: column;
       align-items: center; justify-content: center;
@@ -252,7 +282,8 @@
 
     @media (max-width: 768px) {
       .nav { padding: 1rem 1.25rem; }
-      .nav-loc, .nav-right span { display: none; }
+      .nav-center, .nav-right, .nav-loc { display: none; }
+      .hamburger { display: flex; }
       .case { grid-template-columns: 1fr; gap: 1.5rem; }
       .case:nth-child(even) .case-visual { order: 0; }
       .hero { padding: 5rem 1rem 1.5rem; }
@@ -271,17 +302,23 @@
     </div>
     <div class="nav-center">
       <a href="index.html" class="nav-tab active">HOME</a>
-    
       <a href="request.html" class="nav-tab">REQUEST</a>
+      <a href="terms.html" class="nav-tab">TERMS</a>
     </div>
-      <div class="nav-right">
+    <div class="nav-right">
       <span>China → Ghana</span>
-
     </div>
+    <button class="hamburger" id="hamburger" aria-label="Menu" type="button">
+      <span></span><span></span><span></span>
+    </button>
   </nav>
-      
-    
-  
+
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html" class="active">Home</a>
+    <a href="request.html">Request</a>
+    <a href="terms.html">Terms &amp; Conditions</a>
+    <p class="mm-sub">China → Ghana · Tema</p>
+  </div>
 
   <section class="hero">
     <p class="hero-label">China Sourcing · Ghana Delivery</p>
@@ -435,7 +472,7 @@
     <div style="display:flex;gap:1.5rem">
       <a href="#process">Process</a>
       <a href="request.html">Request</a>
-      <a href="admin.html">Admin</a>
+      <a href="terms.html">Terms</a>
     </div>
     <div>© 2026</div>
   </footer>
@@ -448,6 +485,19 @@
       entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
     }, { threshold: 0.15 });
     document.querySelectorAll('[data-reveal]').forEach(el => observer.observe(el));
+
+    const ham = document.getElementById('hamburger');
+    const menu = document.getElementById('mobileMenu');
+    ham.addEventListener('click', () => {
+      ham.classList.toggle('open');
+      menu.classList.toggle('open');
+      document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
+    });
+    menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+      ham.classList.remove('open');
+      menu.classList.remove('open');
+      document.body.style.overflow = '';
+    }));
   </script>
 </body>
 </html>

@@ -628,7 +628,7 @@
             <div class="result-box">
               <div class="result-row"><span class="lbl">Product (GHS)</span><span class="val" id="rProduct">—</span></div>
               <div class="result-row"><span class="lbl">Commission</span><span class="val" id="rComm">—</span></div>
-              <div class="result-row"><span class="lbl">Airfreight</span><span class="val" id="rShip">—</span></div>
+              <div class="result-row"><span class="lbl">Airfreight</span><span class="val" id="fwdShipVal">—</span></div>
               <div class="result-row highlight">
                 <span class="lbl">Landed total (GHS)</span>
                 <span class="val" id="rLanded">—</span>
@@ -774,7 +774,7 @@
 
         document.getElementById('rProduct').textContent = 'GH₵ ' + fmt(productGhs);
         document.getElementById('rComm').textContent = 'GH₵ ' + fmt(commission) + ' (' + commPct + '%)';
-        document.getElementById('rShip').textContent = 'GH₵ ' + fmt(ship);
+        document.getElementById('fwdShipVal').textContent = 'GH₵ ' + fmt(ship);
         document.getElementById('rLanded').textContent = 'GH₵ ' + fmt(landed);
         document.getElementById('rUnit').textContent = 'GH₵ ' + fmt(unit);
 

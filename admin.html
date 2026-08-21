@@ -858,6 +858,12 @@
       }
     }
 
+    function parseMoneyEl(id) {
+      const el = document.getElementById(id);
+      if (!el) return 0;
+      return parseFloat(String(el.textContent || el.value || '').replace(/[^0-9.]/g, '')) || 0;
+    }
+
     async function createOrder(reqId) {
       const r = getRequests().find(x => x.id === reqId);
       if (!r) return;
@@ -867,29 +873,53 @@
       let product_ghs = 0, commission_ghs = 0, airfreight_ghs = 0;
       let cost_china = 0, cost_currency = 'RMB';
 
-      const costEl = document.getElementById('cCost');
-      const shipEl = document.getElementById('cShip');
-      const commEl = document.getElementById('cComm');
-      const curEl = document.getElementById('cCurrency');
-      const rateRmbEl = document.getElementById('cRateRmb');
-      const rateUsdEl = document.getElementById('cRateUsd');
+      // Which calculator tab is open?
+      const revOpen = document.getElementById('calcRev') &&
+        document.getElementById('calcRev').style.display !== 'none' &&
+        document.getElementById('tabRev') &&
+        document.getElementById('tabRev').classList.contains('active');
 
-      if (costEl && parseFloat(costEl.value) > 0) {
-        cost_china = parseFloat(costEl.value) || 0;
-        cost_currency = curEl ? curEl.value : 'RMB';
-        const rate = cost_currency === 'USD'
-          ? (parseFloat(rateUsdEl && rateUsdEl.value) || RATES.usd_to_ghs)
-          : (parseFloat(rateRmbEl && rateRmbEl.value) || RATES.rmb_to_ghs);
-        const commPct = parseFloat(commEl && commEl.value) || 0;
-        product_ghs = cost_china * rate;
-        commission_ghs = product_ghs * (commPct / 100);
-        airfreight_ghs = parseFloat(shipEl && shipEl.value) || 0;
+      if (revOpen) {
+        // Pull from REVERSE results → full breakdown for earnings
+        const budget = parseFloat(document.getElementById('rBudget') && document.getElementById('rBudget').value) || 0;
+        airfreight_ghs = parseFloat(document.getElementById('rShip') && document.getElementById('rShip').value) || 0;
+        product_ghs = parseMoneyEl('rvProductGhs');
+        commission_ghs = parseMoneyEl('rvComm');
+        // Invoice = product + commission + airfreight (matches customer budget if filled)
         amount = product_ghs + commission_ghs + airfreight_ghs;
+        if (amount <= 0 && budget > 0) amount = budget;
+
+        // Optional: max China spend as cost reference
+        const outCur = (document.getElementById('rOutCur') && document.getElementById('rOutCur').value) || 'RMB';
+        cost_china = parseMoneyEl('rvChina');
+        cost_currency = outCur === 'USD' ? 'USD' : (outCur === 'GHS' ? 'RMB' : 'RMB');
+        if (outCur === 'GHS') cost_china = product_ghs;
       } else {
-        const landedEl = document.getElementById('rLanded');
-        if (landedEl) {
-          const n = parseFloat(String(landedEl.textContent).replace(/[^0-9.]/g, ''));
-          if (n > 0) amount = n;
+        // FORWARD tab (or default)
+        const costEl = document.getElementById('cCost');
+        const shipEl = document.getElementById('cShip');
+        const commEl = document.getElementById('cComm');
+        const curEl = document.getElementById('cCurrency');
+        const rateRmbEl = document.getElementById('cRateRmb');
+        const rateUsdEl = document.getElementById('cRateUsd');
+
+        if (costEl && parseFloat(costEl.value) > 0) {
+          cost_china = parseFloat(costEl.value) || 0;
+          cost_currency = curEl ? curEl.value : 'RMB';
+          const rate = cost_currency === 'USD'
+            ? (parseFloat(rateUsdEl && rateUsdEl.value) || RATES.usd_to_ghs)
+            : (parseFloat(rateRmbEl && rateRmbEl.value) || RATES.rmb_to_ghs);
+          const commPct = parseFloat(commEl && commEl.value) || 0;
+          product_ghs = cost_china * rate;
+          commission_ghs = product_ghs * (commPct / 100);
+          airfreight_ghs = parseFloat(shipEl && shipEl.value) || 0;
+          amount = product_ghs + commission_ghs + airfreight_ghs;
+        } else {
+          const landedEl = document.getElementById('rLanded');
+          if (landedEl) {
+            const n = parseFloat(String(landedEl.textContent).replace(/[^0-9.]/g, ''));
+            if (n > 0) amount = n;
+          }
         }
       }
 
@@ -911,7 +941,10 @@
           payment_status: 'AWAITING'
         });
         await refreshData();
-        alert('Order ' + orderId + ' created · GH₵ ' + fmt(amount));
+        alert('Order ' + orderId + ' created · GH₵ ' + fmt(amount) +
+          (commission_ghs || airfreight_ghs
+            ? '\nCommission GH₵ ' + fmt(commission_ghs) + ' · Airfreight GH₵ ' + fmt(airfreight_ghs)
+            : ''));
         show('orders');
       } catch (err) {
         alert('Could not create order: ' + err.message);

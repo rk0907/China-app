@@ -555,15 +555,64 @@
 
     function parseRequestItems(r) {
       if (!r) return [];
+      // 1) Prefer JSON items column
       let raw = r.items;
       if (raw) {
         try {
           if (typeof raw === 'string') raw = JSON.parse(raw);
-          if (Array.isArray(raw) && raw.length) return raw;
+          if (Array.isArray(raw) && raw.length) return raw.map(normalizeItem);
         } catch (e) {}
       }
-      // Legacy single-item request
-      return [{
+      // 2) Parse description lines: "Item 1: …" / "Item 2: …"
+      const desc = String(r.description || '');
+      if (/Item\s*\d+\s*:/i.test(desc)) {
+        const parts = desc.split(/Item\s*\d+\s*:/i).map(s => s.trim()).filter(Boolean);
+        if (parts.length > 1) {
+          const totalBudget = parseFloat(r.budget || r.budget_ghs) || 0;
+          const perBudget = totalBudget && parts.length ? Math.round((totalBudget / parts.length) * 100) / 100 : '';
+          return parts.map((chunk, i) => {
+            let size = '', colour = '', description = chunk;
+            const sizeM = chunk.match(/\|\s*Size:\s*([^|]+)/i);
+            const colM = chunk.match(/\|\s*Colour:\s*([^|]+)/i);
+            if (sizeM) size = sizeM[1].trim();
+            if (colM) colour = colM[1].trim();
+            // name = text before " — " or first "|"
+            let name = chunk.split('—')[0].split('|')[0].trim();
+            const dash = chunk.indexOf('—');
+            if (dash > 0) description = chunk.slice(dash + 1).replace(/\|\s*Size:.*$/i, '').replace(/\|\s*Colour:.*$/i, '').trim();
+            else description = '';
+            return normalizeItem({
+              category: r.category || '',
+              item: name,
+              description,
+              quantity: 1,
+              budget: perBudget,
+              size,
+              colour
+            });
+          });
+        }
+      }
+      // 3) Split joined item summary "A; B"
+      const summary = String(r.item || r.item_summary || '');
+      if (summary.includes(';')) {
+        const names = summary.split(';').map(s => s.trim()).filter(Boolean);
+        if (names.length > 1) {
+          const totalBudget = parseFloat(r.budget || r.budget_ghs) || 0;
+          const perBudget = totalBudget ? Math.round((totalBudget / names.length) * 100) / 100 : '';
+          return names.map(name => normalizeItem({
+            category: r.category || '',
+            item: name,
+            description: '',
+            quantity: 1,
+            budget: perBudget,
+            size: '',
+            colour: ''
+          }));
+        }
+      }
+      // 4) Single item
+      return [normalizeItem({
         category: r.category || '',
         item: r.item || r.item_summary || '',
         description: r.description || '',
@@ -571,7 +620,19 @@
         budget: parseFloat(r.budget || r.budget_ghs) || '',
         size: r.size || '',
         colour: r.colour || ''
-      }];
+      })];
+    }
+
+    function normalizeItem(it) {
+      return {
+        category: it.category || '',
+        item: it.item || '',
+        description: it.description || '',
+        quantity: parseInt(it.quantity) || 1,
+        budget: it.budget === '' || it.budget == null ? '' : (parseFloat(it.budget) || ''),
+        size: it.size || '',
+        colour: it.colour || ''
+      };
     }
 
     function openDetail(id) {

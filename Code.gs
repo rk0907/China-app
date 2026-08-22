@@ -235,10 +235,22 @@ function ensureSheet_(name, headers) {
     sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold');
     return;
   }
-  // If empty, add headers
   if (sheet.getLastRow() === 0) {
     sheet.appendRow(headers);
     sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold');
+    return;
+  }
+  // Add any missing header columns (e.g. new "items" field)
+  var lastCol = Math.max(sheet.getLastColumn(), 1);
+  var existing = sheet.getRange(1, 1, 1, lastCol).getValues()[0].map(function (h) {
+    return String(h || '').trim();
+  });
+  for (var i = 0; i < headers.length; i++) {
+    if (existing.indexOf(headers[i]) === -1) {
+      var col = existing.length + 1;
+      sheet.getRange(1, col).setValue(headers[i]).setFontWeight('bold');
+      existing.push(headers[i]);
+    }
   }
 }
 

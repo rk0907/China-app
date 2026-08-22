@@ -306,7 +306,7 @@
     //  PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL BELOW
     //  (same URL as in request.html — see SETUP.md)
     // ═══════════════════════════════════════════════════════════
-    const API = 'https://script.google.com/macros/s/AKfycbzP8LC4E5ukv2VRxcI2qxyRaezxzqIKsLqoi4LcYolbWuhMvlFZjHB2okQu7aOuCgw3Hg/exec';
+    const API = 'https://script.google.com/macros/s/AKfycbz0IbJf3EFUe34AnzYCcwHwIOHoLGATdDhvRFFgLQkF5sEWYMkffY48F5XZPa07PLXToA/exec';
 
     // Live rates (fetched) + fallbacks
     let RATES = {
@@ -618,16 +618,12 @@
             <button type="button" class="calc-tab" id="tabRev" onclick="switchCalc('rev')">REVERSE · Source max</button>
           </div>
 
-          <!-- FORWARD -->
+          <!-- FORWARD multi-line -->
           <div id="calcFwd">
             <p style="font-size:0.8rem;color:var(--gray);margin-bottom:0.85rem;line-height:1.5">
-              Enter supplier cost → get landed price in GHS for the customer.
+              Per-item China cost + airfreight. One commission % on the sum of product costs.
             </p>
             <div class="calc-row">
-              <div class="calc-field">
-                <label>Item cost (China)</label>
-                <input type="number" id="cCost" step="0.01" min="0" placeholder="0.00" oninput="runCalc()" />
-              </div>
               <div class="calc-field">
                 <label>Cost currency</label>
                 <div class="cur-toggle" style="margin:0">
@@ -635,6 +631,10 @@
                   <button type="button" class="cur-btn" id="curUsd" onclick="setCostCur('USD')">USD</button>
                 </div>
                 <input type="hidden" id="cCurrency" value="RMB" />
+              </div>
+              <div class="calc-field">
+                <label>Commission % (on total product)</label>
+                <input type="number" id="cComm" step="0.1" min="0" value="10" oninput="runCalc()" />
               </div>
             </div>
             <div class="calc-row">
@@ -651,31 +651,38 @@
               ${RATES.live ? '● Live rates loaded' : '○ Using fallback rates'}
               <button type="button" onclick="refreshRates()">Refresh rates</button>
             </p>
-            <div class="calc-row">
-              <div class="calc-field">
-                <label>Commission %</label>
-                <input type="number" id="cComm" step="0.1" min="0" value="10" oninput="runCalc()" />
+            <div id="fwdLines">
+              ${items.map((it, i) => `
+              <div style="border:1px solid var(--border);border-radius:14px;padding:0.85rem;margin:0.65rem 0" class="fwd-line" data-i="${i}">
+                <p style="font-size:0.75rem;font-weight:700;margin-bottom:0.5rem">Item ${i + 1}: ${it.item || '—'} · Qty ${it.quantity || 1}</p>
+                <div class="calc-row">
+                  <div class="calc-field">
+                    <label>China cost (this item)</label>
+                    <input type="number" class="fl-cost" step="0.01" min="0" placeholder="0.00" oninput="runCalc()" />
+                  </div>
+                  <div class="calc-field">
+                    <label>Airfreight (GHS)</label>
+                    <input type="number" class="fl-ship" step="0.01" min="0" value="0" oninput="runCalc()" />
+                  </div>
+                </div>
+                <div style="font-size:0.75rem;color:var(--gray)">
+                  <span class="fl-prod">Product GH₵ —</span>
+                </div>
               </div>
-              <div class="calc-field">
-                <label>Airfreight (GHS)</label>
-                <input type="number" id="cShip" step="0.01" min="0" value="0" oninput="runCalc()" />
-              </div>
+              `).join('')}
             </div>
-            <div class="calc-field">
-              <label>Quantity</label>
-              <input type="number" id="cQty" min="1" value="${qty}" oninput="runCalc()" />
-            </div>
+            <!-- hidden for createOrder compatibility -->
+            <input type="hidden" id="cCost" value="0" />
+            <input type="hidden" id="cShip" value="0" />
+            <input type="hidden" id="cQty" value="${qty}" />
             <div class="result-box">
-              <div class="result-row"><span class="lbl">Product (GHS)</span><span class="val" id="rProduct">—</span></div>
-              <div class="result-row"><span class="lbl">Commission</span><span class="val" id="rComm">—</span></div>
-              <div class="result-row"><span class="lbl">Airfreight</span><span class="val" id="fwdShipVal">—</span></div>
+              <div class="result-row"><span class="lbl">Product total (GHS)</span><span class="val" id="rProduct">—</span></div>
+              <div class="result-row"><span class="lbl">Commission (one % on product)</span><span class="val" id="rComm">—</span></div>
+              <div class="result-row"><span class="lbl">Airfreight total</span><span class="val" id="fwdShipVal">—</span></div>
               <div class="result-row highlight">
                 <span class="lbl">Landed total (GHS)</span>
                 <span class="val" id="rLanded">—</span>
               </div>
-            </div>
-            <div style="display:flex;justify-content:space-between;margin-top:0.5rem;font-size:0.8rem;color:var(--gray)">
-              <span>Unit landed</span><span id="rUnit" style="font-weight:600">—</span>
             </div>
             <div class="budget-warn" id="budgetWarn"></div>
           </div>
@@ -806,30 +813,41 @@
     }
 
     function runCalc() {
-      // FORWARD
-      if (document.getElementById('cCost')) {
-        const cost = parseFloat(document.getElementById('cCost').value) || 0;
-        const currency = document.getElementById('cCurrency').value || 'RMB';
+      // FORWARD — per-item cost + airfreight; one commission on product sum
+      if (document.getElementById('fwdLines')) {
+        const currency = (document.getElementById('cCurrency') && document.getElementById('cCurrency').value) || 'RMB';
         const rateRmb = parseFloat(document.getElementById('cRateRmb').value) || RATES.rmb_to_ghs;
         const rateUsd = parseFloat(document.getElementById('cRateUsd').value) || RATES.usd_to_ghs;
         const commPct = parseFloat(document.getElementById('cComm').value) || 0;
-        const ship = parseFloat(document.getElementById('cShip').value) || 0;
-        const qty = parseInt(document.getElementById('cQty').value) || 1;
-
         const rate = currency === 'USD' ? rateUsd : rateRmb;
-        const productGhs = cost * rate;
-        const commission = productGhs * (commPct / 100);
-        const landed = productGhs + commission + ship;
-        const unit = qty > 0 ? landed / qty : landed;
 
-        document.getElementById('rProduct').textContent = 'GH₵ ' + fmt(productGhs);
+        let sumProd = 0, sumShip = 0, sumChina = 0;
+        document.querySelectorAll('.fwd-line').forEach(line => {
+          const cost = parseFloat(line.querySelector('.fl-cost').value) || 0;
+          const ship = parseFloat(line.querySelector('.fl-ship').value) || 0;
+          const prod = cost * rate;
+          sumProd += prod;
+          sumShip += ship;
+          sumChina += cost;
+          const el = line.querySelector('.fl-prod');
+          if (el) el.textContent = 'Product GH₵ ' + fmt(prod) + (ship ? ' · Freight GH₵ ' + fmt(ship) : '');
+        });
+        const commission = sumProd * (commPct / 100);
+        const landed = sumProd + commission + sumShip;
+
+        // hidden fields for createOrder
+        const cCost = document.getElementById('cCost');
+        const cShip = document.getElementById('cShip');
+        if (cCost) cCost.value = sumChina;
+        if (cShip) cShip.value = sumShip;
+
+        document.getElementById('rProduct').textContent = 'GH₵ ' + fmt(sumProd);
         document.getElementById('rComm').textContent = 'GH₵ ' + fmt(commission) + ' (' + commPct + '%)';
-        document.getElementById('fwdShipVal').textContent = 'GH₵ ' + fmt(ship);
+        document.getElementById('fwdShipVal').textContent = 'GH₵ ' + fmt(sumShip);
         document.getElementById('rLanded').textContent = 'GH₵ ' + fmt(landed);
-        document.getElementById('rUnit').textContent = 'GH₵ ' + fmt(unit);
 
         const warn = document.getElementById('budgetWarn');
-        if (warn && currentReqBudget > 0 && cost > 0) {
+        if (warn && currentReqBudget > 0 && sumProd > 0) {
           if (landed <= currentReqBudget) {
             warn.className = 'budget-warn ok';
             warn.textContent = 'Within budget · GH₵ ' + fmt(currentReqBudget - landed) + ' headroom';

@@ -23,7 +23,7 @@ var ORDERS_SHEET = 'Orders';
 var REQUEST_HEADERS = [
   'id', 'created', 'status', 'name', 'whatsapp', 'location',
   'category', 'item', 'description', 'quantity', 'budget',
-  'size', 'colour'
+  'size', 'colour', 'items'
 ];
 
 // Column headers for Orders (row 1)
@@ -94,6 +94,10 @@ function submitRequest_(data) {
   var sheet = ss.getSheetByName(REQUESTS_SHEET);
 
   var id = 'SR-' + new Date().getFullYear() + '-' + String(Date.now()).slice(-6);
+  var itemsVal = data.items || '';
+  if (itemsVal && typeof itemsVal !== 'string') {
+    try { itemsVal = JSON.stringify(itemsVal); } catch (e) { itemsVal = ''; }
+  }
   var row = [
     id,
     new Date().toISOString(),
@@ -107,7 +111,8 @@ function submitRequest_(data) {
     Number(data.quantity) || 1,
     data.budget || data.budget_ghs || '',
     data.size || '',
-    data.colour || ''
+    data.colour || '',
+    itemsVal
   ];
   sheet.appendRow(row);
 

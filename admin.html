@@ -552,12 +552,36 @@
       return Number(n).toLocaleString('en-GH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
+
+    function parseRequestItems(r) {
+      if (!r) return [];
+      let raw = r.items;
+      if (raw) {
+        try {
+          if (typeof raw === 'string') raw = JSON.parse(raw);
+          if (Array.isArray(raw) && raw.length) return raw;
+        } catch (e) {}
+      }
+      // Legacy single-item request
+      return [{
+        category: r.category || '',
+        item: r.item || r.item_summary || '',
+        description: r.description || '',
+        quantity: parseInt(r.quantity) || 1,
+        budget: parseFloat(r.budget || r.budget_ghs) || '',
+        size: r.size || '',
+        colour: r.colour || ''
+      }];
+    }
+
     function openDetail(id) {
       const r = getRequests().find(x => x.id === id);
       if (!r) return;
-      const budget = parseFloat(r.budget || r.budget_ghs) || 0;
-      const qty = parseInt(r.quantity) || 1;
+      const items = parseRequestItems(r);
+      const budget = items.reduce((s, it) => s + (parseFloat(it.budget) || 0), 0) || parseFloat(r.budget || r.budget_ghs) || 0;
+      const qty = items.reduce((s, it) => s + (parseInt(it.quantity) || 1), 0) || parseInt(r.quantity) || 1;
       currentReqBudget = budget;
+      window._detailItems = items;
 
       document.getElementById('detailId').textContent = r.id;
       document.getElementById('detailBody').innerHTML = `
@@ -568,20 +592,23 @@
           <p class="detail-sub">${r.location || ''}</p>
         </div>
         <div class="detail-card">
-          <p class="detail-label">Request</p>
-          <p class="detail-name">${r.item || r.item_summary || '—'}</p>
-          <p class="detail-sub" style="white-space:pre-line;margin-top:0.5rem">${r.description || ''}</p>
-          <div class="detail-grid">
-            <div><span>Category</span> ${r.category || '—'}</div>
-            <div><span>Qty</span> ${qty}</div>
-            <div><span>Budget</span> ${budget ? 'GH₵ ' + budget : '—'}</div>
-            <div><span>Quality</span> ${r.quality || '—'}</div>
-            ${r.size ? '<div><span>Size</span> ' + r.size + '</div>' : ''}
-            ${r.colour ? '<div><span>Colour</span> ' + r.colour + '</div>' : ''}
-            ${r.brand ? '<div><span>Brand</span> ' + r.brand + '</div>' : ''}
+          <p class="detail-label">Items (${items.length})</p>
+          ${items.map((it, i) => `
+            <div style="padding:0.75rem 0;border-bottom:1px solid var(--border)">
+              <p class="detail-name">Item ${i + 1}: ${it.item || '—'}</p>
+              <p class="detail-sub">${it.category || ''}${it.description ? ' · ' + it.description : ''}</p>
+              <div class="detail-grid" style="margin-top:0.4rem">
+                <div><span>Qty</span> ${it.quantity || 1}</div>
+                <div><span>Budget</span> ${it.budget ? 'GH₵ ' + it.budget : '—'}</div>
+                ${it.size ? '<div><span>Size</span> ' + it.size + '</div>' : ''}
+                ${it.colour ? '<div><span>Colour</span> ' + it.colour + '</div>' : ''}
+              </div>
+            </div>
+          `).join('')}
+          <div class="detail-grid" style="margin-top:0.85rem">
+            <div><span>Total qty</span> ${qty}</div>
+            <div><span>Total budget</span> ${budget ? 'GH₵ ' + budget : '—'}</div>
           </div>
-          ${r.notes ? '<p class="detail-sub" style="margin-top:0.75rem;font-style:italic">"' + r.notes + '"</p>' : ''}
-          ${r.url ? '<a href="' + r.url + '" target="_blank" class="detail-sub" style="display:inline-block;margin-top:0.5rem;text-decoration:underline">Product link →</a>' : ''}
         </div>
 
         <div class="detail-card">
@@ -653,23 +680,24 @@
             <div class="budget-warn" id="budgetWarn"></div>
           </div>
 
-          <!-- REVERSE -->
+          <!-- REVERSE multi-line -->
           <div id="calcRev" style="display:none">
             <p style="font-size:0.8rem;color:var(--gray);margin-bottom:0.85rem;line-height:1.5">
-              Start from customer budget. Airfreight and commission are subtracted, then converted to max you can spend in China.
+              Per-line reverse: budget − airfreight, then commission. Sums become order totals.
             </p>
-            <div class="calc-field">
-              <label>Customer budget (GHS)</label>
-              <input type="number" id="rBudget" step="0.01" min="0" value="${budget || ''}" placeholder="0.00" oninput="runCalc()" />
-            </div>
             <div class="calc-row">
               <div class="calc-field">
-                <label>Commission %</label>
+                <label>Commission % (all lines)</label>
                 <input type="number" id="rCommPct" step="0.1" min="0" value="10" oninput="runCalc()" />
               </div>
               <div class="calc-field">
-                <label>Airfreight (GHS)</label>
-                <input type="number" id="rShip" step="0.01" min="0" value="0" oninput="runCalc()" />
+                <label>Show China max as</label>
+                <div class="cur-toggle" style="margin:0">
+                  <button type="button" class="cur-btn active" id="outRmb" onclick="setOutCur('RMB')">RMB</button>
+                  <button type="button" class="cur-btn" id="outUsd" onclick="setOutCur('USD')">USD</button>
+                  <button type="button" class="cur-btn" id="outGhs" onclick="setOutCur('GHS')">GHS</button>
+                </div>
+                <input type="hidden" id="rOutCur" value="RMB" />
               </div>
             </div>
             <div class="calc-row">
@@ -682,33 +710,42 @@
                 <input type="number" id="rRateUsd" step="0.0001" value="${RATES.usd_to_ghs}" oninput="runCalc()" />
               </div>
             </div>
-            <p class="rate-note">
-              ${RATES.live ? '● Live rates loaded' : '○ Using fallback rates'}
-              <button type="button" onclick="refreshRates()">Refresh rates</button>
-            </p>
-            <div class="calc-field">
-              <label>Show max spend as</label>
-              <div class="cur-toggle">
-                <button type="button" class="cur-btn active" id="outRmb" onclick="setOutCur('RMB')">RMB</button>
-                <button type="button" class="cur-btn" id="outUsd" onclick="setOutCur('USD')">USD</button>
-                <button type="button" class="cur-btn" id="outGhs" onclick="setOutCur('GHS')">GHS</button>
+            <div id="revLines">
+              ${items.map((it, i) => `
+              <div style="border:1px solid var(--border);border-radius:14px;padding:0.85rem;margin:0.65rem 0" class="rev-line" data-i="${i}">
+                <p style="font-size:0.75rem;font-weight:700;margin-bottom:0.5rem">Item ${i + 1}: ${it.item || '—'}</p>
+                <div class="calc-row">
+                  <div class="calc-field">
+                    <label>Budget (GHS)</label>
+                    <input type="number" class="rl-budget" step="0.01" min="0" value="${it.budget || ''}" oninput="runCalc()" />
+                  </div>
+                  <div class="calc-field">
+                    <label>Airfreight (GHS)</label>
+                    <input type="number" class="rl-ship" step="0.01" min="0" value="0" oninput="runCalc()" />
+                  </div>
+                </div>
+                <div style="font-size:0.75rem;color:var(--gray);display:flex;justify-content:space-between;flex-wrap:wrap;gap:0.35rem">
+                  <span class="rl-prod">Product —</span>
+                  <span class="rl-comm">Comm —</span>
+                  <span class="rl-china" style="font-weight:700;color:var(--black)">China —</span>
+                </div>
               </div>
-              <input type="hidden" id="rOutCur" value="RMB" />
+              `).join('')}
             </div>
+            <!-- Hidden fields so createOrder still works -->
+            <input type="hidden" id="rBudget" value="${budget || 0}" />
+            <input type="hidden" id="rShip" value="0" />
             <div class="result-box">
-              <div class="result-row"><span class="lbl">Customer budget</span><span class="val" id="rvBudget">—</span></div>
-              <div class="result-row"><span class="lbl">− Airfreight</span><span class="val" id="rvShip">—</span></div>
+              <div class="result-row"><span class="lbl">Sum budgets</span><span class="val" id="rvBudget">—</span></div>
+              <div class="result-row"><span class="lbl">− Sum airfreight</span><span class="val" id="rvShip">—</span></div>
               <div class="result-row"><span class="lbl">= After airfreight</span><span class="val" id="rvAfterShip">—</span></div>
-              <div class="result-row"><span class="lbl">− Commission (on product)</span><span class="val" id="rvComm">—</span></div>
+              <div class="result-row"><span class="lbl">− Commission</span><span class="val" id="rvComm">—</span></div>
               <div class="result-row"><span class="lbl">= Max product (GHS)</span><span class="val" id="rvProductGhs">—</span></div>
               <div class="result-row highlight">
                 <span class="lbl" id="rvChinaLabel">Max spend in China (RMB)</span>
                 <span class="val" id="rvChina">—</span>
               </div>
             </div>
-            <p style="font-size:0.75rem;color:var(--gray);margin-top:0.75rem;line-height:1.5">
-              Formula: (Budget − Airfreight) ÷ (1 + commission%) = max product GHS → convert to RMB/USD.
-            </p>
           </div>
         </div>
 
@@ -805,42 +842,57 @@
         }
       }
 
-      // REVERSE — always subtracts airfreight first
-      if (document.getElementById('rBudget')) {
+      // REVERSE — per line then sum
+      if (document.getElementById('rCommPct') && document.getElementById('revLines')) {
+        const rCommPct = parseFloat(document.getElementById('rCommPct').value) || 0;
+        const rRateRmb = parseFloat(document.getElementById('rRateRmb').value) || RATES.rmb_to_ghs;
+        const rRateUsd = parseFloat(document.getElementById('rRateUsd').value) || RATES.usd_to_ghs;
+        const outCur = (document.getElementById('rOutCur') && document.getElementById('rOutCur').value) || 'RMB';
+        const lines = document.querySelectorAll('.rev-line');
+        let sumBudget = 0, sumShip = 0, sumProd = 0, sumComm = 0, sumChina = 0;
+        lines.forEach(line => {
+          const budget = parseFloat(line.querySelector('.rl-budget').value) || 0;
+          const ship = parseFloat(line.querySelector('.rl-ship').value) || 0;
+          const after = Math.max(0, budget - ship);
+          const prod = rCommPct > 0 ? after / (1 + rCommPct / 100) : after;
+          const comm = Math.max(0, after - prod);
+          let china = prod;
+          let prefix = 'GH₵ ';
+          if (outCur === 'RMB') { china = rRateRmb > 0 ? prod / rRateRmb : 0; prefix = '¥ '; }
+          else if (outCur === 'USD') { china = rRateUsd > 0 ? prod / rRateUsd : 0; prefix = '$ '; }
+          line.querySelector('.rl-prod').textContent = 'Product GH₵ ' + fmt(prod);
+          line.querySelector('.rl-comm').textContent = 'Comm GH₵ ' + fmt(comm);
+          line.querySelector('.rl-china').textContent = 'China ' + prefix + fmt(china);
+          sumBudget += budget; sumShip += ship; sumProd += prod; sumComm += comm; sumChina += china;
+        });
+        const afterShip = Math.max(0, sumBudget - sumShip);
+        // Keep hidden fields in sync for createOrder
+        const rb = document.getElementById('rBudget');
+        const rs = document.getElementById('rShip');
+        if (rb) rb.value = sumBudget;
+        if (rs) rs.value = sumShip;
+
+        let label = 'Max spend in China (GHS)', prefix = 'GH₵ ';
+        if (outCur === 'RMB') { label = 'Max spend in China (RMB)'; prefix = '¥ '; }
+        else if (outCur === 'USD') { label = 'Max spend in China (USD)'; prefix = '$ '; }
+
+        document.getElementById('rvBudget').textContent = 'GH₵ ' + fmt(sumBudget);
+        document.getElementById('rvShip').textContent = '− GH₵ ' + fmt(sumShip);
+        document.getElementById('rvAfterShip').textContent = 'GH₵ ' + fmt(afterShip);
+        document.getElementById('rvComm').textContent = '− GH₵ ' + fmt(sumComm) + ' (' + rCommPct + '%)';
+        document.getElementById('rvProductGhs').textContent = 'GH₵ ' + fmt(sumProd);
+        document.getElementById('rvChinaLabel').textContent = label;
+        document.getElementById('rvChina').textContent = prefix + fmt(sumChina);
+      } else if (document.getElementById('rBudget') && !document.getElementById('revLines')) {
+        // fallback single-line (should not hit with new UI)
         const budget = parseFloat(document.getElementById('rBudget').value) || 0;
         const rCommPct = parseFloat(document.getElementById('rCommPct').value) || 0;
         const rShip = parseFloat(document.getElementById('rShip').value) || 0;
-        const rRateRmb = parseFloat(document.getElementById('rRateRmb').value) || RATES.rmb_to_ghs;
-        const rRateUsd = parseFloat(document.getElementById('rRateUsd').value) || RATES.usd_to_ghs;
-        const outCur = document.getElementById('rOutCur').value || 'RMB';
-
-        // budget = product + commission + airfreight
-        // budget - airfreight = product * (1 + c/100)
-        // product = (budget - airfreight) / (1 + c/100)
         const afterShip = Math.max(0, budget - rShip);
         const productGhs = rCommPct > 0 ? afterShip / (1 + rCommPct / 100) : afterShip;
-        const commissionAmt = Math.max(0, afterShip - productGhs);
-
-        let maxOut = productGhs;
-        let label = 'Max product spend (GHS)';
-        let prefix = 'GH₵ ';
-        if (outCur === 'RMB') {
-          maxOut = rRateRmb > 0 ? productGhs / rRateRmb : 0;
-          label = 'Max spend in China (RMB)';
-          prefix = '¥ ';
-        } else if (outCur === 'USD') {
-          maxOut = rRateUsd > 0 ? productGhs / rRateUsd : 0;
-          label = 'Max spend in China (USD)';
-          prefix = '$ ';
-        }
-
         document.getElementById('rvBudget').textContent = 'GH₵ ' + fmt(budget);
         document.getElementById('rvShip').textContent = '− GH₵ ' + fmt(rShip);
-        document.getElementById('rvAfterShip').textContent = 'GH₵ ' + fmt(afterShip);
-        document.getElementById('rvComm').textContent = '− GH₵ ' + fmt(commissionAmt) + ' (' + rCommPct + '%)';
         document.getElementById('rvProductGhs').textContent = 'GH₵ ' + fmt(productGhs);
-        document.getElementById('rvChinaLabel').textContent = label;
-        document.getElementById('rvChina').textContent = prefix + fmt(maxOut);
       }
     }
 

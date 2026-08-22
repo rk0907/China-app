@@ -142,7 +142,7 @@
   </a>
 
   <script>
-    const API = 'https://script.google.com/macros/s/https://script.google.com/macros/s/AKfycbwC_kkOMA1_opN974p3lJCuvv853V-3wVNxI4VxiT7OPJPYk8yh3wrses54UpRgTSnyrQ/exec';
+    const API = 'https://script.google.com/macros/s/AKfycbz0IbJf3EFUe34AnzYCcwHwIOHoLGATdDhvRFFgLQkF5sEWYMkffY48F5XZPa07PLXToA/exec';
     const CATS = ['Clothing & Apparel','Shoes & Footwear','Bags & Accessories','Electronics','Home & Kitchen','Beauty & Personal Care','Sports & Outdoor','Toys & Kids','Automotive','Industrial & Tools','Other'];
     let itemCount = 0;
     const itemsList = document.getElementById('itemsList');
@@ -229,8 +229,17 @@
         items: JSON.stringify(items)
       };
       try {
-        const res = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(data) });
-        const json = await res.json();
+        const res = await fetch(API, {
+          method: 'POST',
+          mode: 'cors',
+          redirect: 'follow',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(data)
+        });
+        const text = await res.text();
+        let json;
+        try { json = JSON.parse(text); }
+        catch (e) { throw new Error('Server did not return JSON. Redeploy Apps Script (Anyone access).'); }
         if (json.success) {
           document.getElementById('formWrap').style.display = 'none';
           document.getElementById('success').style.display = 'block';
@@ -242,7 +251,8 @@
           alert(json.error || 'Failed'); btn.disabled = false; btn.textContent = 'SUBMIT REQUEST';
         }
       } catch (err) {
-        alert('Network error: ' + err); btn.disabled = false; btn.textContent = 'SUBMIT REQUEST';
+        alert('Could not reach server.\n\nTest in browser:\n' + API + '?action=ping\n\nIf that fails: Deploy Apps Script as Anyone (New version).\n\n' + (err.message || err));
+        btn.disabled = false; btn.textContent = 'SUBMIT REQUEST';
       }
     };
 

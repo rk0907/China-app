@@ -261,38 +261,19 @@
     .cta-band p { color: var(--gray); max-width: 28rem; margin: 0 auto 2rem; line-height: 1.7; }
 
     footer {
-      border-top: 1px solid var(--border); padding: 2.5rem;
+      border-top: 1px solid var(--border); padding: 2rem;
       display: flex; justify-content: space-between; align-items: center;
-      font-size: 0.75rem; color: var(--gray); flex-wrap: wrap; gap: 2rem;
-    }
-    footer .footer-brand {
-      display: flex; align-items: center; gap: 0.75rem;
-    }
-    footer .footer-brand img {
-      height: 36px; width: auto;
-    }
-    footer .footer-brand span {
-      font-weight: 600; letter-spacing: 0.05em;
-    }
-    footer .footer-links {
-      display: flex; gap: 2rem;
+      font-size: 0.75rem; color: var(--gray); flex-wrap: wrap; gap: 1rem;
     }
     footer a {
-      display: inline-flex; align-items: center; gap: 0.6rem;
-      color: var(--gray); transition: color 0.2s, transform 0.2s;
-      font-weight: 500; letter-spacing: 0.04em;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      transition: color 0.2s, transform 0.2s;
     }
-    footer a:hover {
-      color: var(--black);
-      transform: translateY(-2px);
-    }
-    footer .footer-icon {
-      width: 16px; height: 16px; display: inline-block;
+    footer a:hover { color: var(--black); transform: translateY(-2px); }
+    .footer-icon {
+      width: 16px; height: 16px; display: inline-flex;
       stroke-width: 2; stroke: currentColor; fill: none;
       stroke-linecap: round; stroke-linejoin: round;
-    }
-    footer .footer-copyright {
-      letter-spacing: 0.05em; font-size: 0.7rem;
     }
 
     @keyframes fadeUp {
@@ -316,8 +297,6 @@
       .case:nth-child(even) .case-visual { order: 0; }
       .hero { padding: 5rem 1rem 1.5rem; }
       .hero-meta { flex-direction: column; gap: 0.75rem; }
-      footer { flex-direction: column; gap: 1.5rem; text-align: center; }
-      footer .footer-links { flex-direction: column; gap: 1rem; }
     }
   </style>
 </head>
@@ -495,11 +474,11 @@
   </section>
 
   <footer>
-    <div class="footer-brand">
-      <img src="Logo.jpg" alt="KAYA" />
-      <span>Tema</span>
+    <div style="display:flex;align-items:center;gap:0.6rem">
+      <img src="Logo.jpg" alt="KAYA" style="height:36px;width:auto" />
+      <span><strong style="color:var(--black)">Tema</strong></span>
     </div>
-    <div class="footer-links">
+    <div style="display:flex;gap:1.5rem">
       <a href="#process">
         <svg class="footer-icon" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M3 12h18M12 3v18"/>
@@ -508,7 +487,7 @@
       </a>
       <a href="request.html">
         <svg class="footer-icon" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2m0 0V3a2 2 0 00-2 2v2m0 0a2 2 0 00-2-2h-2a2 2 0 00-2 2v2"/>
+          <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2m0 0V3a2 2 0 00-2 2v2"/>
         </svg>
         Request
       </a>
@@ -519,7 +498,7 @@
         Terms
       </a>
     </div>
-    <div class="footer-copyright">© 2026</div>
+    <div>© 2026</div>
   </footer>
 
   <script>

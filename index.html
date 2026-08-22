@@ -6,7 +6,7 @@
   <title>China Source GH — Tell us what you need</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&dis[...]
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -261,11 +261,39 @@
     .cta-band p { color: var(--gray); max-width: 28rem; margin: 0 auto 2rem; line-height: 1.7; }
 
     footer {
-      border-top: 1px solid var(--border); padding: 2rem;
+      border-top: 1px solid var(--border); padding: 2.5rem;
       display: flex; justify-content: space-between; align-items: center;
-      font-size: 0.75rem; color: var(--gray); flex-wrap: wrap; gap: 1rem;
+      font-size: 0.75rem; color: var(--gray); flex-wrap: wrap; gap: 2rem;
     }
-    footer a:hover { color: var(--black); }
+    footer .footer-brand {
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+    footer .footer-brand img {
+      height: 36px; width: auto;
+    }
+    footer .footer-brand span {
+      font-weight: 600; letter-spacing: 0.05em;
+    }
+    footer .footer-links {
+      display: flex; gap: 2rem;
+    }
+    footer a {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      color: var(--gray); transition: color 0.2s, transform 0.2s;
+      font-weight: 500; letter-spacing: 0.04em;
+    }
+    footer a:hover {
+      color: var(--black);
+      transform: translateY(-2px);
+    }
+    footer .footer-icon {
+      width: 16px; height: 16px; display: inline-block;
+      stroke-width: 2; stroke: currentColor; fill: none;
+      stroke-linecap: round; stroke-linejoin: round;
+    }
+    footer .footer-copyright {
+      letter-spacing: 0.05em; font-size: 0.7rem;
+    }
 
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(24px); }
@@ -288,6 +316,8 @@
       .case:nth-child(even) .case-visual { order: 0; }
       .hero { padding: 5rem 1rem 1.5rem; }
       .hero-meta { flex-direction: column; gap: 0.75rem; }
+      footer { flex-direction: column; gap: 1.5rem; text-align: center; }
+      footer .footer-links { flex-direction: column; gap: 1rem; }
     }
   </style>
 </head>
@@ -465,16 +495,31 @@
   </section>
 
   <footer>
-    <div style="display:flex;align-items:center;gap:0.6rem">
-      <img src="Logo.jpg" alt="KAYA" style="height:36px;width:auto" />
-      <span><strong style="color:var(--black)"> Tema</span>
+    <div class="footer-brand">
+      <img src="Logo.jpg" alt="KAYA" />
+      <span>Tema</span>
     </div>
-    <div style="display:flex;gap:1.5rem">
-      <a href="#process">Process</a>
-      <a href="request.html">Request</a>
-      <a href="terms.html">Terms</a>
+    <div class="footer-links">
+      <a href="#process">
+        <svg class="footer-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M3 12h18M12 3v18"/>
+        </svg>
+        Process
+      </a>
+      <a href="request.html">
+        <svg class="footer-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2m0 0V3a2 2 0 00-2 2v2m0 0a2 2 0 00-2-2h-2a2 2 0 00-2 2v2"/>
+        </svg>
+        Request
+      </a>
+      <a href="terms.html">
+        <svg class="footer-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M9 12l2 2 4-4m7 4a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        Terms
+      </a>
     </div>
-    <div>© 2026</div>
+    <div class="footer-copyright">© 2026</div>
   </footer>
 
   <script>

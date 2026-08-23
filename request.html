@@ -124,6 +124,14 @@
         </div>
         <div id="itemsList"></div>
         <button type="button" class="btn-add" id="btnAdd">+ ADD ANOTHER ITEM</button>
+        <div class="card">
+          <p class="card-label">Budget</p>
+          <div class="field">
+            <label>Total budget for all items (GHS)</label>
+            <input id="totalBudget" type="number" min="0" placeholder="e.g. 6000" />
+          </div>
+          <p style="font-size:0.75rem;color:var(--gray);margin-top:0.35rem;line-height:1.45">One budget for the whole request. We’ll allocate sourcing within this amount.</p>
+        </div>
         <button type="submit" class="btn-submit" id="btn">SUBMIT REQUEST</button>
       </form>
     </div>
@@ -142,7 +150,7 @@
   </a>
 
   <script>
-    const API = 'https://script.google.com/macros/s/AKfycbwC_kkOMA1_opN974p3lJCuvv853V-3wVNxI4VxiT7OPJPYk8yh3wrses54UpRgTSnyrQ/exec';
+    const API = 'https://script.google.com/macros/s/AKfycbz0IbJf3EFUe34AnzYCcwHwIOHoLGATdDhvRFFgLQkF5sEWYMkffY48F5XZPa07PLXToA/exec';
     const CATS = ['Clothing & Apparel','Shoes & Footwear','Bags & Accessories','Electronics','Home & Kitchen','Beauty & Personal Care','Sports & Outdoor','Toys & Kids','Automotive','Industrial & Tools','Other'];
     let itemCount = 0;
     const itemsList = document.getElementById('itemsList');
@@ -163,10 +171,7 @@
         </div>
         <div class="field"><label>What are you looking for? *</label><input class="item-name" required placeholder="e.g. Women's handbags" /></div>
         <div class="field"><label>Detailed description</label><textarea class="item-desc" placeholder="Extra details..."></textarea></div>
-        <div class="grid-2">
-          <div class="field"><label>Quantity *</label><input class="item-qty" type="number" min="1" value="1" required /></div>
-          <div class="field"><label>Budget (GHS)</label><input class="item-budget" type="number" min="0" placeholder="e.g. 6000" /></div>
-        </div>
+        <div class="field"><label>Quantity *</label><input class="item-qty" type="number" min="1" value="1" required /></div>
         <div class="apparel" style="display:none">
           <div class="grid-2">
             <div class="field"><label>Size</label><input class="item-size" placeholder="e.g. M, L, 42" /></div>
@@ -194,7 +199,6 @@
           item,
           description: card.querySelector('.item-desc').value || '',
           quantity: parseInt(card.querySelector('.item-qty').value, 10) || 1,
-          budget: card.querySelector('.item-budget').value ? parseFloat(card.querySelector('.item-budget').value) : '',
           size: card.querySelector('.item-size').value || '',
           colour: card.querySelector('.item-colour').value || ''
         };
@@ -209,9 +213,12 @@
       btn.disabled = true; btn.textContent = 'SUBMITTING...';
       const items = collectItems();
       if (!items.length) { alert('Add at least one item.'); btn.disabled = false; btn.textContent = 'SUBMIT REQUEST'; return; }
-      const totalBudget = items.reduce((s, it) => s + (parseFloat(it.budget) || 0), 0);
+      const totalBudget = parseFloat(document.getElementById('totalBudget').value) || 0;
       const totalQty = items.reduce((s, it) => s + it.quantity, 0);
       const summary = items.map(it => it.item).join('; ');
+      // strip any legacy budget key from items
+      const itemsClean = items.map(({ category, item, description, quantity, size, colour }) =>
+        ({ category, item, description, quantity, size, colour }));
       const data = {
         action: 'submitRequest',
         name: document.querySelector('[name="name"]').value.trim(),
@@ -226,7 +233,7 @@
         budget_ghs: totalBudget || '',
         size: items[0].size || '',
         colour: items[0].colour || '',
-        items: JSON.stringify(items)
+        items: JSON.stringify(itemsClean)
       };
       try {
         const res = await fetch(API, {

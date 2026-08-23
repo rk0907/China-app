@@ -306,7 +306,7 @@
     //  PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL BELOW
     //  (same URL as in request.html — see SETUP.md)
     // ═══════════════════════════════════════════════════════════
-    const API = 'https://script.google.com/macros/s/AKfycbwC_kkOMA1_opN974p3lJCuvv853V-3wVNxI4VxiT7OPJPYk8yh3wrses54UpRgTSnyrQ/exec';
+    const API = 'https://script.google.com/macros/s/AKfycbz0IbJf3EFUe34AnzYCcwHwIOHoLGATdDhvRFFgLQkF5sEWYMkffY48F5XZPa07PLXToA/exec';
 
     // Live rates (fetched) + fallbacks
     let RATES = {
@@ -568,15 +568,12 @@
       if (/Item\s*\d+\s*:/i.test(desc)) {
         const parts = desc.split(/Item\s*\d+\s*:/i).map(s => s.trim()).filter(Boolean);
         if (parts.length > 1) {
-          const totalBudget = parseFloat(r.budget || r.budget_ghs) || 0;
-          const perBudget = totalBudget && parts.length ? Math.round((totalBudget / parts.length) * 100) / 100 : '';
-          return parts.map((chunk, i) => {
+          return parts.map((chunk) => {
             let size = '', colour = '', description = chunk;
             const sizeM = chunk.match(/\|\s*Size:\s*([^|]+)/i);
             const colM = chunk.match(/\|\s*Colour:\s*([^|]+)/i);
             if (sizeM) size = sizeM[1].trim();
             if (colM) colour = colM[1].trim();
-            // name = text before " — " or first "|"
             let name = chunk.split('—')[0].split('|')[0].trim();
             const dash = chunk.indexOf('—');
             if (dash > 0) description = chunk.slice(dash + 1).replace(/\|\s*Size:.*$/i, '').replace(/\|\s*Colour:.*$/i, '').trim();
@@ -586,7 +583,7 @@
               item: name,
               description,
               quantity: 1,
-              budget: perBudget,
+              budget: '',
               size,
               colour
             });
@@ -598,14 +595,12 @@
       if (summary.includes(';')) {
         const names = summary.split(';').map(s => s.trim()).filter(Boolean);
         if (names.length > 1) {
-          const totalBudget = parseFloat(r.budget || r.budget_ghs) || 0;
-          const perBudget = totalBudget ? Math.round((totalBudget / names.length) * 100) / 100 : '';
           return names.map(name => normalizeItem({
             category: r.category || '',
             item: name,
             description: '',
             quantity: 1,
-            budget: perBudget,
+            budget: '',
             size: '',
             colour: ''
           }));
@@ -639,7 +634,7 @@
       const r = getRequests().find(x => x.id === id);
       if (!r) return;
       const items = parseRequestItems(r);
-      const budget = items.reduce((s, it) => s + (parseFloat(it.budget) || 0), 0) || parseFloat(r.budget || r.budget_ghs) || 0;
+      const budget = parseFloat(r.budget || r.budget_ghs) || 0;
       const qty = items.reduce((s, it) => s + (parseInt(it.quantity) || 1), 0) || parseInt(r.quantity) || 1;
       currentReqBudget = budget;
       window._detailItems = items;
@@ -660,7 +655,6 @@
               <p class="detail-sub">${it.category || ''}${it.description ? ' · ' + it.description : ''}</p>
               <div class="detail-grid" style="margin-top:0.4rem">
                 <div><span>Qty</span> ${it.quantity || 1}</div>
-                <div><span>Budget</span> ${it.budget ? 'GH₵ ' + it.budget : '—'}</div>
                 ${it.size ? '<div><span>Size</span> ' + it.size + '</div>' : ''}
                 ${it.colour ? '<div><span>Colour</span> ' + it.colour + '</div>' : ''}
               </div>
@@ -751,7 +745,7 @@
           <!-- REVERSE multi-line -->
           <div id="calcRev" style="display:none">
             <p style="font-size:0.8rem;color:var(--gray);margin-bottom:0.85rem;line-height:1.5">
-              Per-line reverse: budget − airfreight, then commission. Sums become order totals.
+              One total budget − sum of per-item airfreight, then one commission %. Max China spend for the whole order.
             </p>
             <div class="calc-row">
               <div class="calc-field">
@@ -778,33 +772,24 @@
                 <input type="number" id="rRateUsd" step="0.0001" value="${RATES.usd_to_ghs}" oninput="runCalc()" />
               </div>
             </div>
+            <div class="calc-field">
+              <label>Customer total budget (GHS)</label>
+              <input type="number" id="rBudget" step="0.01" min="0" value="${budget || ''}" placeholder="0.00" oninput="runCalc()" />
+            </div>
             <div id="revLines">
               ${items.map((it, i) => `
               <div style="border:1px solid var(--border);border-radius:14px;padding:0.85rem;margin:0.65rem 0" class="rev-line" data-i="${i}">
-                <p style="font-size:0.75rem;font-weight:700;margin-bottom:0.5rem">Item ${i + 1}: ${it.item || '—'}</p>
-                <div class="calc-row">
-                  <div class="calc-field">
-                    <label>Budget (GHS)</label>
-                    <input type="number" class="rl-budget" step="0.01" min="0" value="${it.budget || ''}" oninput="runCalc()" />
-                  </div>
-                  <div class="calc-field">
-                    <label>Airfreight (GHS)</label>
-                    <input type="number" class="rl-ship" step="0.01" min="0" value="0" oninput="runCalc()" />
-                  </div>
-                </div>
-                <div style="font-size:0.75rem;color:var(--gray);display:flex;justify-content:space-between;flex-wrap:wrap;gap:0.35rem">
-                  <span class="rl-prod">Product —</span>
-                  <span class="rl-comm">Comm —</span>
-                  <span class="rl-china" style="font-weight:700;color:var(--black)">China —</span>
+                <p style="font-size:0.75rem;font-weight:700;margin-bottom:0.5rem">Item ${i + 1}: ${it.item || '—'} · Qty ${it.quantity || 1}</p>
+                <div class="calc-field">
+                  <label>Airfreight for this item (GHS)</label>
+                  <input type="number" class="rl-ship" step="0.01" min="0" value="0" oninput="runCalc()" />
                 </div>
               </div>
               `).join('')}
             </div>
-            <!-- Hidden fields so createOrder still works -->
-            <input type="hidden" id="rBudget" value="${budget || 0}" />
             <input type="hidden" id="rShip" value="0" />
             <div class="result-box">
-              <div class="result-row"><span class="lbl">Sum budgets</span><span class="val" id="rvBudget">—</span></div>
+              <div class="result-row"><span class="lbl">Customer budget</span><span class="val" id="rvBudget">—</span></div>
               <div class="result-row"><span class="lbl">− Sum airfreight</span><span class="val" id="rvShip">—</span></div>
               <div class="result-row"><span class="lbl">= After airfreight</span><span class="val" id="rvAfterShip">—</span></div>
               <div class="result-row"><span class="lbl">− Commission</span><span class="val" id="rvComm">—</span></div>
@@ -921,57 +906,41 @@
         }
       }
 
-      // REVERSE — per line then sum
+      // REVERSE — one budget, per-item airfreight summed, one commission on remainder
       if (document.getElementById('rCommPct') && document.getElementById('revLines')) {
+        const budget = parseFloat(document.getElementById('rBudget').value) || 0;
         const rCommPct = parseFloat(document.getElementById('rCommPct').value) || 0;
         const rRateRmb = parseFloat(document.getElementById('rRateRmb').value) || RATES.rmb_to_ghs;
         const rRateUsd = parseFloat(document.getElementById('rRateUsd').value) || RATES.usd_to_ghs;
         const outCur = (document.getElementById('rOutCur') && document.getElementById('rOutCur').value) || 'RMB';
-        const lines = document.querySelectorAll('.rev-line');
-        let sumBudget = 0, sumShip = 0, sumProd = 0, sumComm = 0, sumChina = 0;
-        lines.forEach(line => {
-          const budget = parseFloat(line.querySelector('.rl-budget').value) || 0;
-          const ship = parseFloat(line.querySelector('.rl-ship').value) || 0;
-          const after = Math.max(0, budget - ship);
-          const prod = rCommPct > 0 ? after / (1 + rCommPct / 100) : after;
-          const comm = Math.max(0, after - prod);
-          let china = prod;
-          let prefix = 'GH₵ ';
-          if (outCur === 'RMB') { china = rRateRmb > 0 ? prod / rRateRmb : 0; prefix = '¥ '; }
-          else if (outCur === 'USD') { china = rRateUsd > 0 ? prod / rRateUsd : 0; prefix = '$ '; }
-          line.querySelector('.rl-prod').textContent = 'Product GH₵ ' + fmt(prod);
-          line.querySelector('.rl-comm').textContent = 'Comm GH₵ ' + fmt(comm);
-          line.querySelector('.rl-china').textContent = 'China ' + prefix + fmt(china);
-          sumBudget += budget; sumShip += ship; sumProd += prod; sumComm += comm; sumChina += china;
+
+        let sumShip = 0;
+        document.querySelectorAll('.rev-line').forEach(line => {
+          sumShip += parseFloat(line.querySelector('.rl-ship').value) || 0;
         });
-        const afterShip = Math.max(0, sumBudget - sumShip);
-        // Keep hidden fields in sync for createOrder
-        const rb = document.getElementById('rBudget');
+        const afterShip = Math.max(0, budget - sumShip);
+        const productGhs = rCommPct > 0 ? afterShip / (1 + rCommPct / 100) : afterShip;
+        const commissionAmt = Math.max(0, afterShip - productGhs);
+
+        let maxOut = productGhs, label = 'Max spend in China (GHS)', prefix = 'GH₵ ';
+        if (outCur === 'RMB') {
+          maxOut = rRateRmb > 0 ? productGhs / rRateRmb : 0;
+          label = 'Max spend in China (RMB)'; prefix = '¥ ';
+        } else if (outCur === 'USD') {
+          maxOut = rRateUsd > 0 ? productGhs / rRateUsd : 0;
+          label = 'Max spend in China (USD)'; prefix = '$ ';
+        }
+
         const rs = document.getElementById('rShip');
-        if (rb) rb.value = sumBudget;
         if (rs) rs.value = sumShip;
 
-        let label = 'Max spend in China (GHS)', prefix = 'GH₵ ';
-        if (outCur === 'RMB') { label = 'Max spend in China (RMB)'; prefix = '¥ '; }
-        else if (outCur === 'USD') { label = 'Max spend in China (USD)'; prefix = '$ '; }
-
-        document.getElementById('rvBudget').textContent = 'GH₵ ' + fmt(sumBudget);
+        document.getElementById('rvBudget').textContent = 'GH₵ ' + fmt(budget);
         document.getElementById('rvShip').textContent = '− GH₵ ' + fmt(sumShip);
         document.getElementById('rvAfterShip').textContent = 'GH₵ ' + fmt(afterShip);
-        document.getElementById('rvComm').textContent = '− GH₵ ' + fmt(sumComm) + ' (' + rCommPct + '%)';
-        document.getElementById('rvProductGhs').textContent = 'GH₵ ' + fmt(sumProd);
-        document.getElementById('rvChinaLabel').textContent = label;
-        document.getElementById('rvChina').textContent = prefix + fmt(sumChina);
-      } else if (document.getElementById('rBudget') && !document.getElementById('revLines')) {
-        // fallback single-line (should not hit with new UI)
-        const budget = parseFloat(document.getElementById('rBudget').value) || 0;
-        const rCommPct = parseFloat(document.getElementById('rCommPct').value) || 0;
-        const rShip = parseFloat(document.getElementById('rShip').value) || 0;
-        const afterShip = Math.max(0, budget - rShip);
-        const productGhs = rCommPct > 0 ? afterShip / (1 + rCommPct / 100) : afterShip;
-        document.getElementById('rvBudget').textContent = 'GH₵ ' + fmt(budget);
-        document.getElementById('rvShip').textContent = '− GH₵ ' + fmt(rShip);
+        document.getElementById('rvComm').textContent = '− GH₵ ' + fmt(commissionAmt) + ' (' + rCommPct + '%)';
         document.getElementById('rvProductGhs').textContent = 'GH₵ ' + fmt(productGhs);
+        document.getElementById('rvChinaLabel').textContent = label;
+        document.getElementById('rvChina').textContent = prefix + fmt(maxOut);
       }
     }
 

@@ -227,7 +227,7 @@
         category: items[0].category,
         item: summary,
         item_summary: summary,
-        description: items.map((it, i) => `Item ${i+1}: ${it.item}${it.description ? ' — ' + it.description : ''}${it.size ? ' | Size: '+it.size : ''}${it.colour ? ' | Colour: '+it.colour : ''}`).join('\n'),
+        description: items.map((it, i) => `Item ${i+1} (x${it.quantity || 1}): ${it.item}${it.description ? ' — ' + it.description : ''}${it.size ? ' | Size: '+it.size : ''}${it.colour ? ' | Colour: '+it.colour : ''}`).join('\n'),
         quantity: totalQty,
         budget: totalBudget || '',
         budget_ghs: totalBudget || '',

@@ -527,7 +527,11 @@
       el.innerHTML = list.map(r => {
         const lines = parseRequestItems(r);
         const productCount = lines.length;
-        const totalUnits = lines.reduce((s, it) => s + (parseInt(it.quantity) || 1), 0) || parseInt(r.quantity) || 1;
+        let totalUnits = lines.reduce((s, it) => s + (parseInt(it.quantity) || 1), 0);
+        const sheetQty = parseInt(r.quantity) || 0;
+        // If items JSON missing and lines defaulted to 1 each, trust Sheet total units
+        if (sheetQty > totalUnits) totalUnits = sheetQty;
+        if (!totalUnits) totalUnits = 1;
         const budget = r.budget || r.budget_ghs;
         return `
         <button class="list-card" onclick="openDetail('${r.id}')">
@@ -571,11 +575,21 @@
       }
       // 2) Parse description lines: "Item 1: …" / "Item 2: …"
       const desc = String(r.description || '');
-      if (/Item\s*\d+\s*:/i.test(desc)) {
-        const parts = desc.split(/Item\s*\d+\s*:/i).map(s => s.trim()).filter(Boolean);
-        if (parts.length > 1) {
-          return parts.map((chunk) => {
-            let size = '', colour = '', description = chunk;
+      if (/Item\s*\d+/i.test(desc)) {
+        // Match "Item 1 (x4): name — ..." or "Item 1: name"
+        const re = /Item\s*(\d+)\s*(?:\(x\s*(\d+)\))?\s*:\s*/gi;
+        const chunks = [];
+        let m, last = 0, indices = [];
+        const copy = desc;
+        while ((m = re.exec(copy)) !== null) {
+          indices.push({ start: m.index, end: m.index + m[0].length, qty: parseInt(m[2], 10) || 1 });
+        }
+        if (indices.length >= 1) {
+          for (let i = 0; i < indices.length; i++) {
+            const bodyStart = indices[i].end;
+            const bodyEnd = i + 1 < indices.length ? indices[i + 1].start : copy.length;
+            const chunk = copy.slice(bodyStart, bodyEnd).trim();
+            let size = '', colour = '', description = '';
             const sizeM = chunk.match(/\|\s*Size:\s*([^|]+)/i);
             const colM = chunk.match(/\|\s*Colour:\s*([^|]+)/i);
             if (sizeM) size = sizeM[1].trim();
@@ -583,17 +597,17 @@
             let name = chunk.split('—')[0].split('|')[0].trim();
             const dash = chunk.indexOf('—');
             if (dash > 0) description = chunk.slice(dash + 1).replace(/\|\s*Size:.*$/i, '').replace(/\|\s*Colour:.*$/i, '').trim();
-            else description = '';
-            return normalizeItem({
+            chunks.push(normalizeItem({
               category: r.category || '',
               item: name,
               description,
-              quantity: 1,
+              quantity: indices[i].qty,
               budget: '',
               size,
               colour
-            });
-          });
+            }));
+          }
+          if (chunks.length) return chunks;
         }
       }
       // 3) Split joined item summary "A; B"
@@ -641,7 +655,10 @@
       if (!r) return;
       const items = parseRequestItems(r);
       const budget = parseFloat(r.budget || r.budget_ghs) || 0;
-      const qty = items.reduce((s, it) => s + (parseInt(it.quantity) || 1), 0) || parseInt(r.quantity) || 1;
+      let qty = items.reduce((s, it) => s + (parseInt(it.quantity) || 1), 0);
+      const sheetQty = parseInt(r.quantity) || 0;
+      if (sheetQty > qty) qty = sheetQty;
+      if (!qty) qty = 1;
       currentReqBudget = budget;
       window._detailItems = items;
 

@@ -98,22 +98,40 @@ function submitRequest_(data) {
   if (itemsVal && typeof itemsVal !== 'string') {
     try { itemsVal = JSON.stringify(itemsVal); } catch (e) { itemsVal = ''; }
   }
-  var row = [
-    id,
-    new Date().toISOString(),
-    'NEW',
-    data.name || '',
-    data.whatsapp || '',
-    data.location || '',
-    data.category || '',
-    data.item || data.item_summary || '',
-    data.description || '',
-    Number(data.quantity) || 1,
-    data.budget || data.budget_ghs || '',
-    data.size || '',
-    data.colour || '',
-    itemsVal
-  ];
+  if (itemsVal) itemsVal = String(itemsVal);
+
+  // Map values by header name so column order in the Sheet can vary
+  var fieldMap = {
+    id: id,
+    created: new Date().toISOString(),
+    status: 'NEW',
+    name: data.name || '',
+    whatsapp: data.whatsapp || '',
+    location: data.location || '',
+    category: data.category || '',
+    item: data.item || data.item_summary || '',
+    description: data.description || '',
+    quantity: Number(data.quantity) || 1,
+    budget: data.budget || data.budget_ghs || '',
+    size: data.size || '',
+    colour: data.colour || '',
+    items: itemsVal
+  };
+
+  var lastCol = Math.max(sheet.getLastColumn(), REQUEST_HEADERS.length);
+  var headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0].map(function (h) {
+    return String(h || '').trim();
+  });
+  var row = [];
+  for (var c = 0; c < headers.length; c++) {
+    var key = headers[c];
+    row.push(key && fieldMap.hasOwnProperty(key) ? fieldMap[key] : '');
+  }
+  // If items header missing somehow, append it
+  if (headers.indexOf('items') === -1) {
+    sheet.getRange(1, headers.length + 1).setValue('items').setFontWeight('bold');
+    row.push(itemsVal);
+  }
   sheet.appendRow(row);
 
   return { success: true, requestId: id };

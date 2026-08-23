@@ -524,7 +524,12 @@
         el.innerHTML = '<div class="empty">No requests yet.<br>Submit one from the request form.</div>';
         return;
       }
-      el.innerHTML = list.map(r => `
+      el.innerHTML = list.map(r => {
+        const lines = parseRequestItems(r);
+        const productCount = lines.length;
+        const totalUnits = lines.reduce((s, it) => s + (parseInt(it.quantity) || 1), 0) || parseInt(r.quantity) || 1;
+        const budget = r.budget || r.budget_ghs;
+        return `
         <button class="list-card" onclick="openDetail('${r.id}')">
           <div class="list-top">
             <span class="list-id">${r.id}</span>
@@ -533,12 +538,13 @@
           <div class="list-title">${r.item || r.item_summary || '—'}</div>
           <div class="list-meta">${r.name || ''} · ${r.whatsapp || ''}</div>
           <div class="list-foot">
-            <span>Qty ${r.quantity || 1}</span>
-            ${r.budget || r.budget_ghs ? '<span>GH₵' + (r.budget || r.budget_ghs) + '</span>' : ''}
+            <span>${productCount} product${productCount === 1 ? '' : 's'} · ${totalUnits} unit${totalUnits === 1 ? '' : 's'}</span>
+            ${budget ? '<span>GH₵' + budget + '</span>' : ''}
             <span>${fmtDate(r.created)}</span>
           </div>
         </button>
-      `).join('');
+      `;
+      }).join('');
     }
 
     function fmtDate(iso) {
@@ -661,7 +667,7 @@
             </div>
           `).join('')}
           <div class="detail-grid" style="margin-top:0.85rem">
-            <div><span>Total qty</span> ${qty}</div>
+            <div><span>Total units</span> ${qty}</div>
             <div><span>Total budget</span> ${budget ? 'GH₵ ' + budget : '—'}</div>
           </div>
         </div>

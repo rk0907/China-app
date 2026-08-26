@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cedi vs Dollar → RMB Calculator</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f0f2f5;
+      color: #1a1a1a;
+      padding: 20px;
+      line-height: 1.5;
+    }
+    .container {
+      max-width: 480px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+    .header {
+      background: linear-gradient(135deg, #1a73e8, #0d47a1);
+      color: white;
+      padding: 24px 20px;
+      text-align: center;
+    }
+    .header h1 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .header p {
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+    .body {
+      padding: 24px 20px;
+    }
+    .section {
+      margin-bottom: 24px;
+    }
+    .section-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #5f6368;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+    .input-group {
+      margin-bottom: 14px;
+    }
+    label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-bottom: 6px;
+      color: #333;
+    }
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      font-size: 1.1rem;
+      border: 1.5px solid #dadce0;
+      border-radius: 10px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus {
+      border-color: #1a73e8;
+    }
+    .result-box {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 18px;
+      margin-top: 8px;
+    }
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #e8eaed;
+    }
+    .result-row:last-child {
+      border-bottom: none;
+    }
+    .result-label {
+      font-size: 0.95rem;
+      color: #5f6368;
+    }
+    .result-value {
+      font-size: 1.15rem;
+      font-weight: 600;
+    }
+    .better {
+      color: #188038;
+    }
+    .worse {
+      color: #d93025;
+    }
+    .equal {
+      color: #f9ab00;
+    }
+    .verdict {
+      margin-top: 20px;
+      padding: 16px;
+      border-radius: 12px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 1.05rem;
+    }
+    .verdict.usd {
+      background: #e6f4ea;
+      color: #137333;
+    }
+    .verdict.cedi {
+      background: #fce8e6;
+      color: #c5221f;
+    }
+    .verdict.same {
+      background: #fef7e0;
+      color: #b06000;
+    }
+    .hint {
+      font-size: 0.8rem;
+      color: #80868b;
+      margin-top: 6px;
+    }
+    .footer {
+      text-align: center;
+      padding: 16px;
+      font-size: 0.8rem;
+      color: #80868b;
+      border-top: 1px solid #e8eaed;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Cedi vs Dollar → RMB</h1>
+      <p>Which route is cheaper for you?</p>
+    </div>
+
+    <div class="body">
+      <!-- Inputs -->
+      <div class="section">
+        <div class="section-title">Your Rates</div>
+
+        <div class="input-group">
+          <label>How many GHS for 1 USD?</label>
+          <input type="number" id="ghsPerUsd" value="12" step="0.01" min="0">
+          <div class="hint">Your actual buying rate (e.g. 12.00)</div>
+        </div>
+
+        <div class="input-group">
+          <label>How many RMB for 100 USD?</label>
+          <input type="number" id="rmbPer100Usd" value="670" step="1" min="0">
+          <div class="hint">Example: 660, 670, 680, 690...</div>
+        </div>
+
+        <div class="input-group">
+          <label>Direct Cedi → RMB (GHS for 100 RMB)</label>
+          <input type="number" id="directGhs" value="210.69" step="0.01" min="0">
+          <div class="hint">The amount deducted when you withdraw 100 RMB</div>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div class="section">
+        <div class="section-title">Cost Comparison (for 100 RMB)</div>
+        <div class="result-box">
+          <div class="result-row">
+            <span class="result-label">Via USD path</span>
+            <span class="result-value" id="usdPathCost">—</span>
+          </div>
+          <div class="result-row">
+            <span class="result-label">Direct Cedi path</span>
+            <span class="result-value" id="cediPathCost">—</span>
+          </div>
+          <div class="result-row">
+            <span class="result-label">Difference</span>
+            <span class="result-value" id="difference">—</span>
+          </div>
+        </div>
+
+        <div id="verdict" class="verdict"></div>
+      </div>
+
+      <!-- Break-even -->
+      <div class="section">
+        <div class="section-title">Break-even Info</div>
+        <div class="result-box">
+          <div class="result-row">
+            <span class="result-label">USD needed for 100 RMB</span>
+            <span class="result-value" id="usdNeeded">—</span>
+          </div>
+          <div class="result-row">
+            <span class="result-label">Max GHS/USD still better</span>
+            <span class="result-value" id="breakEven">—</span>
+          </div>
+        </div>
+        <div class="hint" style="margin-top:10px;">
+          If your GHS-per-USD rate is lower than the break-even number, the USD route is cheaper.
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      Enter your real rates above — results update instantly
+    </div>
+  </div>
+
+  <script>
+    function calculate() {
+      const ghsPerUsd = parseFloat(document.getElementById('ghsPerUsd').value) || 0;
+      const rmbPer100Usd = parseFloat(document.getElementById('rmbPer100Usd').value) || 0;
+      const directGhs = parseFloat(document.getElementById('directGhs').value) || 0;
+
+      // How many USD needed for 100 RMB
+      const usdNeeded = rmbPer100Usd > 0 ? (100 / rmbPer100Usd) * 100 : 0;
+
+      // Cost via USD path
+      const usdPathCost = usdNeeded * ghsPerUsd;
+
+      // Difference
+      const diff = directGhs - usdPathCost;
+
+      // Break-even GHS per USD
+      const breakEven = usdNeeded > 0 ? directGhs / usdNeeded : 0;
+
+      // Update display
+      document.getElementById('usdPathCost').textContent = usdPathCost > 0 ? usdPathCost.toFixed(2) + ' GHS' : '—';
+      document.getElementById('cediPathCost').textContent = directGhs > 0 ? directGhs.toFixed(2) + ' GHS' : '—';
+      document.getElementById('usdNeeded').textContent = usdNeeded > 0 ? usdNeeded.toFixed(2) + ' USD' : '—';
+      document.getElementById('breakEven').textContent = breakEven > 0 ? breakEven.toFixed(2) + ' GHS' : '—';
+
+      const diffEl = document.getElementById('difference');
+      const verdictEl = document.getElementById('verdict');
+
+      if (usdPathCost <= 0 || directGhs <= 0) {
+        diffEl.textContent = '—';
+        diffEl.className = 'result-value';
+        verdictEl.textContent = 'Enter your rates above';
+        verdictEl.className = 'verdict';
+        return;
+      }
+
+      if (Math.abs(diff) < 0.5) {
+        diffEl.textContent = 'Almost same';
+        diffEl.className = 'result-value equal';
+        verdictEl.textContent = 'Both options are almost the same';
+        verdictEl.className = 'verdict same';
+      } else if (diff > 0) {
+        diffEl.textContent = 'Save ' + diff.toFixed(2) + ' GHS via USD';
+        diffEl.className = 'result-value better';
+        verdictEl.textContent = '✅ Better to go via USD → RMB';
+        verdictEl.className = 'verdict usd';
+      } else {
+        diffEl.textContent = 'Save ' + Math.abs(diff).toFixed(2) + ' GHS via direct Cedi';
+        diffEl.className = 'result-value better';
+        verdictEl.textContent = '✅ Better to go direct Cedi → RMB';
+        verdictEl.className = 'verdict cedi';
+      }
+    }
+
+    // Run on every input change
+    ['ghsPerUsd', 'rmbPer100Usd', 'directGhs'].forEach(id => {
+      document.getElementById(id).addEventListener('input', calculate);
+    });
+
+    // Initial calculation
+    calculate();
+  </script>
+</body>
+</html>
